@@ -1,0 +1,66 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Base component styles - from Figma JSON layout */
+.revealSin {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-sp-4); /* From Figma JSON analysis.spacing.gap */
+  padding: var(--spacing-sp-4) var(--spacing-sp-8); /* From Figma JSON layout.padding */
+  border-radius: var(--radius-s); /* From Figma JSON layout.cornerRadius */
+  width: 140px; /* From Figma JSON layout.width */
+  height: 40px; /* From Figma JSON layout.height */
+  box-sizing: border-box;
+  background-color: var(--color-surface-foreground); /* From Figma JSON colors */
+  transition: background-color 0.2s ease-out;
+}
+
+/* SIN text styling */
+.sinText {
+  /* Typography from Figma JSON - Body/Small/SemiBold */
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12px; /* From Figma JSON typography */
+  font-weight: 600; /* From Figma JSON typography */
+  line-height: 16px; /* From Figma JSON typography */
+  letter-spacing: 0; /* From Figma JSON typography */
+  color: var(--color-text-primary); /* From Figma JSON colors */
+  text-decoration: none;
+  text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* State variants */
+.stateDefault {
+  /* Default state styles - already covered in base .revealSin */
+}
+
+.stateRevealed {
+  /* Revealed state styles - same as default per Figma JSON */
+  /* Both states have identical styling in the JSON */
+}
+
+/* Hover states */
+.revealSin:hover:not([data-disabled]) {
+  background-color: var(--color-surface-hover);
+}
+
+/* Focus states */
+.revealSin:focus-within {
+  outline: 2px solid var(--color-surface-focused);
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+.revealSin[data-disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.revealSin[data-disabled] .sinText {
+  color: var(--color-text-disabled);
+}

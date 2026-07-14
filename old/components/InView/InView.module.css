@@ -1,0 +1,143 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Root container */
+.inViewRoot {
+  display: inline-flex;
+  position: relative;
+  min-width: 0; /* Allow shrinking in flex containers */
+  max-width: 100%;
+}
+
+/* Trigger Button - From Figma inview.json layout */
+.trigger {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--spacing-sp-16);
+  padding: var(--spacing-sp-12);
+  border-radius: var(--radius-xs);
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease-out;
+  font-family: var(--font-family-brand);
+  width: fit-content;
+}
+
+/* Trigger Hover State */
+.trigger:hover:not(.triggerDisabled):not(.triggerActive) {
+  background-color: var(--color-surface-hover);
+}
+
+/* Trigger Active/Open State */
+.triggerActive {
+  background-color: var(--color-surface-selected);
+}
+
+/* Trigger Disabled State */
+.triggerDisabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Trigger Info Container */
+.triggerInfoContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-8);
+  min-width: 0; /* Allow shrinking */
+  overflow: hidden;
+}
+
+/* Trigger Icon */
+.triggerIcon {
+  color: var(--color-icon-dark);
+  flex-shrink: 0;
+}
+
+/* Trigger Label */
+.triggerLabel {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Trigger Chevron */
+.triggerChevron {
+  color: var(--color-icon-dark);
+  flex-shrink: 0;
+}
+
+/* Dropdown Content - From Figma inContextSelector structure */
+.content {
+  background-color: var(--color-surface-foreground);
+  border-radius: var(--radius-xs);
+  padding: var(--spacing-sp-24);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1), 0px 0px 2px rgba(0, 0, 0, 0.06);
+  z-index: 200; /* Ensure it's above header (z-index: 100) */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sp-12);
+  width: 655px;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+/* Tab Group - Uses ButtonGroup component */
+.tabGroup {
+  flex-shrink: 0;
+}
+
+/* Section Title - Headlines/H5 typography */
+.sectionTitle {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-headline-h5-size);
+  font-weight: var(--font-headline-h5-weight);
+  line-height: var(--font-headline-h5-line-height);
+  color: var(--color-text-primary);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Select All Wrapper */
+.selectAllWrapper {
+  flex-shrink: 0;
+}
+
+/* Items List - Scrollable area */
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sp-8);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  max-height: 400px;
+}
+
+/* Bottom Container */
+.bottomContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding-top: var(--spacing-sp-12);
+  border-top: var(--border-width-100) solid var(--color-stroke-light);
+  flex-shrink: 0;
+}
+
+/* Button Wrapper */
+.buttonWrapper {
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-sp-12);
+}
+

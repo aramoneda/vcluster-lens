@@ -1,0 +1,40 @@
+import { themeQuartz } from 'ag-grid-community';
+
+// to use myTheme in an application, pass it to the theme grid option
+const myTheme = themeQuartz
+	.withParams({
+        accentColor: "#0B49EA",
+        advancedFilterBuilderColumnPillColor: "#D9F6EC",
+        advancedFilterBuilderJoinPillColor: "#FCE9EA",
+        advancedFilterBuilderOptionPillColor: "#FEEDE4",
+        advancedFilterBuilderValuePillColor: "#E6E7F9",
+        borderColor: "#1C1F2226",
+        borderRadius: 8,
+        browserColorScheme: "light",
+        buttonActiveBorder: true,
+        buttonBorder: true,
+        buttonDisabledBackgroundColor: "#D6DADE",
+        buttonDisabledTextColor: "#8A9196",
+        buttonVerticalPadding: 12,
+        cellBatchEditBackgroundColor: "#00152B28",
+        cellBatchEditTextColor: "#00152B",
+        cellWidgetSpacing: 8,
+        checkboxBorderRadius: 2,
+        checkboxIndeterminateBackgroundColor: "#0B49EA",
+        checkboxUncheckedBorderColor: "#BFC4C8",
+        chromeBackgroundColor: "#F6F7F8",
+        dialogBorder: true,
+        findActiveMatchBackgroundColor: "#FEEDE4",
+        findMatchBackgroundColor: "#FFFACA",
+        fontFamily: {
+            googleFont: "Inter"
+        },
+        foregroundColor: "#1C1F22",
+        fullRowEditInvalidBackgroundColor: "#FCE9EA",
+        headerBackgroundColor: "#F6F7F8",
+        headerFontSize: 14,
+        headerFontWeight: 600,
+        invalidColor: "#CC2330",
+        valueChangeDeltaDownColor: "#CC2330",
+        valueChangeDeltaUpColor: "#066A45"
+    });

@@ -1,0 +1,166 @@
+/* Import global design tokens */
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* --- Keyframes for slide animations --- */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+
+
+/* --- Drawer Overlay --- */
+/* Based on figma-json: No explicit overlay styles, using Radix defaults + custom animation */
+.drawerOverlay {
+  background-color: rgba(0, 0, 0, 0.25); /* Explicit 25% black backdrop */
+  position: fixed;
+  inset: 0;
+  z-index: 40; /* Ensure it's below content but above page */
+  /* border: 5px solid red !important; --- DEBUG BORDER REMOVED --- */
+  animation-duration: 0.3s; /* Match content animation duration */
+  animation-timing-function: ease-out;
+}
+
+.drawerOverlay[data-state='open'] {
+  animation-name: fadeIn; /* Assuming a global fadeIn animation */
+}
+
+.drawerOverlay[data-state='closed'] {
+  animation-name: fadeOut; /* Assuming a global fadeOut animation */
+}
+
+/* --- Drawer Content --- */
+/* Based on figma-json: Drawer layout and colors */
+.drawerContent {
+  background-color: var(--color-surface-foreground); /* figma-json: drawer_fill0 */
+  border-radius: var(--radius-s); /* figma-json: layout.cornerRadius.token */
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 50; /* Above overlay */
+  width: 578px; /* figma-json: layout.width */
+  max-width: var(--max-width-drawer, 90vw); /* figma-json: layout.maxWidth, with a fallback */
+  min-width: var(--min-width-drawer, 360px); /* figma-json: layout.minWidth */
+  height: 100vh; /* figma-json: layout.height (interpreted as full viewport height) */
+  /* padding: var(--spacing-sp-24); Padding will be applied to internal wrappers if needed or managed by flex gap */
+  box-sizing: border-box; /* Ensure padding/border don't add to 100vh */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sp-24); /* sp-24 gap between header, body, footer */
+  overflow-y: hidden; /* Content itself should not scroll, body will */
+  /* height: 100vh; Relying on top:0, bottom:0 for fixed positioning height */
+
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); /* Radix recommended timing */
+}
+
+.drawerContent.right {
+  right: 0;
+}
+
+.drawerContent[data-state='open'] {
+  animation-name: slideInFromRight;
+}
+
+.drawerContent[data-state='closed'] {
+  animation-name: slideOutToRight;
+}
+
+/* --- Nested Containers --- */
+/* Based on figma-json: structure.children[0].children (mainContentWrapper children) */
+
+/* .drawerHeader corresponds to "TopWrapper" in figma-json */
+.drawerHeader {
+  display: flex;
+  justify-content: flex-start; /* Align items to the start */
+  align-items: center;
+  flex-shrink: 0;
+  padding: var(--spacing-sp-24); /* figma-json: layout.padding.token - applied here */
+  padding-bottom: 0; /* Remove bottom padding to allow sp-24 gap */
+}
+
+/* .drawerBody is the main scrollable content area */
+.drawerBody {
+  flex-grow: 1;
+  flex-basis: 0; /* Ensure flex-grow works correctly for scrolling */
+  overflow-y: auto; /* Allow body to scroll if content exceeds space */
+  padding-left: var(--spacing-sp-24); /* figma-json: layout.padding.token - applied here */
+  padding-right: var(--spacing-sp-24); /* figma-json: layout.padding.token - applied here */
+  /* Remove top and bottom padding to allow gap to handle spacing */
+  /* Placeholder styles, actual content will define its layout */
+  /* Based on figma-json: .ContentPlaceholder */
+}
+
+/* .drawerFooter corresponds to "BottomWrapper" in figma-json */
+.drawerFooter {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right by default */
+  gap: var(--spacing-sp-12); /* figma-json: ButtonContainer.boundVariables.itemSpacing.tokenName */
+  flex-shrink: 0;
+  padding: var(--spacing-sp-24); /* figma-json: layout.padding.token - applied here */
+  padding-top: 0; /* Remove top padding to allow sp-24 gap from body */
+}
+
+/* --- Drawer Title --- */
+/* Based on figma-json: typography["Drawer/TitleHeader"] */
+.drawerTitle {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-headline-h4-size);
+  font-weight: var(--font-headline-h4-weight);
+  line-height: var(--font-headline-h4-line-height);
+  color: var(--color-text-primary); /* figma-json: maincontentwrapper_topwrapper_header_titleheader_titleheader_fill0.token */
+  margin: 0; /* Reset default margin */
+}
+
+/* --- Drawer Description --- */
+/* No specific description style in figma-json, using a sensible default */
+.drawerDescription {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-sp-4);
+  margin-bottom: var(--spacing-sp-16);
+}
+
+/* --- Drawer Close Button --- */
+/* This class is on the Dialog.Close wrapper for the IconButton */
+.drawerCloseButton {
+  /* IconButton itself will have styles. This is for positioning if needed. */
+  /* Example: if IconButton needs specific alignment within the header */
+  /* color: var(--color-icon-brand); figma-json: maincontentwrapper_topwrapper_iconbutton_icons_16px/close_path_path_fill0.token */
+  /* This color is handled by IconButton's "color" prop */
+  margin-left: auto; /* Pushes the close button to the right */
+}
+
+/* --- Drawer Back Button --- */
+.drawerBackButton {
+  /* Styles for the back button if needed, e.g., margin-right */
+  margin-right: var(--spacing-sp-8); /* Add some space between back button and title */
+}
+
+/* Fallback global keyframes if not defined elsewhere */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-tooltip",
+  "type": "registry:ui",
+  "title": "Tooltip",
+  "description": "A small contextual hint shown on hover or focus, with configurable placement and delay.",
+  "dependencies": [
+    "@radix-ui/react-tooltip"
+  ],
+  "categories": [
+    "feedback",
+    "overlay"
+  ],
+  "meta": {
+    "tags": [
+      "tooltip",
+      "hint",
+      "overlay",
+      "a11y"
+    ],
+    "examples": [
+      {
+        "title": "Tooltip hint",
+        "code": "import { SimpleTooltip } from \"@/components/ui/tooltip\"\n\n<SimpleTooltip content=\"More info\">\n  <span>Hover me</span>\n</SimpleTooltip>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/tooltip.tsx",
+      "type": "registry:ui",
+      "content": "'use client'\n\nimport * as React from 'react'\nimport * as TooltipPrimitive from '@radix-ui/react-tooltip'\n\nimport { cn } from '@/lib/utils'\n\nfunction TooltipProvider({\n  delayDuration = 0,\n  ...props\n}: React.ComponentProps<typeof TooltipPrimitive.Provider>) {\n  return (\n    <TooltipPrimitive.Provider\n      data-slot=\"tooltip-provider\"\n      delayDuration={delayDuration}\n      {...props}\n    />\n  )\n}\n\nfunction Tooltip({\n  ...props\n}: React.ComponentProps<typeof TooltipPrimitive.Root>) {\n  return (\n    <TooltipProvider>\n      <TooltipPrimitive.Root data-slot=\"tooltip\" {...props} />\n    </TooltipProvider>\n  )\n}\n\nfunction TooltipTrigger({\n  ...props\n}: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {\n  return <TooltipPrimitive.Trigger data-slot=\"tooltip-trigger\" {...props} />\n}\n\nfunction TooltipContent({\n  className,\n  sideOffset = 4,\n  children,\n  ...props\n}: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>) {\n  return (\n    <TooltipPrimitive.Portal>\n      <TooltipPrimitive.Content\n        data-slot=\"tooltip-content\"\n        sideOffset={sideOffset}\n        className={cn(\n          // Layout & sizing from Figma\n          'z-[9999] max-w-[250px] px-3 py-2 rounded-[var(--radius-s)]',\n          // Colors - dark background, white text\n          'bg-[var(--color-surface-tooltip)] text-[var(--color-text-tooltip)]',\n          // Typography - body medium\n          'text-sm leading-5 font-normal',\n          // Shadow\n          'shadow-[0px_2px_8px_rgba(0,0,0,0.15)]',\n          // Animations\n          'animate-in fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0',\n          'data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1',\n          'data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1',\n          // Text handling\n          'break-words',\n          className,\n        )}\n        {...props}\n      >\n        {children}\n      </TooltipPrimitive.Content>\n    </TooltipPrimitive.Portal>\n  )\n}\n\n/**\n * Composite Tooltip component matching Old API.\n * Usage: <SimpleTooltip content=\"Tooltip text\"><Button>Hover me</Button></SimpleTooltip>\n */\nexport interface SimpleTooltipProps\n  extends Pick<\n      React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Provider>,\n      'delayDuration' | 'skipDelayDuration' | 'disableHoverableContent'\n    >,\n    Pick<\n      React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Root>,\n      'open' | 'defaultOpen' | 'onOpenChange'\n    >,\n    Pick<\n      React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>,\n      'side' | 'sideOffset' | 'align' | 'alignOffset'\n    > {\n  /** The trigger element for the tooltip */\n  children: React.ReactNode\n  /** The content to display within the tooltip */\n  content: React.ReactNode\n  /** Optional class name for the content */\n  contentClassName?: string\n}\n\nconst SimpleTooltip = React.forwardRef<\n  React.ComponentRef<typeof TooltipPrimitive.Content>,\n  SimpleTooltipProps\n>(\n  (\n    {\n      // Provider Props\n      delayDuration,\n      skipDelayDuration,\n      disableHoverableContent,\n      // Root Props\n      open,\n      defaultOpen,\n      onOpenChange,\n      // Trigger Props\n      children,\n      // Content Props\n      content,\n      side,\n      sideOffset = 4,\n      align,\n      alignOffset,\n      contentClassName,\n    },\n    ref\n  ) => {\n    return (\n      <TooltipPrimitive.Provider\n        delayDuration={delayDuration}\n        skipDelayDuration={skipDelayDuration}\n        disableHoverableContent={disableHoverableContent}\n      >\n        <TooltipPrimitive.Root\n          open={open}\n          defaultOpen={defaultOpen}\n          onOpenChange={onOpenChange}\n        >\n          <TooltipPrimitive.Trigger asChild>\n            {children}\n          </TooltipPrimitive.Trigger>\n          <TooltipPrimitive.Portal>\n            <TooltipPrimitive.Content\n              ref={ref}\n              side={side}\n              sideOffset={sideOffset}\n              align={align}\n              alignOffset={alignOffset}\n              className={cn(\n                'z-[9999] max-w-[250px] px-3 py-2 rounded-[var(--radius-s)]',\n                'bg-[var(--color-surface-tooltip)] text-[var(--color-text-tooltip)]',\n                'text-sm leading-5 font-normal',\n                'shadow-[0px_2px_8px_rgba(0,0,0,0.15)]',\n                'animate-in fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0',\n                'data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1',\n                'data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1',\n                'break-words',\n                contentClassName,\n              )}\n            >\n              {content}\n            </TooltipPrimitive.Content>\n          </TooltipPrimitive.Portal>\n        </TooltipPrimitive.Root>\n      </TooltipPrimitive.Provider>\n    )\n  }\n)\nSimpleTooltip.displayName = 'SimpleTooltip'\n\nexport { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, SimpleTooltip }\n"
+    }
+  ]
+}

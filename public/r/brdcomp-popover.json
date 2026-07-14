@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-popover",
+  "type": "registry:ui",
+  "title": "Popover",
+  "description": "A floating panel anchored to a trigger, useful for lightweight forms or contextual info. It can contain any content.",
+  "dependencies": [
+    "@radix-ui/react-popover",
+    "class-variance-authority"
+  ],
+  "categories": [
+    "overlay"
+  ],
+  "meta": {
+    "tags": [
+      "popover",
+      "overlay",
+      "floating",
+      "context"
+    ],
+    "examples": [
+      {
+        "title": "Popover content",
+        "code": "import { Popover, PopoverTrigger, PopoverContent } from \"@/components/ui/popover\"\n\n<Popover>\n  <PopoverTrigger>Open</PopoverTrigger>\n  <PopoverContent>Popover content</PopoverContent>\n</Popover>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/popover.tsx",
+      "type": "registry:ui",
+      "content": "'use client'\n\nimport * as React from 'react'\nimport * as PopoverPrimitive from '@radix-ui/react-popover'\nimport { cva, type VariantProps } from 'class-variance-authority'\n\nimport { cn } from '@/lib/utils'\n\n// Size type matching old Popover component\nexport type PopoverSize = 'M' | 'S' | 'XS'\n\nconst popoverContentVariants = cva(\n  [\n    // Background and appearance\n    'bg-[var(--color-surface-foreground)]',\n    'text-[var(--color-text-primary)]',\n    'rounded-[var(--radius-s)]',\n    'shadow-[0px_4px_12px_rgba(0,0,0,0.1),0px_0px_2px_rgba(0,0,0,0.06)]',\n    'z-[200]',\n    'outline-none',\n    // Animations\n    'data-[state=open]:animate-in data-[state=closed]:animate-out',\n    'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',\n    'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',\n    'data-[side=bottom]:slide-in-from-top-2',\n    'data-[side=left]:slide-in-from-right-2',\n    'data-[side=right]:slide-in-from-left-2',\n    'data-[side=top]:slide-in-from-bottom-2',\n    'origin-(--radix-popover-content-transform-origin)',\n    'duration-200 ease-out',\n  ],\n  {\n    variants: {\n      size: {\n        M: 'p-6',   // spacing-sp-24 = 24px\n        S: 'p-4',   // spacing-sp-16 = 16px\n        XS: 'p-3',  // spacing-sp-12 = 12px\n      },\n    },\n    defaultVariants: {\n      size: 'M',\n    },\n  }\n)\n\nfunction Popover({\n  ...props\n}: React.ComponentProps<typeof PopoverPrimitive.Root>) {\n  return <PopoverPrimitive.Root data-slot=\"popover\" {...props} />\n}\n\nfunction PopoverTrigger({\n  ...props\n}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {\n  return <PopoverPrimitive.Trigger data-slot=\"popover-trigger\" {...props} />\n}\n\nexport interface PopoverContentProps\n  extends Omit<React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>, 'asChild'>,\n    VariantProps<typeof popoverContentVariants> {\n  /** The size of the popover content, affecting padding */\n  size?: PopoverSize\n}\n\nconst PopoverContent = React.forwardRef<\n  React.ElementRef<typeof PopoverPrimitive.Content>,\n  PopoverContentProps\n>(\n  (\n    {\n      className,\n      align = 'center',\n      sideOffset = 8, // 8px default matching old component\n      size = 'M',\n      ...props\n    },\n    ref\n  ) => {\n    return (\n      <PopoverPrimitive.Portal>\n        <PopoverPrimitive.Content\n          ref={ref}\n          data-slot=\"popover-content\"\n          data-size={size}\n          align={align}\n          sideOffset={sideOffset}\n          className={cn(popoverContentVariants({ size }), className)}\n          {...props}\n        />\n      </PopoverPrimitive.Portal>\n    )\n  }\n)\n\nPopoverContent.displayName = 'PopoverContent'\n\nfunction PopoverAnchor({\n  ...props\n}: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {\n  return <PopoverPrimitive.Anchor data-slot=\"popover-anchor\" {...props} />\n}\n\nfunction PopoverClose({\n  ...props\n}: React.ComponentProps<typeof PopoverPrimitive.Close>) {\n  return <PopoverPrimitive.Close data-slot=\"popover-close\" {...props} />\n}\n\nexport {\n  Popover,\n  PopoverTrigger,\n  PopoverContent,\n  PopoverAnchor,\n  PopoverClose,\n  popoverContentVariants,\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: var(--radius-xs);
+  /* Default typography - will be overridden by size variants */
+  font-family: var(--font-family-brand);
+  letter-spacing: 0%;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Type Variants */
+.filled {
+  /* Base filled styles - specific colors will come from color variants */
+}
+
+.outline {
+  border-width: var(--border-width-100);
+  border-style: solid;
+  background-color: var(--color-surface-foreground); /* Default for outline */
+}
+
+/* Color Variants - Filled */
+.filled.default {
+  background-color: var(--chetwode-100);
+  color: var(--chetwode-600);
+}
+.filled.sky {
+  background-color: var(--azure-100);
+  color: var(--azure-700);
+}
+.filled.grass {
+  background-color: var(--green-haze-100);
+  color: var(--green-haze-700);
+}
+.filled.bored {
+  background-color: var(--orange-haze-100);
+  color: var(--orange-haze-700);
+}
+.filled.negative {
+  background-color: var(--color-state-error-light);
+  color: var(--color-state-error-accent);
+}
+.filled.neuteral {
+  background-color: var(--neutral-300);
+  color: var(--color-text-primary);
+  border: var(--border-width-100) solid var(--color-stroke-default);
+}
+.filled.dark {
+  background-color: var(--color-surface-foreground-dark);
+  color: var(--color-text-inverse);
+}
+
+/* Color Variants - Outline */
+.outline.default {
+  border-color: var(--chetwode-200);
+  color: var(--chetwode-500);
+}
+.outline.sky {
+  border-color: var(--azure-200);
+  color: var(--azure-600);
+}
+.outline.grass {
+  border-color: var(--green-haze-200);
+  color: var(--color-state-success-accent);
+}
+.outline.bored {
+  border-color: var(--orange-haze-200);
+  color: var(--orange-haze-600);
+}
+.outline.negative {
+  border-color: var(--warning-light); /* Figma JSON uses --warning-light for border */
+  color: var(--color-state-error-accent);
+}
+.outline.neuteral {
+  border-color: var(--color-stroke-default);
+  color: var(--color-text-primary);
+}
+.outline.dark {
+  border-color: var(--color-surface-foreground-dark);
+  color: var(--color-surface-foreground-dark);
+}
+
+
+/* Size Variants */
+/* Default Size (corresponds to Figma's "Default" size option) */
+.default {
+  padding-top: var(--spacing-sp-2);
+  padding-bottom: var(--spacing-sp-2);
+  padding-left: var(--spacing-sp-6);
+  padding-right: var(--spacing-sp-6);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+  height: 24px; /* Derived from Figma layout height for Default size */
+}
+
+/* Large Size */
+.large {
+  padding-top: var(--spacing-sp-2);
+  padding-bottom: var(--spacing-sp-2);
+  padding-left: var(--spacing-sp-8);
+  padding-right: var(--spacing-sp-8);
+  font-size: var(--font-body-large-size);
+  font-weight: var(--font-body-large-semibold-weight);
+  line-height: var(--font-body-large-line-height);
+  height: 28px; /* Derived from Figma layout height for Large size */
+}
+
+/* Small Size */
+.small {
+  padding-top: var(--spacing-sp-2);
+  padding-bottom: var(--spacing-sp-2);
+  padding-left: var(--spacing-sp-4);
+  padding-right: var(--spacing-sp-4);
+  font-size: var(--font-body-small-size);
+  font-weight: var(--font-body-small-semibold-weight);
+  line-height: var(--font-body-small-line-height);
+  height: 20px; /* Derived from Figma layout height for Small size */
+}

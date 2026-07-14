@@ -1,0 +1,39 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-badge",
+  "type": "registry:ui",
+  "title": "Badge",
+  "description": "A small label used to highlight status, categories, or counts. Variants: filled or outline. Colors: default, sky, grass, bored, negative, neutral, dark. Sizes: sm, default, lg.",
+  "dependencies": [
+    "@radix-ui/react-slot",
+    "class-variance-authority"
+  ],
+  "categories": [
+    "data-display",
+    "status"
+  ],
+  "meta": {
+    "tags": [
+      "badge",
+      "label",
+      "status",
+      "tag"
+    ],
+    "examples": [
+      {
+        "title": "Semantic badge",
+        "code": "import { Badge } from \"@/components/ui/badge\"\n\n<Badge variant=\"filled\" color=\"grass\">Active</Badge>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/badge.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport { Slot } from \"@radix-ui/react-slot\"\nimport { cva, type VariantProps } from \"class-variance-authority\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst badgeVariants = cva(\n  \"inline-flex items-center justify-center rounded-[4px] font-semibold whitespace-nowrap shrink-0 [&>svg]:pointer-events-none gap-1 transition-colors\",\n  {\n    variants: {\n      variant: {\n        filled: \"\",\n        outline: \"border bg-[var(--color-surface-widget)]\",\n      },\n      color: {\n        default: \"\",\n        sky: \"\",\n        grass: \"\",\n        bored: \"\",\n        negative: \"\",\n        neutral: \"\",\n        dark: \"\",\n      },\n      size: {\n        sm: \"px-1 py-0.5 text-xs leading-4 h-5\",\n        default: \"px-1.5 py-0.5 text-sm leading-5 h-6\",\n        lg: \"px-2 py-0.5 text-base leading-6 h-7\",\n      },\n    },\n    compoundVariants: [\n      // Filled variants\n      {\n        variant: \"filled\",\n        color: \"default\",\n        className: \"bg-[var(--color-badge-filled-default-bg)] text-[var(--color-badge-filled-default-text)]\",\n      },\n      {\n        variant: \"filled\",\n        color: \"sky\",\n        className: \"bg-[var(--color-badge-filled-sky-bg)] text-[var(--color-badge-filled-sky-text)]\",\n      },\n      {\n        variant: \"filled\",\n        color: \"grass\",\n        className: \"bg-[var(--color-badge-filled-grass-bg)] text-[var(--color-badge-filled-grass-text)]\",\n      },\n      {\n        variant: \"filled\",\n        color: \"bored\",\n        className: \"bg-[var(--color-badge-filled-bored-bg)] text-[var(--color-badge-filled-bored-text)]\",\n      },\n      {\n        variant: \"filled\",\n        color: \"negative\",\n        className: \"bg-[var(--color-badge-filled-negative-bg)] text-[var(--color-badge-filled-negative-text)]\",\n      },\n      {\n        variant: \"filled\",\n        color: \"neutral\",\n        className: \"bg-[var(--color-badge-filled-neutral-bg)] text-[var(--color-badge-filled-neutral-text)] border border-[var(--color-badge-filled-neutral-border)]\",\n      },\n      {\n        variant: \"filled\",\n        color: \"dark\",\n        className: \"bg-[var(--color-badge-filled-dark-bg)] text-[var(--color-badge-filled-dark-text)]\",\n      },\n      // Outline variants\n      {\n        variant: \"outline\",\n        color: \"default\",\n        className: \"border-[var(--color-badge-outline-default-border)] text-[var(--color-badge-outline-default-text)]\",\n      },\n      {\n        variant: \"outline\",\n        color: \"sky\",\n        className: \"border-[var(--color-badge-outline-sky-border)] text-[var(--color-badge-outline-sky-text)]\",\n      },\n      {\n        variant: \"outline\",\n        color: \"grass\",\n        className: \"border-[var(--color-badge-outline-grass-border)] text-[var(--color-badge-outline-grass-text)]\",\n      },\n      {\n        variant: \"outline\",\n        color: \"bored\",\n        className: \"border-[var(--color-badge-outline-bored-border)] text-[var(--color-badge-outline-bored-text)]\",\n      },\n      {\n        variant: \"outline\",\n        color: \"negative\",\n        className: \"border-[var(--color-badge-outline-negative-border)] text-[var(--color-badge-outline-negative-text)]\",\n      },\n      {\n        variant: \"outline\",\n        color: \"neutral\",\n        className: \"border-[var(--color-badge-outline-neutral-border)] text-[var(--color-badge-outline-neutral-text)]\",\n      },\n      {\n        variant: \"outline\",\n        color: \"dark\",\n        className: \"border-[var(--color-badge-outline-dark-border)] text-[var(--color-badge-outline-dark-text)]\",\n      },\n    ],\n    defaultVariants: {\n      variant: \"filled\",\n      color: \"default\",\n      size: \"default\",\n    },\n  }\n)\n\nexport interface BadgeProps\n  extends React.ComponentProps<\"span\">,\n    VariantProps<typeof badgeVariants> {\n  asChild?: boolean\n}\n\nfunction Badge({\n  className,\n  variant,\n  color,\n  size,\n  asChild = false,\n  ...props\n}: BadgeProps) {\n  const Comp = asChild ? Slot : \"span\"\n\n  return (\n    <Comp\n      data-slot=\"badge\"\n      className={cn(badgeVariants({ variant, color, size }), className)}\n      {...props}\n    />\n  )\n}\n\nexport { Badge, badgeVariants }\n"
+    }
+  ]
+}

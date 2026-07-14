@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-tabs",
+  "type": "registry:ui",
+  "title": "Tabs",
+  "description": "Tabbed navigation for switching between related sections without changing pages.",
+  "dependencies": [
+    "@radix-ui/react-tabs",
+    "class-variance-authority"
+  ],
+  "categories": [
+    "navigation"
+  ],
+  "meta": {
+    "tags": [
+      "tabs",
+      "navigation",
+      "content",
+      "layout"
+    ],
+    "examples": [
+      {
+        "title": "Tabbed content",
+        "code": "import { Tabs, TabsList, TabsTrigger, TabsContent } from \"@/components/ui/tabs\"\n\n<Tabs defaultValue=\"a\">\n  <TabsList>\n    <TabsTrigger value=\"a\">A</TabsTrigger>\n    <TabsTrigger value=\"b\">B</TabsTrigger>\n  </TabsList>\n  <TabsContent value=\"a\">Content A</TabsContent>\n  <TabsContent value=\"b\">Content B</TabsContent>\n</Tabs>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/tabs.tsx",
+      "type": "registry:ui",
+      "content": "'use client'\n\nimport * as React from 'react'\nimport * as TabsPrimitive from '@radix-ui/react-tabs'\nimport { cva, type VariantProps } from 'class-variance-authority'\n\nimport { cn } from '@/lib/utils'\n\n// Size variants matching old Tabset: title, medium, small\nexport type TabsVariant = 'title' | 'medium' | 'small'\n\n// Context for passing variant to children\ninterface TabsContextValue {\n  variant: TabsVariant\n}\n\nconst TabsContext = React.createContext<TabsContextValue>({\n  variant: 'title',\n})\n\nconst tabsListVariants = cva(\n  [\n    'relative flex',\n    // Border line at the bottom using pseudo-element for precise alignment\n    'after:content-[\"\"] after:absolute after:bottom-0 after:left-0 after:right-0',\n    'after:h-[2px] after:bg-[var(--color-stroke-default)]',\n  ],\n  {\n    variants: {\n      variant: {\n        title: 'gap-6',  // spacing-sp-24 = 24px\n        medium: 'gap-6', // spacing-sp-24 = 24px\n        small: 'gap-3 after:hidden', // spacing-sp-12 = 12px, no border\n      },\n    },\n    defaultVariants: {\n      variant: 'title',\n    },\n  }\n)\n\nconst tabsTriggerVariants = cva(\n  [\n    'relative inline-flex items-center justify-center',\n    'bg-transparent border-none rounded-none',\n    'cursor-pointer outline-none',\n    'text-[var(--color-text-secondary)]',\n    'transition-colors duration-150',\n    'pb-3', // padding-bottom for space to underline\n    // Underline via pseudo-element - positioned at bottom of trigger\n    'after:content-[\"\"] after:absolute after:bottom-0 after:left-0 after:right-0',\n    'after:h-[2px] after:bg-transparent',\n    'after:z-10', // Above the list border\n    // Active state\n    'data-[state=active]:text-[var(--color-text-primary)]',\n    'data-[state=active]:after:bg-[var(--color-stroke-brand)]',\n    // Hover state (inactive)\n    'data-[state=inactive]:hover:text-[var(--color-text-primary)]',\n    'data-[state=inactive]:hover:after:bg-[var(--color-stroke-dark)]',\n    // Pressed state (inactive)\n    'data-[state=inactive]:active:text-[var(--color-text-link-default)]',\n    'data-[state=inactive]:active:after:bg-[var(--color-stroke-brand)]',\n    // Focus state\n    'focus-visible:ring-2 focus-visible:ring-[var(--denim-300)]',\n    // Disabled state\n    'disabled:text-[var(--color-text-disabled)]',\n    'disabled:cursor-not-allowed',\n    'disabled:after:bg-transparent',\n  ],\n  {\n    variants: {\n      variant: {\n        title: [\n          'min-w-[58px]',\n          'font-[var(--font-family-brand)]',\n          'text-lg font-semibold leading-9', // h-9 equivalent via line-height\n        ],\n        medium: [\n          'min-w-[40px]',\n          'font-[var(--font-family-brand)]',\n          'text-sm font-semibold leading-8', // h-8 equivalent via line-height\n        ],\n        small: [\n          'min-w-[40px]',\n          'font-[var(--font-family-brand)]',\n          'text-sm font-semibold leading-7', // h-7 equivalent via line-height\n          'pb-2', // smaller padding for small variant\n        ],\n      },\n    },\n    defaultVariants: {\n      variant: 'title',\n    },\n  }\n)\n\nexport interface TabsProps\n  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>,\n    VariantProps<typeof tabsListVariants> {\n  /** The visual variant of the tabs */\n  variant?: TabsVariant\n}\n\nfunction Tabs({\n  className,\n  variant = 'title',\n  children,\n  ...props\n}: TabsProps) {\n  return (\n    <TabsContext.Provider value={{ variant }}>\n      <TabsPrimitive.Root\n        data-slot=\"tabs\"\n        data-variant={variant}\n        className={cn('flex flex-col', className)}\n        {...props}\n      >\n        {children}\n      </TabsPrimitive.Root>\n    </TabsContext.Provider>\n  )\n}\n\nexport interface TabsListProps\n  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {\n  /** Override the variant from context */\n  variant?: TabsVariant\n}\n\nfunction TabsList({\n  className,\n  variant: variantProp,\n  ...props\n}: TabsListProps) {\n  const { variant: contextVariant } = React.useContext(TabsContext)\n  const variant = variantProp || contextVariant\n\n  return (\n    <TabsPrimitive.List\n      data-slot=\"tabs-list\"\n      data-variant={variant}\n      className={cn(tabsListVariants({ variant }), className)}\n      {...props}\n    />\n  )\n}\n\nexport interface TabsTriggerProps\n  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {\n  /** Override the variant from context */\n  variant?: TabsVariant\n}\n\nfunction TabsTrigger({\n  className,\n  variant: variantProp,\n  children,\n  ...props\n}: TabsTriggerProps) {\n  const { variant: contextVariant } = React.useContext(TabsContext)\n  const variant = variantProp || contextVariant\n\n  return (\n    <TabsPrimitive.Trigger\n      data-slot=\"tabs-trigger\"\n      data-variant={variant}\n      className={cn(tabsTriggerVariants({ variant }), className)}\n      {...props}\n    >\n      <span className=\"whitespace-nowrap\">{children}</span>\n    </TabsPrimitive.Trigger>\n  )\n}\n\nfunction TabsContent({\n  className,\n  ...props\n}: React.ComponentProps<typeof TabsPrimitive.Content>) {\n  return (\n    <TabsPrimitive.Content\n      data-slot=\"tabs-content\"\n      className={cn('flex-1 outline-none p-4', className)}\n      {...props}\n    />\n  )\n}\n\nexport {\n  Tabs,\n  TabsList,\n  TabsTrigger,\n  TabsContent,\n  tabsListVariants,\n  tabsTriggerVariants,\n}\n"
+    }
+  ]
+}

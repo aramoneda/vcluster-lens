@@ -1,0 +1,105 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+.link {
+  /* Base styles from Figma JSON typography for "State=Default/Label" */
+  font-family: var(--font-family-brand);
+  font-size: var(--font-utility-link-size);
+  font-weight: var(--font-utility-link-weight);
+  line-height: var(--font-utility-link-line-height);
+  letter-spacing: 0%; /* Figma: letterSpacing: "0%" */
+  text-decoration: underline; /* Figma: textDecoration: "UNDERLINE" */
+  color: var(--color-text-link-default); /* Figma: State=Default, label_label_text_color0 */
+  cursor: pointer;
+  display: inline-flex; /* To align icon and text */
+  align-items: center;
+  gap: var(--spacing-sp-4); /* Figma: itemSpacing tokenName: "--spacing-sp-4" */
+  border-radius: var(--radius-xs); /* Figma: layout.cornerRadius.token */
+  padding: 0; /* Assuming links are inline and padding is not typically applied directly unless specified */
+  background-color: transparent;
+  border: none;
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  user-select: auto;
+  transition: color 0.2s ease-in-out; /* Smooth transition for color changes */
+}
+
+/* Default state (already covered by .link, but :link pseudo-class is good practice) */
+.link:link {
+  color: var(--color-text-link-default); /* Figma: State=Default */
+  text-decoration: underline;
+}
+.link:link .iconWrapper {
+  fill: var(--color-text-link-default);
+}
+
+/* Visited state */
+.link:visited {
+  color: var(--color-text-link-visited); /* Figma: State=Visited */
+  text-decoration: underline;
+}
+.link:visited .iconWrapper {
+  fill: var(--color-text-link-visited);
+}
+
+/* Hover state */
+.link:hover:not([data-disabled]) {
+  color: var(--color-text-link-hover); /* Figma: State=Hover */
+  text-decoration: underline;
+}
+.link:hover:not([data-disabled]) .iconWrapper {
+  fill: var(--color-text-link-hover);
+}
+
+/* Pressed/Active state */
+.link:active:not([data-disabled]) {
+  color: var(--color-text-link-pressed); /* Figma: State=Pressed */
+  text-decoration: underline;
+}
+.link:active:not([data-disabled]) .iconWrapper {
+  fill: var(--color-text-link-pressed);
+}
+
+/* Focus state - using :focus-visible for better accessibility */
+.link:focus-visible:not([data-disabled]) {
+  color: var(--color-text-link-default); /* Figma: State=Focused, uses default link color */
+  text-decoration: underline;
+  /* Figma JSON mentions ".Focus_Ring_component" for State=Focused.
+     This typically implies an outline. We'll use a standard outline.
+     If a specific focus ring style is defined in global tokens, that should be used.
+     For now, a default browser outline or a simple one.
+  */
+  outline: 2px solid var(--denim-300); /* Assuming a focus color token exists */
+  outline-offset: 2px;
+}
+.link:focus-visible:not([data-disabled]) .iconWrapper {
+  fill: var(--color-text-link-default);
+}
+
+/* Disabled state */
+.link[data-disabled],
+.link[aria-disabled='true'] {
+  color: var(--color-text-link-disabled); /* Figma: State=Disabled */
+  text-decoration: underline;
+  cursor: not-allowed;
+  pointer-events: none; /* Ensure it's not clickable */
+}
+.link[data-disabled] .iconWrapper,
+.link[aria-disabled='true'] .iconWrapper {
+  fill: var(--color-text-link-disabled);
+}
+
+.iconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Icons should inherit color from the parent link's text color by default.
+     If specific icon colors are needed per state, they would be defined here
+     or by styling the SVG's fill/stroke directly if they use `currentColor`.
+     The Figma JSON has ".bar_chart_component" but no specific color tokens for the icon itself,
+     implying it might inherit or be a fixed color. Assuming `currentColor` for now.
+  */
+  fill: var(--color-text-link-default); /* For SVG icons */
+  color: inherit; /* Ensures icon color matches link text color */
+}

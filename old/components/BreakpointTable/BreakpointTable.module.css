@@ -1,0 +1,136 @@
+/* Import global design tokens */
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Table Container */
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-s);
+  border: var(--border-width-100) solid var(--color-stroke-table);
+  background-color: var(--color-surface-foreground);
+}
+
+/* Table Base Styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  line-height: var(--font-body-medium-line-height);
+}
+
+/* Header Styles */
+.headerRow {
+  background-color: var(--color-surface-table-data-header);
+  border-bottom: var(--border-width-200) solid var(--color-stroke-table);
+}
+
+.headerCell {
+  padding: var(--spacing-sp-12) var(--spacing-sp-16);
+  text-align: left;
+  font-weight: var(--font-body-medium-semibold-weight);
+  color: var(--color-text-primary);
+  border-right: var(--border-width-100) solid var(--color-stroke-light);
+  white-space: nowrap;
+}
+
+.headerCell:last-child {
+  border-right: none;
+}
+
+/* Data Row Styles */
+.dataRow {
+  border-bottom: var(--border-width-100) solid var(--color-stroke-light);
+}
+
+.dataRow:last-child {
+  border-bottom: none;
+}
+
+.dataRow:hover {
+  background-color: var(--color-surface-table-row-hover);
+}
+
+/* Data Cell Styles */
+.dataCell {
+  padding: var(--spacing-sp-12) var(--spacing-sp-16);
+  color: var(--color-text-primary);
+  border-right: var(--border-width-100) solid var(--color-stroke-light);
+  vertical-align: top;
+}
+
+.dataCell:last-child {
+  border-right: none;
+}
+
+/* Specific Cell Type Styles */
+.gridSizeCell {
+  font-weight: var(--font-body-medium-semibold-weight);
+  color: var(--color-text-primary);
+  min-width: 80px;
+}
+
+.deviceCell {
+  color: var(--color-text-secondary);
+  min-width: 180px;
+}
+
+.rangeCell {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: var(--font-body-small-size);
+  min-width: 120px;
+}
+
+.spacingCell {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: var(--font-body-small-size);
+  min-width: 100px;
+}
+
+.columnsCell,
+.marginCell,
+.gutterCell {
+  text-align: center;
+  font-weight: var(--font-body-medium-semibold-weight);
+  min-width: 80px;
+}
+
+.tokenCell {
+  min-width: 140px;
+}
+
+.tokenCode {
+  background-color: var(--neutral-150);
+  color: var(--color-text-primary);
+  padding: var(--spacing-sp-2) var(--spacing-sp-4);
+  border-radius: var(--radius-xs);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: var(--font-body-small-size);
+  font-weight: var(--font-body-small-semibold-weight);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tableContainer {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .headerCell,
+  .dataCell {
+    padding: var(--spacing-sp-8) var(--spacing-sp-12);
+    font-size: var(--font-body-small-size);
+  }
+  
+  .deviceCell {
+    min-width: 140px;
+  }
+  
+  .tokenCode {
+    font-size: 11px;
+    padding: var(--spacing-sp-2);
+  }
+}

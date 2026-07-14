@@ -1,0 +1,49 @@
+/*
+  Shared AG Grid Quartz mapping from:
+  src/assets/ag-grid-theme-builder-OneBR tokens.txt
+  Applied as CSS vars for legacy ag-theme-quartz class usage.
+*/
+
+.brd-ag-theme-map.ag-theme-quartz {
+  --ag-accent-color: var(--brand-500);
+  --ag-advanced-filter-builder-column-pill-color: var(--green-100);
+  --ag-advanced-filter-builder-join-pill-color: var(--red-100);
+  --ag-advanced-filter-builder-option-pill-color: var(--orange-100);
+  --ag-advanced-filter-builder-value-pill-color: var(--chetwode-100);
+
+  --ag-border-color: var(--color-stroke-light);
+  --ag-border-radius: var(--radius-s);
+  --ag-browser-color-scheme: light;
+
+  --ag-button-active-border: solid 1px;
+  --ag-button-border: solid 1px;
+  --ag-button-disabled-background-color: var(--color-surface-button-secondary-disabled);
+  --ag-button-disabled-text-color: var(--color-text-button-secondary-disabled);
+  --ag-button-vertical-padding: var(--spacing-sp-8);
+
+  /* Fallback mapping for missing source token: --color-surface-table-level2 */
+  --ag-cell-batch-edit-background-color: var(--color-surface-selected);
+  --ag-cell-batch-edit-text-color: var(--color-text-input-value);
+  --ag-cell-widget-spacing: var(--spacing-sp-8);
+
+  --ag-checkbox-border-radius: var(--radius-xxs);
+  --ag-checkbox-indeterminate-background-color: var(--brand-500);
+  --ag-checkbox-unchecked-color: var(--color-stroke-controls-default);
+
+  --ag-chrome-background-color: var(--color-surface-table-data-header);
+  --ag-control-panel-background-color: var(--color-surface-table-data-header);
+
+  --ag-find-active-match-background-color: var(--orange-100);
+  --ag-find-match-background-color: #fffaca;
+
+  --ag-foreground-color: var(--color-text-primary);
+  --ag-full-row-edit-invalid-background-color: var(--red-100);
+  --ag-header-background-color: var(--color-surface-table-data-header);
+  --ag-header-font-size: 14px;
+  --ag-header-font-weight: 600;
+  --ag-invalid-color: var(--color-surface-button-error-default);
+
+  /* Fallback mapping for missing source tokens: --color-text-state-error/success */
+  --ag-value-change-delta-down-color: var(--color-state-error);
+  --ag-value-change-delta-up-color: var(--color-state-success);
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-radio-group",
+  "type": "registry:ui",
+  "title": "Radio Group",
+  "description": "An exclusive selection group for choosing one option from a list, with labels and helper text.",
+  "dependencies": [
+    "@radix-ui/react-radio-group",
+    "class-variance-authority"
+  ],
+  "categories": [
+    "forms"
+  ],
+  "meta": {
+    "tags": [
+      "radio",
+      "selection",
+      "form",
+      "input"
+    ],
+    "examples": [
+      {
+        "title": "Radio options",
+        "code": "import { RadioGroup, RadioGroupItem } from \"@/components/ui/radio-group\"\n\n<RadioGroup defaultValue=\"a\">\n  <RadioGroupItem value=\"a\" label=\"Option A\" />\n  <RadioGroupItem value=\"b\" label=\"Option B\" />\n</RadioGroup>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/radio-group.tsx",
+      "type": "registry:ui",
+      "content": "'use client'\n\nimport * as React from 'react'\nimport * as RadioGroupPrimitive from '@radix-ui/react-radio-group'\nimport { cva, type VariantProps } from 'class-variance-authority'\n\nimport { cn } from '@/lib/utils'\n\n// Size type matching old Radio component\nexport type RadioSize = 'sm' | 'default'\n\nconst radioGroupVariants = cva(\n  'flex',\n  {\n    variants: {\n      orientation: {\n        vertical: 'flex-col gap-6',   // sp-24 = 24px\n        horizontal: 'flex-row gap-6', // sp-24 = 24px\n      },\n    },\n    defaultVariants: {\n      orientation: 'vertical',\n    },\n  }\n)\n\nconst radioItemVariants = cva(\n  [\n    'rounded-full border-2 bg-transparent',\n    'flex items-center justify-center shrink-0',\n    'transition-all duration-150 outline-none',\n    // Default (unchecked) state\n    'border-[var(--color-stroke-controls-default)]',\n    // Hover state (unchecked)\n    'data-[state=unchecked]:hover:border-[var(--color-stroke-controls-hover)]',\n    // Checked state\n    'data-[state=checked]:border-[var(--color-surface-controls-selected)]',\n    // Focus state\n    'focus-visible:ring-2 focus-visible:ring-[var(--denim-300)]',\n    // Disabled state\n    'disabled:border-[var(--color-stroke-controls-disabled)]',\n    'disabled:bg-[var(--color-surface-controls-disabled)]',\n    'disabled:cursor-not-allowed',\n  ],\n  {\n    variants: {\n      size: {\n        sm: 'size-[18px]',      // 18px\n        default: 'size-6',      // 24px\n      },\n    },\n    defaultVariants: {\n      size: 'default',\n    },\n  }\n)\n\nconst radioIndicatorVariants = cva(\n  [\n    'rounded-full',\n    'data-[state=checked]:bg-[var(--color-surface-controls-selected)]',\n    // Disabled checked state\n    'data-[disabled]:data-[state=checked]:bg-[var(--color-stroke-controls-disabled)]',\n  ],\n  {\n    variants: {\n      size: {\n        sm: 'size-[10px]',     // ~55% of 18px\n        default: 'size-[14px]', // ~58% of 24px\n      },\n    },\n    defaultVariants: {\n      size: 'default',\n    },\n  }\n)\n\n// Context for passing size to children\ninterface RadioGroupContextValue {\n  size: RadioSize\n}\n\nconst RadioGroupContext = React.createContext<RadioGroupContextValue>({\n  size: 'default',\n})\n\nexport interface RadioGroupProps\n  extends React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>,\n    VariantProps<typeof radioGroupVariants> {\n  /** Size of all radio items in the group */\n  size?: RadioSize\n}\n\nfunction RadioGroup({\n  className,\n  orientation = 'vertical',\n  size = 'default',\n  children,\n  ...props\n}: RadioGroupProps) {\n  return (\n    <RadioGroupContext.Provider value={{ size }}>\n      <RadioGroupPrimitive.Root\n        data-slot=\"radio-group\"\n        orientation={orientation}\n        className={cn(radioGroupVariants({ orientation }), className)}\n        {...props}\n      >\n        {children}\n      </RadioGroupPrimitive.Root>\n    </RadioGroupContext.Provider>\n  )\n}\n\nexport interface RadioGroupItemProps\n  extends Omit<React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>, 'children'> {\n  /** Override size from context */\n  size?: RadioSize\n  /** Label text for the radio item */\n  label?: React.ReactNode\n  /** Supporting text below the label */\n  supportingText?: React.ReactNode\n  /** Whether the item is locked (disabled but visually distinct) */\n  locked?: boolean\n}\n\nfunction RadioGroupItem({\n  className,\n  size: sizeProp,\n  label,\n  supportingText,\n  disabled,\n  locked = false,\n  ...props\n}: RadioGroupItemProps) {\n  const { size: contextSize } = React.useContext(RadioGroupContext)\n  const size = sizeProp || contextSize\n  const isEffectivelyDisabled = disabled || locked\n\n  const radioElement = (\n    <RadioGroupPrimitive.Item\n      data-slot=\"radio-group-item\"\n      disabled={isEffectivelyDisabled}\n      data-locked={locked || undefined}\n      className={cn(radioItemVariants({ size }), className)}\n      {...props}\n    >\n      <RadioGroupPrimitive.Indicator\n        data-slot=\"radio-group-indicator\"\n        className={radioIndicatorVariants({ size })}\n      />\n    </RadioGroupPrimitive.Item>\n  )\n\n  if (!label && !supportingText) {\n    return radioElement\n  }\n\n  return (\n    <label\n      className={cn(\n        'inline-flex items-center gap-3 cursor-pointer',\n        isEffectivelyDisabled && 'cursor-not-allowed'\n      )}\n      data-disabled={isEffectivelyDisabled || undefined}\n      data-locked={locked || undefined}\n    >\n      {radioElement}\n      <span className=\"flex flex-col\">\n        {label && (\n          <span\n            className={cn(\n              'font-[var(--font-family-brand)]',\n              size === 'sm' ? 'text-sm font-semibold leading-5' : 'text-base font-semibold leading-6',\n              'text-[var(--color-text-primary)]',\n              isEffectivelyDisabled && 'text-[var(--color-text-controls-disabled)]'\n            )}\n          >\n            {label}\n          </span>\n        )}\n        {supportingText && (\n          <span\n            className={cn(\n              'font-[var(--font-family-brand)]',\n              size === 'sm' ? 'text-sm font-normal leading-5' : 'text-base font-normal leading-6',\n              'text-[var(--color-text-secondary)]',\n              isEffectivelyDisabled && 'text-[var(--color-text-controls-disabled)]'\n            )}\n          >\n            {supportingText}\n          </span>\n        )}\n      </span>\n    </label>\n  )\n}\n\nexport {\n  RadioGroup,\n  RadioGroupItem,\n  radioGroupVariants,\n  radioItemVariants,\n  radioIndicatorVariants,\n}\n"
+    }
+  ]
+}

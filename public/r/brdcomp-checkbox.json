@@ -1,0 +1,39 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-checkbox",
+  "type": "registry:ui",
+  "title": "Checkbox",
+  "description": "A selectable checkbox for binary choices, supporting labels, supporting text, and an indeterminate state.",
+  "dependencies": [
+    "@radix-ui/react-checkbox",
+    "class-variance-authority",
+    "lucide-react"
+  ],
+  "categories": [
+    "forms"
+  ],
+  "meta": {
+    "tags": [
+      "checkbox",
+      "input",
+      "form",
+      "selection"
+    ],
+    "examples": [
+      {
+        "title": "Checkbox with label",
+        "code": "import { Checkbox } from \"@/components/ui/checkbox\"\n\n<Checkbox label=\"Accept terms\" />"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/checkbox.tsx",
+      "type": "registry:ui",
+      "content": "'use client'\n\nimport * as React from 'react'\nimport * as CheckboxPrimitive from '@radix-ui/react-checkbox'\nimport { Check, Minus } from 'lucide-react'\nimport { cva, type VariantProps } from 'class-variance-authority'\n\nimport { cn } from '@/lib/utils'\n\nconst checkboxVariants = cva(\n  [\n    'peer shrink-0 flex items-center justify-center rounded-[var(--radius-xxs)]',\n    'border-2 border-[var(--color-stroke-controls-default)] bg-transparent',\n    'transition-colors duration-200 ease-out',\n    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-surface-focused)]',\n    // Unchecked hover\n    'hover:not-disabled:data-[state=unchecked]:border-[var(--color-stroke-controls-hover)]',\n    // Checked state\n    'data-[state=checked]:bg-[var(--color-surface-controls-selected)] data-[state=checked]:border-0',\n    'hover:not-disabled:data-[state=checked]:bg-[var(--color-surface-controls-hover)]',\n    // Indeterminate state\n    'data-[state=indeterminate]:bg-[var(--color-surface-controls-selected)] data-[state=indeterminate]:border-0',\n    'hover:not-disabled:data-[state=indeterminate]:bg-[var(--color-surface-controls-hover)]',\n    // Disabled state\n    'disabled:cursor-not-allowed',\n    'disabled:data-[state=unchecked]:bg-[var(--color-surface-controls-disabled)] disabled:data-[state=unchecked]:border-[var(--color-stroke-controls-disabled)]',\n    'disabled:data-[state=checked]:bg-[var(--color-surface-controls-locked)]',\n    'disabled:data-[state=indeterminate]:bg-[var(--color-surface-controls-locked)]',\n  ],\n  {\n    variants: {\n      size: {\n        sm: 'size-[18px]',\n        default: 'size-6',\n      },\n    },\n    defaultVariants: {\n      size: 'sm',\n    },\n  }\n)\n\nconst iconVariants = cva('text-white', {\n  variants: {\n    size: {\n      sm: '',\n      default: '',\n    },\n  },\n  defaultVariants: {\n    size: 'sm',\n  },\n})\n\nexport type CheckboxSize = 'sm' | 'default'\n\nexport interface CheckboxProps\n  extends Omit<React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>, 'asChild'>,\n    VariantProps<typeof checkboxVariants> {\n  /**\n   * A label to be displayed next to the checkbox.\n   */\n  label?: React.ReactNode\n  /**\n   * Additional supporting text to be displayed.\n   */\n  supportingText?: React.ReactNode\n}\n\nconst Checkbox = React.forwardRef<\n  React.ComponentRef<typeof CheckboxPrimitive.Root>,\n  CheckboxProps\n>(({ className, size = 'sm', label, supportingText, id: providedId, disabled, checked, ...props }, ref) => {\n  const generatedId = React.useId()\n  const checkboxId = providedId || generatedId\n\n  const hasTextContent = label || supportingText\n\n  // Icon sizes based on checkbox size\n  const checkIconSize = size === 'default' ? 'size-4' : 'size-3'\n  const minusIconSize = size === 'default' ? 'size-3' : 'size-2'\n\n  // Determine which icon to show based on checked state\n  const isIndeterminate = checked === 'indeterminate'\n\n  const checkboxElement = (\n    <CheckboxPrimitive.Root\n      ref={ref}\n      id={checkboxId}\n      data-slot=\"checkbox\"\n      disabled={disabled}\n      checked={checked}\n      className={cn(checkboxVariants({ size }), className)}\n      {...props}\n    >\n      <CheckboxPrimitive.Indicator\n        data-slot=\"checkbox-indicator\"\n        className={cn(\n          'flex items-center justify-center',\n          iconVariants({ size }),\n          disabled && 'text-[var(--color-text-controls-disabled)]'\n        )}\n      >\n        {isIndeterminate ? (\n          <Minus className={cn(minusIconSize, 'stroke-[2px]')} aria-hidden />\n        ) : (\n          <Check className={checkIconSize} aria-hidden />\n        )}\n      </CheckboxPrimitive.Indicator>\n    </CheckboxPrimitive.Root>\n  )\n\n  // If no label/supporting text, return just the checkbox\n  if (!hasTextContent) {\n    return checkboxElement\n  }\n\n  // Return checkbox with label/supporting text wrapper\n  return (\n    <div\n      data-slot=\"checkbox-wrapper\"\n      className={cn(\n        'flex items-start gap-3',\n        disabled && 'cursor-not-allowed'\n      )}\n    >\n      {checkboxElement}\n      <div className=\"flex flex-col gap-0.5\">\n        {label && (\n          <label\n            htmlFor={checkboxId}\n            className={cn(\n              'cursor-pointer font-semibold text-[var(--color-text-primary)]',\n              size === 'default' ? 'text-base leading-6' : 'text-sm leading-5',\n              disabled && 'cursor-not-allowed text-[var(--color-text-controls-disabled)]'\n            )}\n          >\n            {label}\n          </label>\n        )}\n        {supportingText && (\n          <span\n            className={cn(\n              'text-[var(--color-text-secondary)]',\n              size === 'default' ? 'text-base leading-6' : 'text-sm leading-5'\n            )}\n          >\n            {supportingText}\n          </span>\n        )}\n      </div>\n    </div>\n  )\n})\n\nCheckbox.displayName = 'Checkbox'\n\nexport { Checkbox, checkboxVariants }\n"
+    }
+  ]
+}

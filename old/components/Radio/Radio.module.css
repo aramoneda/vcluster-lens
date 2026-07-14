@@ -1,0 +1,264 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Base styles for the label wrapper */
+.labelWrapper {
+  display: inline-flex; /* To allow multiple items in a row by default if not in a flex column */
+  align-items: center; /* Vertically center the radio button and the text block */
+  gap: var(--spacing-sp-12); /* Gap between radio circle and text content */
+  cursor: pointer;
+  position: relative; /* For focus ring positioning */
+  /* margin-bottom will be handled by parent RadioGroup.Root gap */
+}
+
+.labelWrapper.disabledLabel {
+  cursor: not-allowed;
+}
+
+.textWrapper {
+  display: flex;
+  flex-direction: column;
+  /* Adjust line height or gap if needed based on visual inspection */
+}
+
+/* Styles for the Radio Item (the clickable circle) */
+.radioItem {
+  all: unset; /* Reset Radix default styles */
+  background-color: transparent;
+  border-radius: 50%; /* Always a circle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Prevent shrinking */
+  border-style: solid;
+  border-width: var(--border-width-200); /* Default border width from Figma structure */
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative; /* For focus ring */
+}
+
+/* Size variants for Radio Item */
+.radioItem.size18px {
+  width: 18px;
+  height: 18px;
+}
+
+.radioItem.size24px {
+  width: 24px;
+  height: 24px;
+}
+
+/* Default (Unselected) state for Radio Item */
+.radioItem {
+  border-color: var(--color-stroke-controls-default);
+}
+.labelWrapper:has(.radioItem[data-state='unchecked']) .labelText,
+.labelWrapper:has(.radioItem[data-state='unchecked']) .supportingText {
+  color: var(--color-text-controls-default);
+}
+
+
+/* Hover state for Radio Item (Unselected) */
+.radioItem[data-state='unchecked']:not([data-disabled]):hover {
+  border-color: var(--color-stroke-controls-hover);
+}
+.labelWrapper:has(.radioItem[data-state='unchecked']:not([data-disabled]):hover) .labelText,
+.labelWrapper:has(.radioItem[data-state='unchecked']:not([data-disabled]):hover) .supportingText {
+  color: var(--color-text-controls-hover);
+}
+
+/* Focused state for Radio Item (Unselected) */
+/* Using ::after for a focus ring that doesn't affect layout, similar to .Focus_Ring component */
+.radioItem[data-state='unchecked']:not([data-disabled]):focus-visible,
+.radioItem[data-state='checked']:not([data-disabled]):focus-visible {
+  outline: none; /* Remove default outline */
+  box-shadow: 0 0 0 2px var(--denim-300), 0 0 0 2px var(--color-stroke-brand); /* Focus ring from Figma (e.g., Size=24px, State=Focused) */
+}
+/* Focused state for 18px Radio Item - Overrides generic focus ring color */
+.radioItem.size18px[data-state='unchecked']:not([data-disabled]):focus-visible,
+.radioItem.size18px[data-state='checked']:not([data-disabled]):focus-visible {
+  box-shadow: 0 0 0 2px var(--denim-300), 0 0 0 2px var(--denim-300);
+}
+/* Label color for focused state */
+.labelWrapper:has(.radioItem:not([data-disabled]):focus-visible) .labelText,
+.labelWrapper:has(.radioItem:not([data-disabled]):focus-visible) .supportingText {
+  color: var(--color-text-controls-focused);
+}
+
+
+/* Selected (Checked) state for Radio Item */
+.radioItem[data-state='checked'] {
+  border-color: var(--color-surface-controls-selected); /* selected_ellipse_3_ellipse_3_stroke0 from Figma */
+  background-color: transparent; /* Outer circle background should be transparent or white */
+}
+.labelWrapper:has(.radioItem[data-state='checked']) .labelText,
+.labelWrapper:has(.radioItem[data-state='checked']) .supportingText {
+  color: var(--color-text-controls-selected);
+}
+
+/* Disabled state for Radio Item */
+.radioItem[data-disabled] {
+  border-color: var(--color-stroke-controls-disabled); /* disabled_disabled_stroke0 */
+  background-color: var(--color-surface-controls-disabled); /* disabled_disabled_fill0 */
+}
+.labelWrapper:has(.radioItem[data-disabled]) .labelText,
+.labelWrapper:has(.radioItem[data-disabled]) .supportingText {
+  color: var(--color-text-controls-disabled);
+}
+
+
+/* Styles for the Radio Indicator (the inner mark when selected) */
+.radioIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.radioIndicator::after {
+  content: '';
+  display: block;
+  background-color: white; /* Indicator is typically white on a colored background */
+  border-radius: 50%;
+}
+
+/* Size variants for Radio Indicator's inner dot */
+/* Figma: selected_ellipse_4_ellipse_4_fill0 is the selected color, the indicator itself is a smaller white circle */
+/* The size of the inner dot is relative to the item size. Let's assume a ratio. */
+/* For 18px item, inner dot could be ~8px. For 24px item, ~10px. */
+/* These are visual estimations and might need adjustment based on Figma's "Ellipse 4" dimensions if available. */
+/* The Figma JSON shows Ellipse 4 as the same color as Ellipse 3 for selected state, implying the indicator is the filled state. */
+/* Radix indicator is a child, so we style it directly. */
+/* The Figma JSON for "Selected" state shows Ellipse 3 (outer) and Ellipse 4 (inner) both with --color-surface-controls-selected. */
+/* This means the indicator should be the same color as the border/background of the item when selected. */
+/* However, typical radio buttons have a contrasting inner indicator. */
+/* Let's follow the Radix pattern: Item background changes, Indicator is a separate mark. */
+/* The Figma JSON for "Size=18px, State=Selected" has "selected_ellipse_4_ellipse_4_fill0" with token "--color-surface-controls-selected". */
+/* This is confusing. A common pattern is the indicator is a different color (e.g. white if item bg is blue). */
+/* Given the structure, `RadioGroup.Indicator` is *inside* `RadioGroup.Item`. */
+/* If `Item` background becomes blue, `Indicator` should be white or a contrasting color. */
+/* The JSON `selected_ellipse_4_ellipse_4_fill0` is likely the color of the *dot itself*. */
+/* Let's assume the indicator dot should be white when the item is selected (blue). */
+/* If the item itself becomes blue, the indicator should be white. */
+/* The Figma JSON for selected state:
+    "selected_ellipse_3_ellipse_3_stroke0": "--color-surface-controls-selected" (border of item)
+    "selected_ellipse_4_ellipse_4_fill0": "--color-surface-controls-selected" (fill of inner dot)
+    This implies the inner dot is the same color as the border, which means it's a solid circle.
+    Radix's Indicator is a separate element. We'll make it a smaller circle of the selected color.
+*/
+
+.radioItem.size18px .radioIndicator::after {
+  width: 10px; /* Adjusted to be ~50% of 18px */
+  height: 10px;
+  background-color: white; /* Default indicator color, overridden by state if needed */
+}
+
+.radioItem.size24px .radioIndicator::after {
+  width: 14px; /* Adjusted to be 50% of 24px */
+  height: 14px;
+  background-color: white;
+}
+
+/* Indicator color when item is selected */
+.radioItem[data-state='checked']:not([data-disabled]) .radioIndicator::after {
+  background-color: var(--color-surface-controls-selected); /* selected_ellipse_4_ellipse_4_fill0 from Figma */
+}
+
+/* Indicator color when item is disabled and selected */
+/* Figma: "disabled_disabled_fill0" for the item, "disabled_disabled_stroke0" for border. No specific indicator color. */
+/* Let's make the indicator less prominent or match a disabled mark color if available. */
+/* For now, it will inherit the white from above, which might be fine on a gray disabled background. */
+.radioItem[data-disabled][data-state='checked'] .radioIndicator::after {
+   background-color: var(--color-stroke-controls-disabled); /* Match disabled border for contrast */
+}
+
+
+/* Locked state - Assuming "Locked" means selected but not changeable by user, visually similar to selected but with specific locked colors */
+/* The Figma JSON has "locked_ellipse_3_ellipse_3_fill0" and "locked_ellipse_4_ellipse_4_fill0" */
+.radioItem[data-state='checked'][data-locked='true'] { /* Styles for a locked and selected radio item */
+  background-color: var(--color-surface-controls-locked); /* Fill of the outer circle: locked_ellipse_3_ellipse_3_fill0 */
+  border-color: var(--color-surface-controls-locked-icon); /* Border of the outer circle, using the icon color for contrast */
+}
+.radioItem[data-state='checked'][data-locked='true'] .radioIndicator::after {
+  background-color: var(--color-surface-controls-locked-icon); /* Fill of the inner bullet: locked_ellipse_4_ellipse_4_fill0 */
+}
+.labelWrapper:has(.radioItem[data-state='checked'][data-locked='true']) .labelText,
+.labelWrapper:has(.radioItem[data-state='checked'][data-locked='true']) .supportingText {
+  color: var(--color-text-controls-locked);
+}
+
+/* If locked and unselected (though less common for radio, more for checkbox) */
+.radioItem[data-state='unchecked'][data-locked='true'] {
+  border-color: var(--color-stroke-controls-disabled); /* Or a specific locked-unselected border */
+  background-color: var(--color-surface-controls-disabled); /* Or a specific locked-unselected background */
+}
+.labelWrapper:has(.radioItem[data-state='unchecked'][data-locked='true']) .labelText,
+.labelWrapper:has(.radioItem[data-state='unchecked'][data-locked='true']) .supportingText {
+  color: var(--color-text-controls-locked);
+}
+
+
+/* Label Text Styles */
+.labelText {
+  /* Typography applied based on size via parent .labelWrapper class with .size18pxLabel or .size24pxLabel */
+  display: block; /* Ensure it takes block space for alignment */
+}
+
+.labelWrapper.size18pxLabel .labelText {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+}
+
+.labelWrapper.size24pxLabel .labelText {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-large-size);
+  font-weight: var(--font-body-large-semibold-weight);
+  line-height: var(--font-body-large-line-height);
+}
+
+/* Supporting Text Styles */
+.supportingText {
+  /* Typography applied based on size via parent .labelWrapper class with .size18pxLabel or .size24pxLabel */
+  display: block; /* Ensure it takes block space for alignment */
+}
+
+.labelWrapper.size18pxLabel .supportingText {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+}
+
+.labelWrapper.size24pxLabel .supportingText {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-large-size);
+  font-weight: var(--font-body-large-regular-weight);
+  line-height: var(--font-body-large-line-height);
+}
+
+/* Remove padding adjustments as align-items: center on labelWrapper should handle alignment */
+/* .labelWrapper.size18pxLabel .textWrapper {
+    padding-top: 1px;
+}
+.labelWrapper.size24pxLabel .textWrapper {
+    padding-top: 2px;
+} */
+
+/* Styles for the RadioGroup Root container */
+[data-radix-radio-group-root] {
+  display: flex; /* Default by Radix, but good to be explicit */
+}
+
+[data-radix-radio-group-root][data-orientation="vertical"] {
+  flex-direction: column;
+  gap: var(--spacing-sp-24); /* Vertical spacing between radio items */
+}
+
+[data-radix-radio-group-root][data-orientation="horizontal"] {
+  flex-direction: row;
+  gap: var(--spacing-sp-24); /* Horizontal spacing between radio items, using sp-12 as a sensible default */
+}

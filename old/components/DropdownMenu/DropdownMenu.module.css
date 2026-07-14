@@ -1,0 +1,239 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* --- Root Content Pane --- */
+/* Derived from figma-jsons/dropdownmenu.json layout and variants */
+.content {
+  min-width: 256px; /* From dropdownmenu.json layout.width, as min-width */
+  background-color: var(--color-surface-foreground); /* droplist_fill0 */
+  border-radius: var(--radius-s); /* layout.cornerRadius */
+  padding: var(--spacing-sp-4); /* layout.padding */
+  border: var(--border-width-100) solid var(--color-stroke-default); /* layout.strokeWeight & droplist_stroke0 */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1), 0px 0px 1px rgba(0, 0, 0, 0.05); /* Common shadow, consider tokenizing */
+  z-index: 200; /* Ensure it's above header (z-index: 100) and other content */
+  overflow: hidden; /* Ensures border-radius clips children */
+}
+
+/* --- Sub-menu Content --- */
+/* Should generally match the main content styling */
+.subContent {
+  min-width: 200px; /* Or derive from figma if sub-menu has specific width */
+  background-color: var(--color-surface-foreground);
+  border-radius: var(--radius-s);
+  padding: var(--spacing-sp-4);
+  border: var(--border-width-100) solid var(--color-stroke-default);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1), 0px 0px 1px rgba(0, 0, 0, 0.05);
+  z-index: 201; /* Above main content if overlapping */
+  overflow: hidden;
+}
+
+/* --- Base Item Styling (Common to Item, CheckboxItem, RadioItem, SubTrigger) --- */
+/* Derived from figma-jsons/dropdownItem.json layout, variants, and typography */
+.item,
+.checkboxItem,
+.radioItem,
+.subTrigger {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: auto; /* Allow content to define height, min-height if needed */
+  padding: var(--spacing-sp-12) var(--spacing-sp-16); /* layout.paddingTop/Bottom, layout.paddingLeft/Right */
+  border-radius: var(--radius-xs); /* layout.cornerRadius */
+  font-family: var(--font-family-brand); /* typography.State=Default/Label */
+  font-size: var(--font-body-medium-size); /* typography.State=Default/Label */
+  font-weight: var(--font-body-medium-regular-weight); /* typography.State=Default/Label */
+  line-height: var(--font-body-medium-line-height); /* typography.State=Default/Label */
+  color: var(--color-text-primary); /* variants[State=Default].colors.label_label_text_color0 */
+  outline: none;
+  user-select: none;
+  cursor: default;
+  gap: var(--spacing-sp-12); /* itemSpacing from dropdownItem.json structure, corrected from sp-8 */
+  transition: background-color 0.1s ease-out, color 0.1s ease-out;
+}
+
+/* Inset styling for items/labels that need alignment with items having icons/checkboxes */
+/* This is used when an item *doesn't* have a leading icon/control but needs to align with those that do. */
+.itemInset,
+.labelInset {
+  /* Default padding-left is sp-16.
+     A typical control (Checkbox/Radio) is 18px wide.
+     The gap after the control is sp-12.
+     So, total indent = default left padding (sp-16) + control width (18px) + gap (sp-12)
+     This class should be applied to the item/label itself if it needs this extra padding.
+     If the item *has* a control, the gap property on the flex container handles spacing.
+  */
+  padding-left: calc(var(--spacing-sp-16) + 18px + var(--spacing-sp-12)); /* Adjust 18px if control size differs */
+}
+
+
+/* --- Item States --- */
+.item[data-highlighted],
+.checkboxItem[data-highlighted],
+.radioItem[data-highlighted],
+.subTrigger[data-highlighted] {
+  background-color: var(--color-surface-hover); /* variants[State=Hover].colors.state=hover_fill0 */
+  color: var(--color-text-primary); /* variants[State=Hover].colors.label_label_text_color0 */
+}
+
+.item[data-focus-visible],
+.checkboxItem[data-focus-visible],
+.radioItem[data-focus-visible],
+.subTrigger[data-focus-visible] {
+  /* Based on dropdownItem.json State=Focused which uses .Focus_Ring */
+  outline: 2px solid var(--denim-300);
+  outline-offset: 2px;
+  background-color: var(--color-surface-hover); /* Often focus also has hover background */
+}
+
+.item[data-disabled],
+.checkboxItem[data-disabled],
+.radioItem[data-disabled],
+.subTrigger[data-disabled] {
+  color: var(--color-text-disabled);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* NEW: Active state for standard .item */
+/* Based on figma-jsons/dropdownItem.json State=Selected variant */
+.item[data-active] {
+  background-color: var(--color-surface-selected); /* state=selected_fill0 */
+  color: var(--color-text-selected); /* label_label_text_color0 */
+  font-weight: var(--font-body-medium-semibold-weight); /* typography[State=Selected/Label].fontWeight */
+}
+/* Ensure highlighted (hover) styles take precedence over active if both apply, or define combined state */
+.item[data-active][data-highlighted] {
+  background-color: var(--color-surface-hover); /* Needs a token, or use hover and adjust text if needed */
+  color: var(--color-text-selected); /* Needs a token, or keep selected text color */
+}
+
+
+/* --- CheckboxItem & RadioItem --- */
+/* Styling for the item itself when checked (background, text color) */
+.checkboxItem[data-state='checked'],
+.radioItem[data-state='checked'] {
+  background-color: var(--color-surface-selected); /* variants[State=Selected].colors.state=selected_fill0 */
+  color: var(--color-text-selected); /* variants[State=Selected].colors.label_label_text_color0 */
+  font-weight: var(--font-body-medium-semibold-weight); /* typography[State=Selected/Label].fontWeight */
+}
+
+/* Container for the Radix indicator in CheckboxItem and RadioItem */
+/* This ensures the custom Checkbox component and the Radix Radio indicator are spaced correctly */
+.checkboxItem > [data-checkbox-wrapper], /* Targeting the wrapper of the custom Checkbox */
+.radioItem > .itemIndicatorContainer { /* Targeting the new span container for radio indicator */
+  /* No margin-right needed here if the parent item uses `gap` */
+  /* If parent item does not use gap, or for more control: */
+  /* margin-right: var(--spacing-sp-12); */
+}
+
+
+/* Styles for RadioItem's indicator to mimic custom Radio component */
+.radioItem .itemIndicatorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; /* Match custom radio size */
+  height: 18px; /* Match custom radio size */
+  flex-shrink: 0;
+}
+
+.radioItem .itemIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; /* Size of the clickable area / border */
+  height: 18px;
+  border-radius: 50%;
+  border: var(--border-width-200) solid var(--color-stroke-controls-default); /* Default unselected border */
+  box-sizing: border-box; /* Ensure padding/border are within width/height */
+  background-color: transparent; /* Default unselected background */
+  transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.radioItem:not([data-disabled])[data-highlighted] .itemIndicator {
+  border-color: var(--color-stroke-controls-hover); /* Hover unselected border */
+}
+
+.radioItem[data-state='checked'] .itemIndicator {
+  border-color: var(--color-surface-controls-selected); /* Selected border */
+  /* background-color: var(--color-surface-controls-selected); /* If the whole circle should fill */
+}
+
+.radioItem .itemIndicator::after { /* The inner dot */
+  content: '';
+  display: block;
+  width: 10px; /* Size of the inner dot, from Radio.module.css .radioItem.size18px .radioIndicator::after */
+  height: 10px;
+  border-radius: 50%;
+  background-color: transparent; /* Transparent by default */
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.radioItem[data-state='checked'] .itemIndicator::after {
+  background-color: var(--color-surface-controls-selected); /* Color of the inner dot when selected */
+}
+
+/* Disabled states for RadioItem indicator */
+.radioItem[data-disabled] .itemIndicator {
+  border-color: var(--color-stroke-controls-disabled);
+  background-color: var(--color-surface-controls-disabled); /* Optional: fill disabled radio */
+}
+
+.radioItem[data-disabled][data-state='checked'] .itemIndicator::after {
+  background-color: var(--color-stroke-controls-disabled); /* Or a more muted color for the dot */
+}
+/* Ensure the custom Checkbox component aligns well */
+/* The Checkbox component itself has a wrapper, so we target that if needed */
+.checkboxItem > [data-checkbox-wrapper] { /* Now using a stable data-attribute for targeting */
+  /* Adjustments if necessary, e.g., if its internal padding/margin causes misalignment with the gap */
+}
+
+
+/* --- Label --- */
+/* Derived from figma-jsons/dropdownmenu.json typography.DropList/Label */
+.label {
+  padding: var(--spacing-sp-8) var(--spacing-sp-16); /* Adjust padding as needed for labels */
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-secondary); /* Labels are often secondary text */
+  user-select: none;
+}
+
+/* --- Separator --- */
+.separator {
+  height: var(--border-width-100);
+  background-color: var(--color-stroke-default); /* droplist_stroke0 or a specific separator token */
+  margin: var(--spacing-sp-4) calc(-1 * var(--spacing-sp-4)); /* Full width within padded content */
+}
+/* If separator should be inset like items: */
+/*
+.separator {
+  height: var(--border-width-100);
+  background-color: var(--color-stroke-divider);
+  margin: var(--spacing-sp-8) var(--spacing-sp-16);
+}
+*/
+
+/* --- SubTrigger Icon --- */
+/* This container will hold the lucide-react ChevronRight icon */
+.subTriggerIcon {
+  margin-left: auto; /* Pushes the icon to the far right */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-icon-dark); /* Default icon color from dropdownItem.json (indirectly) */
+  /* Size is set on the icon component itself (16px) */
+  /* padding-left: var(--spacing-sp-16); /* Spacing between label and icon if not handled by gap and margin-left: auto */
+}
+
+.subTrigger[data-highlighted] .subTriggerIcon,
+.subTrigger[data-focus-visible] .subTriggerIcon {
+  color: var(--color-icon-dark); /* Or a specific hover/focus icon color if defined */
+}
+
+.subTrigger[data-state='open'] .subTriggerIcon {
+  color: var(--color-icon-brand); /* Or a specific "open" state icon color */
+}

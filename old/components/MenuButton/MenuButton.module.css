@@ -1,0 +1,5 @@
+/* No global token imports needed as this primarily overrides IconButton styles */
+
+.menuButtonCircular {
+  border-radius: 50%; /* Or var(--radius-full) if available and preferred */
+}

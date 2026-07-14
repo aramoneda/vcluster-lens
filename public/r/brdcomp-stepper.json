@@ -1,0 +1,40 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-stepper",
+  "type": "registry:ui",
+  "title": "Stepper",
+  "description": "An onboarding and workflow progress indicator for multi-step flows with inferred completed, current, and upcoming states.",
+  "dependencies": [
+    "class-variance-authority"
+  ],
+  "categories": [
+    "navigation",
+    "onboarding",
+    "data-display"
+  ],
+  "meta": {
+    "tags": [
+      "stepper",
+      "wizard",
+      "onboarding",
+      "progress",
+      "steps"
+    ],
+    "examples": [
+      {
+        "title": "Onboarding progress",
+        "code": "import { Stepper } from \"@/components/ui/stepper\"\n\n<Stepper\n  currentStepIndex={1}\n  steps={[\n    { title: \"Company details\", description: \"Website and location\" },\n    { title: \"Your details\", description: \"Name and email\" },\n    { title: \"Verification\", description: \"Confirm your account\" },\n  ]}\n/>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/stepper.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\nimport { cva } from \"class-variance-authority\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport interface StepperItem {\n  title: React.ReactNode\n  description?: React.ReactNode\n}\n\nexport interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {\n  steps: StepperItem[]\n  currentStepIndex: number\n}\n\ntype StepperVisualState = \"completed\" | \"current\" | \"upcoming\"\n\nconst stepperVariants = cva(\n  \"flex min-w-0 flex-col gap-[var(--spacing-sp-16)] lg:flex-row lg:gap-0\"\n)\n\nconst stepperTrackVariants = cva(\"hidden h-2 rounded-full lg:block\", {\n  variants: {\n    state: {\n      completed: \"bg-[var(--color-state-success-accent)]\",\n      current: \"bg-[var(--color-state-success-accent)]\",\n      upcoming: \"bg-[var(--neutral-400)]\",\n    },\n    isLast: {\n      true: \"invisible\",\n      false: \"\",\n    },\n  },\n})\n\nconst stepperVerticalConnectorVariants = cva(\n  \"absolute left-[18px] top-[calc(36px+var(--spacing-sp-12))] w-0.5 -translate-x-1/2 lg:hidden\",\n  {\n    variants: {\n      state: {\n        completed: \"bg-[var(--color-state-success-accent)]\",\n        current: \"bg-[var(--color-state-success-accent)]\",\n        upcoming: \"bg-[var(--neutral-400)]\",\n      },\n      isLast: {\n        true: \"hidden\",\n        false: \"bottom-[calc(var(--spacing-sp-16)*-1)]\",\n      },\n    },\n  }\n)\n\nconst stepperIndicatorVariants = cva(\n  [\n    \"inline-flex size-9 shrink-0 items-center justify-center rounded-full border-2\",\n    \"row-span-2 col-start-1 row-start-1 lg:row-auto lg:col-auto\",\n  ],\n  {\n    variants: {\n      state: {\n        completed:\n          \"border-[var(--color-state-success-accent)] bg-[var(--color-state-success-accent)] text-[var(--color-surface-foreground)]\",\n        current:\n          \"border-[var(--green-haze-300)] bg-[var(--color-surface-foreground)] p-[3px] text-[var(--color-state-success-accent)]\",\n        upcoming:\n          \"border-[var(--color-stroke-default)] bg-[var(--color-surface-foreground)] text-transparent\",\n      },\n    },\n  }\n)\n\nfunction clampStepIndex(currentStepIndex: number, stepsLength: number) {\n  if (stepsLength <= 0) {\n    return 0\n  }\n\n  if (!Number.isFinite(currentStepIndex)) {\n    return 0\n  }\n\n  return Math.min(Math.max(currentStepIndex, 0), stepsLength - 1)\n}\n\nfunction getVisualState(index: number, currentStepIndex: number): StepperVisualState {\n  if (index < currentStepIndex) {\n    return \"completed\"\n  }\n\n  if (index === currentStepIndex) {\n    return \"current\"\n  }\n\n  return \"upcoming\"\n}\n\nfunction CompletedGlyph() {\n  return (\n    <svg\n      aria-hidden=\"true\"\n      viewBox=\"0 0 24 24\"\n      className=\"size-5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      strokeWidth=\"2.5\"\n      strokeLinecap=\"round\"\n      strokeLinejoin=\"round\"\n    >\n      <path d=\"M6.5 12.5 10 16l7.5-8\" />\n    </svg>\n  )\n}\n\nfunction CurrentGlyph() {\n  return (\n    <span className=\"relative block size-full rounded-full border-[3px] border-current bg-[var(--color-surface-foreground)]\">\n      <span className=\"absolute inset-[3px] overflow-hidden rounded-full bg-[var(--color-surface-foreground)]\">\n        <span className=\"absolute inset-y-0 right-0 w-1/2 bg-current\" />\n      </span>\n    </span>\n  )\n}\n\nfunction StepIndicator({ state }: { state: StepperVisualState }) {\n  if (state === \"completed\") {\n    return <CompletedGlyph />\n  }\n\n  if (state === \"current\") {\n    return <CurrentGlyph />\n  }\n\n  return <span aria-hidden=\"true\" className=\"size-0\" />\n}\n\nexport function Stepper({\n  steps,\n  currentStepIndex,\n  className,\n  ...props\n}: StepperProps) {\n  if (steps.length === 0) {\n    return null\n  }\n\n  const clampedCurrentStepIndex = clampStepIndex(currentStepIndex, steps.length)\n\n  return (\n    <div\n      data-slot=\"stepper\"\n      className={cn(stepperVariants(), className)}\n      {...props}\n    >\n      {steps.map((step, index) => {\n        const state = getVisualState(index, clampedCurrentStepIndex)\n        const isLast = index === steps.length - 1\n\n        return (\n          <div\n            key={index}\n            data-slot=\"stepper-item\"\n            className=\"relative grid min-w-0 grid-cols-[36px_minmax(0,1fr)] items-start gap-x-[var(--spacing-sp-12)] gap-y-[var(--spacing-sp-12)] lg:flex-1 lg:grid-cols-1 lg:grid-rows-[8px_auto] lg:gap-x-0 lg:gap-y-[var(--spacing-sp-12)]\"\n            aria-current={state === \"current\" ? \"step\" : undefined}\n          >\n            <div\n              data-slot=\"stepper-track\"\n              className={stepperTrackVariants({ state, isLast })}\n            />\n\n            <div\n              data-slot=\"stepper-connector\"\n              className={stepperVerticalConnectorVariants({ state, isLast })}\n            />\n\n            <div\n              data-slot=\"stepper-content\"\n              className=\"contents lg:flex lg:min-w-0 lg:items-start lg:gap-[var(--spacing-sp-12)]\"\n            >\n              <div\n                data-slot=\"stepper-indicator\"\n                className={stepperIndicatorVariants({ state })}\n                aria-hidden=\"true\"\n              >\n                <StepIndicator state={state} />\n              </div>\n\n              <div\n                data-slot=\"stepper-text\"\n                className=\"col-start-2 row-start-1 min-w-0 self-center lg:min-w-0\"\n              >\n                <div\n                  data-slot=\"stepper-title\"\n                  className=\"min-w-0 [font:var(--font-body-medium-semibold)] text-[var(--color-text-dark-accent)] lg:truncate\"\n                >\n                  {step.title}\n                  <span className=\"sr-only\">\n                    {state === \"completed\"\n                      ? \", completed\"\n                      : state === \"current\"\n                        ? \", current step\"\n                        : \", upcoming\"}\n                  </span>\n                </div>\n\n                {step.description ? (\n                  <div\n                    data-slot=\"stepper-description\"\n                    className=\"mt-[2px] min-w-0 text-[var(--color-text-secondary)] [font:var(--font-body-medium)] lg:truncate\"\n                  >\n                    {step.description}\n                  </div>\n                ) : null}\n              </div>\n            </div>\n          </div>\n        )\n      })}\n    </div>\n  )\n}\n\nexport { stepperVariants }\n"
+    }
+  ]
+}

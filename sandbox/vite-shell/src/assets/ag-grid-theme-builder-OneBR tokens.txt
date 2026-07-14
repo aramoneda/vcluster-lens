@@ -1,0 +1,40 @@
+import { themeQuartz } from 'ag-grid-community';
+
+// to use myTheme in an application, pass it to the theme grid option
+const myTheme = themeQuartz
+	.withParams({
+        accentColor: "--brand-500",
+        advancedFilterBuilderColumnPillColor: "--green-100",
+        advancedFilterBuilderJoinPillColor: "--red-100",
+        advancedFilterBuilderOptionPillColor: "--orange-100",
+        advancedFilterBuilderValuePillColor: "--chetwode-100",
+        borderColor: "--color-stroke-light",
+        borderRadius: "--radius-s",
+        browserColorScheme: "light",
+        buttonActiveBorder: true,
+        buttonBorder: true,
+        buttonDisabledBackgroundColor: "--color-surface-button-secondary-disabled",
+        buttonDisabledTextColor: "--color-text-button-secondary-disabled",
+        buttonVerticalPadding: "--spacing-sp-8",
+        cellBatchEditBackgroundColor: "--color-surface-table-level2",
+        cellBatchEditTextColor: "--color-text-input-value",
+        cellWidgetSpacing: "--spacing-sp-8",
+        checkboxBorderRadius: "--radius-xxs",
+        checkboxIndeterminateBackgroundColor: "--brand-500",
+        checkboxUncheckedBorderColor: "--color-stroke-controls-default",
+        chromeBackgroundColor: "--color-surface-table-data-header",
+        dialogBorder: true,
+        findActiveMatchBackgroundColor: "--orange-100",
+        findMatchBackgroundColor: "#FFFACA",
+        fontFamily: {
+            googleFont: "Inter"
+        },
+        foregroundColor: "--color-text-primary",
+        fullRowEditInvalidBackgroundColor: "--red-100",
+        headerBackgroundColor: "--color-surface-table-data-header",
+        headerFontSize: 14,
+        headerFontWeight: 600,
+        invalidColor: "--color-surface-button-error-default",
+        valueChangeDeltaDownColor: "--color-text-state-error",
+        valueChangeDeltaUpColor: "--color-text-state-success"
+    });

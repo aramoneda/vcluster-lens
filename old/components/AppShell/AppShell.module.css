@@ -1,0 +1,151 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Layout dimension variables - easy to adjust */
+.appShell {
+  --app-shell-header-height: 64px;
+  --app-shell-nav-width-minimised: 104px;
+  --app-shell-nav-width-full: 317px;
+  --app-shell-toolbar-width: 48px;
+  --app-shell-nav-breakpoint: 2050px;
+
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--color-surface-dashboard);
+}
+
+/* Header - Fixed at top, not scrollable */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+/* Main Container - Below header, fills remaining height */
+.mainContainer {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0; /* Important for nested scrolling */
+  position: relative;
+  margin-top: var(--app-shell-header-height);
+}
+
+/* Left Navigation - Fixed to left edge, not scrollable */
+.leftNav {
+  position: fixed;
+  top: var(--app-shell-header-height);
+  left: 0;
+  bottom: 0;
+  flex-shrink: 0;
+  z-index: 50;
+  overflow: hidden;
+}
+
+/* Content Area - Scrollable area for Page */
+.contentArea {
+  flex: 1;
+  min-width: 0; /* Prevent flex overflow */
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-left: var(--app-shell-nav-width-minimised);
+  margin-right: var(--app-shell-toolbar-width);
+}
+
+/* When Full nav is shown, adjust content margin */
+.navFull .contentArea {
+  margin-left: var(--app-shell-nav-width-full);
+}
+
+/* Page - Takes full content area */
+.page {
+  flex: 1;
+  min-height: 100%;
+}
+
+/* Footer Wrapper - Ensures footer is at bottom of Page content */
+.footerWrapper {
+  grid-column: 1 / -1; /* Span all grid columns */
+  margin-top: auto;
+}
+
+/* Side Toolbar - Fixed to right edge, vertically centered, hugs content */
+.sideToolbar {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  height: auto; /* Hug content, don't stretch */
+}
+
+/* Hide SideToolbar on smaller screens */
+@media (max-width: 767px) {
+  .sideToolbar {
+    display: none;
+  }
+
+  .contentArea {
+    margin-right: 0;
+  }
+}
+
+/* Hide left nav on mobile */
+@media (max-width: 479px) {
+  .leftNav {
+    display: none !important;
+  }
+
+  .contentArea {
+    margin-left: 0;
+  }
+}
+
+/* Notifications Slot - Positioned at top, centered in content area */
+.notificationsSlot {
+  position: fixed;
+  top: calc(var(--app-shell-header-height) + var(--spacing-sp-24));
+  left: calc(var(--app-shell-nav-width-minimised) + var(--spacing-sp-24));
+  right: calc(var(--app-shell-toolbar-width) + var(--spacing-sp-24));
+  z-index: 150; /* Above content, below modals/drawers */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sp-8);
+  pointer-events: none; /* Allow clicks to pass through empty space */
+}
+
+.notificationsSlot > * {
+  pointer-events: auto; /* But intercoms themselves are clickable */
+  max-width: 600px;
+  width: 100%;
+}
+
+/* When Full nav is shown, adjust left position */
+.navFull .notificationsSlot {
+  left: calc(var(--app-shell-nav-width-full) + var(--spacing-sp-24));
+}
+
+/* On mobile, notifications span full width */
+@media (max-width: 767px) {
+  .notificationsSlot {
+    left: var(--spacing-sp-16);
+    right: var(--spacing-sp-16);
+  }
+}
+
+@media (max-width: 479px) {
+  .notificationsSlot {
+    left: var(--spacing-sp-8);
+    right: var(--spacing-sp-8);
+  }
+}

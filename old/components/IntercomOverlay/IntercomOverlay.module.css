@@ -1,0 +1,180 @@
+/* Import global design tokens */
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Base IntercomOverlay styles */
+/* Figma: Intercoms/Overlay component - main container */
+/* Layout: auto-layout horizontal, space-between alignment, no gap (auto spacing) */
+.intercomOverlay {
+  /* Layout from Figma JSON analysis.cssHints */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  /* Fixed dimensions from Figma JSON layout */
+  width: 853px;
+  height: 56px;
+  min-height: 56px; /* Ensure minimum height is maintained */
+  max-height: 56px; /* Prevent content from expanding height */
+
+  /* Ensure proper box sizing */
+  box-sizing: border-box;
+
+  /* Padding from Figma JSON layout tokens */
+  padding: var(--spacing-sp-12) var(--spacing-sp-16);
+
+  /* Border radius from Figma JSON layout */
+  border-radius: var(--radius-s);
+
+  /* No border specified in Figma JSON - only fill colors */
+
+  /* Shadow from Popover component for consistency */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1), 0px 0px 2px rgba(0, 0, 0, 0.06);
+
+  /* Prevent any margin that could affect height */
+  margin: 0;
+}
+
+/* Left container: icon + text content */
+/* Figma: first "container" frame with itemSpacing: --spacing-sp-12 */
+.leftContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-12); /* From Figma JSON boundVariables.itemSpacing */
+  flex: 1; /* Take available space */
+  min-width: 0; /* Allow shrinking */
+  overflow: hidden; /* Prevent overflow */
+
+  /* Ensure proper box sizing and no margins */
+  box-sizing: border-box;
+  margin: 0;
+
+  /* Ensure container height doesn't exceed parent */
+  height: 100%;
+}
+
+/* Status icon container */
+.statusIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  /* Ensure proper box sizing and no margins */
+  box-sizing: border-box;
+  margin: 0;
+
+  /* Constrain icon size to prevent height expansion */
+  width: 20px;
+  height: 20px;
+}
+
+/* Text content for inline message and link */
+/* Figma: "textContainer" frame - inline layout for text + link */
+/* Gap from Figma JSON: boundVariables.itemSpacing: "--spacing-sp-8" */
+.textContent {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sp-8); /* From Figma JSON textContainer itemSpacing */
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+  letter-spacing: 0%;
+  text-transform: none;
+  text-decoration: none;
+  color: var(--color-text-primary);
+
+  /* Prevent text overflow that could expand height */
+  flex: 1;
+  min-width: 0; /* Allow text to shrink */
+  overflow: hidden;
+
+  /* Ensure proper box sizing and no margins */
+  box-sizing: border-box;
+  margin: 0;
+
+  /* Ensure text height doesn't exceed container */
+  max-height: 20px; /* Match line-height */
+}
+
+
+
+/* Right container: expand/collapse links + dismiss button */
+/* Figma: second "container" frame with itemSpacing: --spacing-sp-16 */
+.rightContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-16); /* From Figma JSON boundVariables.itemSpacing */
+  flex-shrink: 0;
+
+  /* Ensure proper box sizing and no margins */
+  box-sizing: border-box;
+  margin: 0;
+
+  /* Ensure container height doesn't exceed parent */
+  height: 100%;
+}
+
+/* Type Variants */
+/* Based on exact Figma JSON variants and color tokens */
+
+/* Info Variant */
+/* Figma: Type=Info */
+/* Background: type=info_fill0 (token: --color-surface-foreground, hex: #ffffff) */
+/* No stroke/border specified in Figma JSON */
+.typeInfo {
+  background-color: var(--color-surface-foreground); /* #ffffff */
+}
+
+.typeInfo .statusIcon {
+  color: var(--color-state-info-accent); /* Icon color - not from JSON, using design system */
+}
+
+/* Warning Variant */
+/* Figma: Type=Warning */
+/* Background: type=warning_fill0 (hex: #fffdfd) - token missing per JSON */
+/* No stroke/border specified in Figma JSON */
+.typeWarning {
+  background-color: #fffdfd; /* Exact hex from Figma JSON - no token available */
+}
+
+.typeWarning .statusIcon {
+  color: var(--color-state-warning-accent); /* Icon color - not from JSON, using design system */
+}
+
+/* Critical Variant */
+/* Figma: Type=Critical */
+/* Background: type=critical_fill0 (hex: #fffbfc) - token missing per JSON */
+/* No stroke/border specified in Figma JSON */
+.typeCritical {
+  background-color: #fffbfc; /* Exact hex from Figma JSON - no token available */
+}
+
+.typeCritical .statusIcon {
+  color: var(--color-state-error-accent); /* Icon color - not from JSON, using design system */
+}
+
+/* Success Variant */
+/* Figma: Type=Success */
+/* Background: type=success_fill0 (hex: #fcfdfc) - token missing per JSON */
+/* No stroke/border specified in Figma JSON */
+.typeSuccess {
+  background-color: #fcfdfc; /* Exact hex from Figma JSON - no token available */
+}
+
+.typeSuccess .statusIcon {
+  color: var(--color-state-success-accent); /* Icon color - not from JSON, using design system */
+}
+
+/* Responsive behavior */
+@media (max-width: 900px) {
+  .intercomOverlay {
+    width: 100%;
+    max-width: 853px;
+  }
+}

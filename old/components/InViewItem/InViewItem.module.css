@@ -1,0 +1,143 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Main container - From Figma layout analysis */
+.inViewItem {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sp-16);
+  border-radius: var(--radius-xs);
+  border-width: var(--border-width-100);
+  border-style: solid;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
+  cursor: pointer;
+
+  /* Default state - Property 1=Default */
+  background-color: var(--color-surface-foreground); /* #ffffff */
+  border-color: var(--color-stroke-light); /* #d6dade */
+}
+
+/* Hover state - Property 1=Hover */
+.inViewItem:hover:not(.disabled):not(.selected) {
+  background-color: var(--color-surface-hover); /* #f2f4f5 */
+  border-color: var(--color-stroke-light);
+}
+
+/* Selected state - Property 1=Selected */
+.inViewItem.selected {
+  background-color: var(--color-surface-selected); /* #e7f1fc */
+  border-color: var(--color-stroke-brand); /* #0b49ea */
+}
+
+/* Disabled state */
+.inViewItem.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Left Container */
+.leftContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--spacing-sp-16);
+}
+
+/* Checkbox Wrapper - aligned to top left corner */
+.checkboxWrapper {
+  display: flex;
+  align-items: flex-start;
+  padding-top: var(--spacing-sp-2);
+}
+
+/* Content Wrapper */
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sp-4);
+}
+
+/* Top Container - Labels */
+.topContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sp-2);
+}
+
+/* Owner Label - Secondary text */
+.ownerLabel {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-secondary); /* #656c70 */
+}
+
+/* Main Label - Primary text */
+.label {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-primary); /* #1c1f22 */
+}
+
+/* Selected label color */
+.labelSelected {
+  color: var(--color-text-selected); /* #0f3db5 */
+}
+
+/* Badges Container */
+.badgesContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-4);
+}
+
+/* Right Container - Data Entries */
+.rightContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-16);
+}
+
+/* Data Entry - Vertical layout with 52px height */
+.dataEntry {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--spacing-sp-8);
+  height: 52px;
+}
+
+/* Data Entry Label */
+.dataEntryLabel {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-secondary); /* #656c70 */
+}
+
+/* Data Entry Value container */
+.dataEntryValue {
+  display: flex;
+  align-items: center;
+}
+
+/* Data Entry Value text (non-badge) */
+.dataEntryValueText {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-primary);
+}
+

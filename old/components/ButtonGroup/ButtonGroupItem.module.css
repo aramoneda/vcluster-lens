@@ -1,0 +1,171 @@
+/* Import global tokens */
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+.buttonGroupItem {
+  all: unset; /* Reset all browser styles for Primitive.button */
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-grow: 1; /* If items should share space equally or grow */
+
+  border-radius: var(--radius-xs);
+  /* Default border: 1px solid transparent. Color changes on focus. */
+  border: 1px solid transparent;
+
+  color: var(--color-text-primary);
+  background-color: transparent;
+
+  font-family: var(--font-family-brand);
+  text-decoration: none;
+  letter-spacing: 0%;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+/* --- Size S --- */
+:global([data-size="S"]) .buttonGroupItem {
+  height: 28px;
+  padding-left: var(--spacing-sp-6);
+  padding-right: var(--spacing-sp-6);
+  font-size: var(--font-body-small-size);
+  font-weight: var(--font-body-small-semibold-weight);
+  line-height: var(--font-body-small-line-height);
+}
+:global([data-size="S"]) .buttonGroupItem.iconOnly {
+  width: 28px;
+  padding: 0;
+}
+:global([data-size="S"]) .buttonGroupItem .iconWrapper + .labelWrapper,
+:global([data-size="S"]) .buttonGroupItem .labelWrapper + .iconWrapper {
+  margin-left: var(--spacing-sp-2);
+}
+:global([data-size="S"]) .buttonGroupItem .iconWrapper > svg {
+  width: 14px;
+  height: 14px;
+}
+
+
+/* --- Size M --- */
+:global([data-size="M"]) .buttonGroupItem {
+  height: 32px;
+  padding-left: var(--spacing-sp-4);
+  padding-right: var(--spacing-sp-4);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+}
+:global([data-size="M"]) .buttonGroupItem.iconOnly {
+  width: 32px;
+  padding: 0;
+}
+:global([data-size="M"]) .buttonGroupItem .iconWrapper > svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* --- Size L --- */
+:global([data-size="L"]) .buttonGroupItem {
+  height: 48px;
+  padding: var(--spacing-sp-8);
+  font-size: var(--font-body-large-size);
+  font-weight: var(--font-body-large-semibold-weight);
+  line-height: var(--font-body-large-line-height);
+}
+:global([data-size="L"]) .buttonGroupItem.iconOnly {
+  width: 48px;
+  padding: 0;
+}
+:global([data-size="L"]) .buttonGroupItem .iconWrapper > svg {
+  width: 20px;
+  height: 20px;
+}
+
+
+/* States - Apply to the .buttonGroupItem itself */
+/* Hover state - Radix uses data-state="off" for non-active items */
+.buttonGroupItem:hover:not([data-disabled]):not([aria-disabled='true']):not([data-state='on']) {
+  background-color: var(--color-surface-button-group-hover);
+  color: var(--color-text-primary);
+  border-color: transparent;
+}
+
+/* Active (selected) state - Radix uses data-state="on" */
+.buttonGroupItem[data-state='on'] {
+  background-color: var(--color-surface-button-group-active);
+  color: var(--color-text-link-default);
+  border-color: transparent;
+}
+/* Ensure hover on active item doesn't change its active styling */
+.buttonGroupItem[data-state='on']:hover:not([data-disabled]):not([aria-disabled='true']) {
+  background-color: var(--color-surface-button-group-active);
+  color: var(--color-text-link-default);
+  border-color: transparent;
+}
+
+
+/* Pressed state (CSS :active) - for momentary press */
+.buttonGroupItem:active:not([data-disabled]):not([aria-disabled='true']):not([data-state='on']) {
+  background-color: var(--color-surface-button-group-hover);
+}
+/* Pressed state on an already active item */
+.buttonGroupItem[data-state='on']:active:not([data-disabled]):not([aria-disabled='true']) {
+  background-color: var(--color-surface-button-group-active);
+}
+
+
+/* Focus-visible state */
+.buttonGroupItem:focus-visible:not([data-disabled]):not([aria-disabled='true']) {
+  outline: none;
+  border-color: var(--color-stroke-brand);
+  box-shadow: 0 0 0 2px var(--brand-300);
+}
+/* Focus on an active item should still show focus ring but maintain active background */
+.buttonGroupItem[data-state='on']:focus-visible:not([data-disabled]):not([aria-disabled='true']) {
+  outline: none;
+  border-color: var(--color-stroke-brand);
+  box-shadow: 0 0 0 2px var(--brand-300);
+  background-color: var(--color-surface-button-group-active);
+  color: var(--color-text-link-default);
+}
+
+
+/* Disabled state - Radix uses [data-disabled] */
+.buttonGroupItem[data-disabled],
+.buttonGroupItem[aria-disabled='true'] { /* Keep aria-disabled for robustness if manually set */
+  color: var(--color-text-disabled) !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  cursor: not-allowed;
+  box-shadow: none !important;
+}
+
+/* Icon and Label Wrappers */
+.iconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.labelWrapper {
+  display: inline-block;
+}
+.iconOnly .iconWrapper {
+ margin: 0;
+}
+
+/* Default spacing for icon + label, applies to M and L unless overridden by S */
+.iconWrapper + .labelWrapper {
+  margin-left: var(--spacing-sp-4);
+}
+.labelWrapper + .iconWrapper {
+  margin-left: var(--spacing-sp-4);
+}
+
+/* SVG icon sizing, default, can be overridden by size-specific rules */
+.iconWrapper > svg {
+  width: 1em; /* Fallback, specific sizes preferred */
+  height: 1em; /* Fallback, specific sizes preferred */
+}

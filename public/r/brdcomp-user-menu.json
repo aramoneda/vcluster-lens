@@ -1,0 +1,39 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-user-menu",
+  "type": "registry:ui",
+  "title": "User Menu",
+  "description": "A user name trigger that opens a dropdown menu for account actions.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "categories": [
+    "navigation",
+    "overlay"
+  ],
+  "meta": {
+    "tags": [
+      "user-menu",
+      "dropdown",
+      "account",
+      "profile"
+    ],
+    "examples": [
+      {
+        "title": "User menu",
+        "code": "import { UserMenu } from \"@/components/ui/user-menu\"\n\n<UserMenu name=\"John Smith\" items={[{ id: \"profile\", label: \"Profile\" }]} />"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-dropdown-menu.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/user-menu.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport { ChevronDown } from \"lucide-react\"\n\nimport {\n  DropdownMenu,\n  DropdownMenuContent,\n  DropdownMenuItem,\n  DropdownMenuTrigger,\n  type DropdownMenuItemProps,\n} from \"@/components/ui/dropdown-menu\"\nimport { cn } from \"@/lib/utils\"\n\nexport type UserMenuItem = {\n  id: string\n  label: string\n  disabled?: boolean\n  variant?: DropdownMenuItemProps[\"variant\"]\n}\n\nexport interface UserMenuProps {\n  name: string\n  items: UserMenuItem[]\n  selectedId?: string\n  onSelect?: (item: UserMenuItem) => void\n  open?: boolean\n  onOpenChange?: (open: boolean) => void\n  triggerClassName?: string\n  menuClassName?: string\n}\n\nfunction UserMenu({\n  name,\n  items,\n  selectedId,\n  onSelect,\n  open,\n  onOpenChange,\n  triggerClassName,\n  menuClassName,\n}: UserMenuProps) {\n  return (\n    <DropdownMenu open={open} onOpenChange={onOpenChange}>\n      <DropdownMenuTrigger asChild>\n        <button\n          type=\"button\"\n          className={cn(\n            \"group inline-flex items-center gap-2 rounded-[var(--radius-s)] px-3 py-2\",\n            \"text-sm font-semibold text-[var(--color-text-brand)]\",\n            \"bg-transparent transition-colors\",\n            \"hover:bg-[var(--color-surface-hover)]\",\n            \"data-[state=open]:bg-[var(--color-surface-selected)]\",\n            triggerClassName\n          )}\n        >\n          <span>{name}</span>\n          <ChevronDown\n            className={cn(\n              \"size-4 transition-transform\",\n              \"text-[var(--color-icon-brand)]\",\n              \"group-data-[state=open]:rotate-180\"\n            )}\n            aria-hidden=\"true\"\n          />\n        </button>\n      </DropdownMenuTrigger>\n      <DropdownMenuContent position=\"bottom-right\" className={cn(\"min-w-[220px]\", menuClassName)}>\n        {items.map((item) => (\n          <DropdownMenuItem\n            key={item.id}\n            isActive={item.id === selectedId}\n            onSelect={() => onSelect?.(item)}\n            disabled={item.disabled}\n            variant={item.variant}\n          >\n            {item.label}\n          </DropdownMenuItem>\n        ))}\n      </DropdownMenuContent>\n    </DropdownMenu>\n  )\n}\n\nexport { UserMenu }\n"
+    }
+  ]
+}

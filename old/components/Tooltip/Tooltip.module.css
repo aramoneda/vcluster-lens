@@ -1,0 +1,137 @@
+/* Import global design tokens */
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Base host class (optional, ensures module linkage) */
+.tooltipHost {
+  /* No specific styles needed here unless overriding Root itself */
+}
+
+/* Styles for the Tooltip Content */
+/* Derived from figma-jsons/done/tooltip.json */
+.tooltipContent {
+  /* Layout & Sizing - from figma-jsons/done/tooltip.json layout */
+  max-width: 250px; /* From layout.maxWidth */
+  padding-top: var(--spacing-sp-8); /* From layout.paddingTop.token */
+  padding-right: var(--spacing-sp-12); /* From layout.paddingRight.token */
+  padding-bottom: var(--spacing-sp-8); /* From layout.paddingBottom.token */
+  padding-left: var(--spacing-sp-12); /* From layout.paddingLeft.token */
+  border-radius: var(--radius-s); /* From layout.cornerRadius.token */
+
+  /* Colors - from figma-jsons/done/tooltip.json variants[0].colors */
+  background-color: var(--color-surface-foreground-dark); /* From type=default_fill0.token */
+  color: var(--color-text-inverse); /* From here_is_a_tooltip_here_is_a_tooltip_fill0.token */
+
+  /* Typography - from figma-jsons/done/tooltip.json typography */
+  font-family: var(--font-family-brand); /* From typography.fontFamily */
+  font-size: var(--font-body-medium-size); /* From typography.fontSize */
+  font-weight: var(--font-body-medium-regular-weight); /* From typography.fontWeight */
+  line-height: var(--font-body-medium-line-height); /* From typography.lineHeight */
+  letter-spacing: normal; /* From typography.letterSpacing: 0% */
+  text-transform: none; /* From typography.textCase: ORIGINAL */
+  text-decoration: none; /* From typography.textDecoration: NONE */
+
+  /* Shadow - Raw value as specified in prompt, token --shadow-tooltip not found/provided */
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15); /* Was var(--shadow-tooltip), using raw value as token is undefined and not in tooltip.json */
+
+  /* Clipping prevention */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Optional: handle long text better */
+  word-wrap: break-word; /* Ensure long words break */
+
+  /* Radix animation */
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+
+  /* Ensure tooltip is on top of other elements */
+  z-index: 9999;
+}
+
+/* Animation States - Based on Radix examples */
+.tooltipContent[data-state='delayed-open'] {
+  animation-name: slideUpAndFade;
+}
+.tooltipContent[data-state='closed'] {
+  animation-name: fadeOut; /* Keep fadeOut for closing */
+  opacity: 0; /* Ensure final state is fully transparent */
+  visibility: hidden; /* Ensure it's hidden and non-interactive */
+  background-color: transparent !important; /* Ensure no background when closed */
+}
+
+/* Styles for the Tooltip Arrow */
+/* Derived from figma-jsons/done/tooltip.json content background */
+.tooltipArrow {
+  fill: var(--color-surface-foreground-dark); /* Match content background */
+  width: 10px; /* Radix default/common size */
+  height: 5px; /* Radix default/common size */
+}
+
+/* Keyframes for animations (standard Radix examples) */
+@keyframes slideUpAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideRightAndFade {
+  from {
+    opacity: 0;
+    transform: translateX(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideDownAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideLeftAndFade {
+  from {
+    opacity: 0;
+    transform: translateX(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Apply specific animations based on side */
+.tooltipContent[data-side='top'][data-state='delayed-open'] {
+  animation-name: slideDownAndFade;
+}
+.tooltipContent[data-side='right'][data-state='delayed-open'] {
+  animation-name: slideLeftAndFade;
+}
+.tooltipContent[data-side='bottom'][data-state='delayed-open'] {
+  animation-name: slideUpAndFade;
+}
+.tooltipContent[data-side='left'][data-state='delayed-open'] {
+  animation-name: slideRightAndFade;
+}

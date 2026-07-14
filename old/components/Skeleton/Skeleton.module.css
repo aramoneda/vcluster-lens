@@ -1,0 +1,54 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+
+/* Base styles for Skeleton component */
+/* Derived from figma-jsons/skeleton.json layout section */
+.skeleton {
+  width: 200px; /* Default width from figma-jsons/skeleton.json layout.width */
+  height: 24px; /* Default height from figma-jsons/skeleton.json layout.height */
+  border-radius: var(--radius-xs); /* Default cornerRadius from figma-jsons/skeleton.json layout.cornerRadius.token */
+  background-color: var(--brand-200); /* Default to state 1 fill */
+  display: block; /* Ensure it behaves like a block element */
+  overflow: hidden; /* Needed for the animation to be contained */
+  position: relative; /* Needed for the pseudo-element animation */
+}
+
+/* Styles for state="1" variant */
+/* Derived from figma-jsons/skeleton.json variants[name="state=1"] */
+.state1 {
+  background-color: var(--brand-200); /* fill0 from figma-jsons/skeleton.json variants[name="state=1"].colors.state=1_fill0.token */
+  /* Layout properties (width, height, cornerRadius) are the same as base for state=1 */
+}
+
+/* Styles for state="2" variant */
+/* Derived from figma-jsons/skeleton.json variants[name="state=2"] */
+.state2 {
+  background-color: var(--brand-300); /* fill0 from figma-jsons/skeleton.json variants[name="state=2"].colors.state=2_fill0.token */
+  /* Layout properties (width, height, cornerRadius) are the same as base for state=2 */
+}
+
+/* Animation styles */
+.animated::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2), /* Lighter shimmer color */
+    transparent
+  );
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}

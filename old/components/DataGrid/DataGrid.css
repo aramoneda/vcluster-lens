@@ -1,0 +1,220 @@
+/* BRD DataGrid Styles using BRD Design Tokens */
+
+.brd-data-grid {
+  width: 100%;
+  font-family: var(--font-family-brand);
+}
+
+/* AG Grid Theme Override using BRD Design Tokens */
+.ag-theme-brd {
+  /* Base colors */
+  --ag-background-color: var(--color-surface-foreground);
+  --ag-foreground-color: var(--color-text-primary);
+  --ag-secondary-foreground-color: var(--color-text-secondary);
+
+  /* Border colors */
+  --ag-border-color: var(--color-stroke-table);
+  --ag-row-border-color: var(--color-stroke-table);
+
+  /* Header styling */
+  --ag-header-background-color: var(--color-surface-table-data-header);
+  --ag-header-foreground-color: var(--color-text-primary);
+  --ag-header-border-color: var(--color-stroke-table);
+
+  /* Row styling */
+  --ag-row-hover-color: var(--color-surface-table-row-hover);
+  --ag-selected-row-background-color: var(--color-surface-selected);
+
+  /* Cell styling */
+  --ag-cell-horizontal-border: var(--color-stroke-table);
+  --ag-cell-horizontal-padding: var(--spacing-sp-12);
+
+  /* Typography */
+  --ag-font-family: var(--font-family-brand);
+  --ag-font-size: var(--font-body-medium-size);
+  --ag-font-weight: var(--font-body-medium-regular-weight);
+
+  /* Spacing */
+  --ag-grid-size: var(--spacing-sp-8);
+  --ag-row-height: calc(var(--spacing-sp-48) + var(--spacing-sp-8));
+  --ag-header-height: calc(var(--spacing-sp-48) + var(--spacing-sp-8));
+
+  /* Focus and selection */
+  --ag-range-selection-border-color: var(--color-surface-focused);
+  --ag-cell-focus-border-color: var(--color-surface-table-data-cell-border-focus);
+
+  /* Scrollbar */
+  --ag-scrollbar-size: var(--spacing-sp-8);
+
+  /* Ensure minimum height for the grid */
+  min-height: 200px;
+}
+
+/* Header cell styling */
+.ag-theme-brd .ag-header-cell {
+  font: var(--font-body-medium-semibold);
+  color: var(--color-text-primary);
+  border-right: 1px solid var(--color-stroke-table);
+  display: flex;
+  align-items: center;
+}
+
+.ag-theme-brd .ag-header-cell-label {
+  padding: 0 var(--spacing-sp-12);
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Data cell styling */
+.ag-theme-brd .ag-cell {
+  font: var(--font-body-medium);
+  color: var(--color-text-primary);
+  border-right: 1px solid var(--color-stroke-table);
+  padding: 0 var(--spacing-sp-12);
+  line-height: var(--font-body-medium-line-height);
+  display: flex;
+  align-items: center;
+}
+
+/* Header alignment classes */
+.ag-theme-brd .ag-header-cell-left .ag-header-cell-label {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.ag-theme-brd .ag-header-cell-right .ag-header-cell-label {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.ag-theme-brd .ag-header-cell-center .ag-header-cell-label {
+  justify-content: center;
+  text-align: center;
+}
+
+/* Row styling */
+.ag-theme-brd .ag-row {
+  border-bottom: 1px solid var(--color-stroke-table);
+}
+
+.ag-theme-brd .ag-row:hover {
+  background-color: var(--color-surface-table-row-hover);
+}
+
+.ag-theme-brd .ag-row-selected {
+  background-color: var(--color-surface-selected);
+}
+
+/* Pagination styling */
+.ag-theme-brd .ag-paging-panel {
+  border-top: 1px solid var(--color-stroke-table);
+  background-color: var(--color-surface-foreground);
+  padding: var(--spacing-sp-12) var(--spacing-sp-16);
+  font: var(--font-body-small);
+  color: var(--color-text-secondary);
+}
+
+.ag-theme-brd .ag-paging-button {
+  background-color: transparent;
+  border: 1px solid var(--color-stroke-default);
+  border-radius: var(--radius-s);
+  color: var(--color-text-primary);
+  padding: var(--spacing-sp-4) var(--spacing-sp-8);
+  margin: 0 var(--spacing-sp-2);
+  font: var(--font-body-small);
+}
+
+.ag-theme-brd .ag-paging-button:hover:not(.ag-disabled) {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-stroke-controls-hover);
+}
+
+.ag-theme-brd .ag-paging-button.ag-disabled {
+  color: var(--color-text-disabled);
+  border-color: var(--color-stroke-controls-disabled);
+}
+
+/* Filter styling */
+.ag-theme-brd .ag-filter {
+  background-color: var(--color-surface-popover);
+  border: 1px solid var(--color-stroke-default);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-m);
+}
+
+.ag-theme-brd .ag-filter-input {
+  background-color: var(--color-surface-input-default);
+  border: 1px solid var(--color-stroke-controls-default);
+  border-radius: var(--radius-s);
+  color: var(--color-text-input-value);
+  font: var(--font-body-medium);
+  padding: var(--spacing-sp-8) var(--spacing-sp-12);
+}
+
+.ag-theme-brd .ag-filter-input:focus {
+  border-color: var(--color-surface-focused);
+  outline: none;
+}
+
+/* Sort indicator styling */
+.ag-theme-brd .ag-header-cell-sortable .ag-header-cell-label {
+  cursor: pointer;
+}
+
+.ag-theme-brd .ag-sort-ascending-icon,
+.ag-theme-brd .ag-sort-descending-icon {
+  color: var(--color-surface-focused);
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .ag-theme-brd {
+    --ag-cell-horizontal-padding: var(--spacing-sp-8);
+    --ag-row-height: calc(var(--spacing-sp-40) + var(--spacing-sp-8));
+    --ag-header-height: calc(var(--spacing-sp-40) + var(--spacing-sp-8));
+    --ag-font-size: var(--font-body-small-size);
+  }
+
+  .ag-theme-brd .ag-header-cell,
+  .ag-theme-brd .ag-cell {
+    font-size: var(--font-body-small-size);
+    line-height: var(--font-body-small-line-height);
+  }
+}
+
+/* Loading overlay */
+.ag-theme-brd .ag-overlay-loading-wrapper {
+  background-color: var(--color-surface-foreground);
+}
+
+.ag-theme-brd .ag-overlay-loading-center {
+  color: var(--color-text-secondary);
+  font: var(--font-body-medium);
+}
+
+/* No rows overlay */
+.ag-theme-brd .ag-overlay-no-rows-wrapper {
+  background-color: var(--color-surface-foreground);
+}
+
+.ag-theme-brd .ag-overlay-no-rows-center {
+  color: var(--color-text-secondary);
+  font: var(--font-body-medium);
+}
+
+/* Scrollbar styling */
+.ag-theme-brd .ag-body-horizontal-scroll,
+.ag-theme-brd .ag-body-vertical-scroll {
+  background-color: var(--color-surface-background);
+}
+
+.ag-theme-brd .ag-scrollbar-thumb {
+  background-color: var(--color-stroke-controls-default);
+  border-radius: var(--radius-s);
+}
+
+.ag-theme-brd .ag-scrollbar-thumb:hover {
+  background-color: var(--color-stroke-controls-hover);
+}
+

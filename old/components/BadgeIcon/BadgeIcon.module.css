@@ -1,0 +1,145 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+
+/* Base BadgeIcon styles */
+.badgeIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: var(--radius-xxl); /* Default from layout.cornerRadius.token */
+  flex-shrink: 0; /* Prevent shrinking in flex containers */
+}
+
+/* Icon SVG within the badge */
+.badgeIcon .iconSvg {
+  display: block; /* Remove extra space below inline SVGs */
+  /* The size of the SVG will be controlled by its parent's padding and dimensions.
+     Lucide icons are typically 24x24 by default, but their container (BadgeIcon)
+     will define the visible area. We ensure the SVG scales if needed. */
+  width: 100%; /* Make SVG fill the icon slot defined by padding */
+  height: 100%; /* Make SVG fill the icon slot defined by padding */
+}
+
+
+/* Size Variants */
+/* Size: Default (maps to Figma's "Default" size) */
+.sizeDefault {
+  width: 32px; /* layout.width for Default size */
+  height: 32px; /* layout.height for Default size */
+  padding: var(--spacing-sp-4); /* layout.padding.token for Default size */
+}
+
+/* Size: Large (maps to Figma's "Large" size) */
+.sizeLarge {
+  width: 40px; /* layout.width for Large size */
+  height: 40px; /* layout.height for Large size */
+  padding: var(--spacing-sp-8); /* layout.padding.token for Large size */
+}
+
+/* Size: Small (maps to Figma's "Small" size) */
+.sizeSmall {
+  width: 28px; /* layout.width for Small size */
+  height: 28px; /* layout.height for Small size */
+  padding: var(--spacing-sp-2); /* layout.padding.token for Small size */
+}
+
+
+/* Type Variants */
+/* Type: Filled */
+.typeFilled .iconSvg {
+  /* Icon color for Filled type is typically the same as the background or a contrasting color.
+     Figma JSON shows icon color is derived from the 'fill' of the icon component itself,
+     which is often inherited or set to 'currentColor'.
+     The background color of the badge dictates the 'fill' for the icon.
+     Lucide icons use `currentColor` for their stroke by default.
+     We will set the `color` property on the .badgeIcon, and the SVG should inherit it.
+  */
+}
+
+/* Type: Outline */
+.typeOutline {
+  border-style: solid;
+  border-width: var(--border-width-100); /* layout.strokeWeight.token for Outline type */
+  background-color: var(--color-surface-foreground); /* Default background for Outline */
+}
+
+.typeOutline .iconSvg {
+  /* Icon color for Outline type is typically the stroke color of the badge.
+     The `color` property on .badgeIcon will set this.
+  */
+}
+
+
+/* Color Variants */
+
+/* Color: Default */
+.typeFilled.colorDefault {
+  background-color: var(--chetwode-100); /* variants.colors.type=filled,_color=default,..._fill0.token */
+  color: var(--chetwode-500); /* Assuming a darker shade for the icon, needs token or explicit value if specified */
+}
+.typeOutline.colorDefault {
+  border-color: var(--chetwode-200); /* variants.colors.type=outline,_color=default,..._stroke0.token */
+  color: var(--chetwode-500); /* Icon color for outline default */
+}
+
+/* Color: Sky */
+.typeFilled.colorSky {
+  background-color: var(--azure-100); /* variants.colors.type=filled,_color=sky,..._fill0.token */
+  color: var(--azure-500); /* Assuming a darker shade for the icon */
+}
+.typeOutline.colorSky {
+  border-color: var(--azure-200); /* variants.colors.type=outline,_color=sky,..._stroke0.token */
+  color: var(--azure-500); /* Icon color for outline sky */
+}
+
+/* Color: Grass */
+.typeFilled.colorGrass {
+  background-color: var(--green-haze-100); /* variants.colors.type=filled,_color=grass,..._fill0.token */
+  color: var(--green-haze-500); /* Assuming a darker shade for the icon */
+}
+.typeOutline.colorGrass {
+  border-color: var(--green-haze-200); /* variants.colors.type=outline,_color=grass,..._stroke0.token */
+  color: var(--green-haze-500); /* Icon color for outline grass */
+}
+
+/* Color: Bored */
+.typeFilled.colorBored {
+  background-color: var(--orange-haze-100); /* variants.colors.type=filled,_color=bored,..._fill0.token */
+  color: var(--orange-haze-500); /* Assuming a darker shade for the icon */
+}
+.typeOutline.colorBored {
+  border-color: var(--orange-haze-200); /* variants.colors.type=outline,_color=bored,..._stroke0.token */
+  color: var(--orange-haze-500); /* Icon color for outline bored */
+}
+
+/* Color: Negative */
+.typeFilled.colorNegative {
+  background-color: var(--color-state-error-light); /* variants.colors.type=filled,_color=negative,..._fill0.token */
+  color: var(--red-700); /* Darker shade for the icon */
+}
+.typeOutline.colorNegative {
+  /* Figma JSON for "Type=Outline, Color=Negative, Size=Default" uses "--warning-light" for stroke.
+     This seems like a mismatch if "Negative" implies error.
+     Using error token for consistency, but noting Figma specified --warning-light.
+     If --warning-light is intended, change var(--error-accent) to var(--warning-light)
+     and the icon color to var(--orange-700) or similar.
+  */
+  border-color: var(--warning-light); /* Using error token, Figma: --warning-light */
+  color: var(--red-700); /* Icon color for outline negative */
+}
+
+/*
+  Note on icon colors:
+  The Figma JSON specifies fill colors for the badge itself (e.g., `type=filled,_color=sky,_size=default_fill0`).
+  It does NOT explicitly specify the color of the *icon glyph* inside the badge for each variant.
+  Lucide icons use `currentColor` for their paths by default.
+  So, by setting the `color` CSS property on the `.badgeIcon` element (or a more specific variant class),
+  the SVG icon should inherit this color.
+  The chosen icon colors (e.g., `var(--azure-500)`) are assumptions based on common design patterns
+  (e.g., a darker shade of the badge background for filled icons, or a prominent color for outline icons).
+  These should be verified against the visual design or updated if specific icon color tokens are available
+  or if the Figma JSON provides this detail elsewhere for the icon instances.
+  For "Outline" type, the `type=outline,..._stroke0` in Figma JSON refers to the *border* of the badge.
+  The icon color inside an outline badge is often the same as this border color or a related theme color.
+*/

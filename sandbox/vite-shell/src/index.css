@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap");
+@import "@one-brd-test/ui/tokens.css";
+@import "tw-animate-css";
+@import "./features/grid/brd-ag-grid-theme.css";
+
+@source "./**/*.{js,ts,jsx,tsx}";
+@source "../node_modules/@one-brd-test/ui/dist/**/*.mjs";
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: var(--font-family-brand);
+}

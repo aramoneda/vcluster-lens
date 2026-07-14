@@ -1,0 +1,141 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Base card styles */
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: border-box;
+  font-family: var(--font-family-brand);
+  width: fit-content;
+}
+
+/* Top row container for icons */
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.topLeftIcon {
+  display: flex;
+  align-items: center;
+}
+
+.topActionIcon {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* Main content area */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-sp-2);
+}
+
+/* Bottom CTA */
+.bottomCTA {
+  margin-top: auto;
+}
+
+/* Size Variants */
+
+/* Small size - Figma: radius-xs, sp-12 padding, sp-2 gap */
+.small {
+  border-radius: var(--radius-xs);
+  padding: var(--spacing-sp-12);
+  gap: var(--spacing-sp-2);
+  justify-content: flex-end;
+}
+
+/* Medium size - Figma: radius-xs, sp-12 padding, sp-2 gap */
+.medium {
+  border-radius: var(--radius-xs);
+  padding: var(--spacing-sp-12);
+  gap: var(--spacing-sp-2);
+  justify-content: flex-end;
+}
+
+/* Large size - Figma: radius-s, sp-24 padding, sp-8 gap */
+.large {
+  border-radius: var(--radius-s);
+  padding: var(--spacing-sp-24);
+  gap: var(--spacing-sp-8);
+  justify-content: flex-start;
+}
+
+/* Color Variants */
+
+/* Gray - background color */
+.gray {
+  background-color: var(--color-surface-background);
+}
+
+/* Light - white with border */
+.light {
+  background-color: var(--color-surface-widget);
+  border: var(--border-width-100) solid var(--color-stroke-light);
+}
+
+/* Super Light - white without border */
+.super-light {
+  background-color: var(--color-surface-widget);
+}
+
+/* Blue - selected surface */
+.blue {
+  background-color: var(--color-surface-selected);
+}
+
+/* Typography - Label styles per size */
+.label {
+  color: var(--color-text-secondary);
+}
+
+/* Small/Medium label - Body/Medium/Regular */
+.label-small,
+.label-medium {
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+}
+
+/* Large label - Body/Large/Regular */
+.label-large {
+  font-size: var(--font-body-large-size);
+  font-weight: var(--font-body-large-regular-weight);
+  line-height: var(--font-body-large-line-height);
+}
+
+/* Typography - Value styles per size */
+.value {
+  color: var(--color-text-dark-accent);
+}
+
+/* Small value - Body/Large/Bold */
+.value-small {
+  font-size: var(--font-body-large-size);
+  font-weight: var(--font-body-large-bold-weight);
+  line-height: var(--font-body-large-line-height);
+}
+
+/* Medium value - Headlines/H4 */
+.value-medium {
+  font-size: var(--font-headline-h4-size);
+  font-weight: var(--font-headline-h4-weight);
+  line-height: var(--font-headline-h4-line-height);
+}
+
+/* Large value - Headlines/H2 */
+.value-large {
+  font-size: var(--font-headline-h2-size);
+  font-weight: var(--font-headline-h2-weight);
+  line-height: var(--font-headline-h2-line-height);
+}
+

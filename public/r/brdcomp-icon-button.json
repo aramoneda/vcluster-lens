@@ -1,0 +1,40 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-icon-button",
+  "type": "registry:ui",
+  "title": "Icon Button",
+  "description": "An icon-only button with built-in accessibility labeling, size variants, and active states. Use `ariaLabel` for the tooltip and assistive text.",
+  "dependencies": [
+    "@radix-ui/react-slot",
+    "class-variance-authority"
+  ],
+  "categories": [
+    "actions",
+    "icons"
+  ],
+  "meta": {
+    "tags": [
+      "icon-button",
+      "button",
+      "action",
+      "a11y"
+    ],
+    "examples": [
+      {
+        "title": "Icon action",
+        "code": "import { IconButton } from \"@/components/ui/icon-button\"\n\n<IconButton ariaLabel=\"Edit\">\n  <span>Edit</span>\n</IconButton>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-tooltip.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/icon-button.tsx",
+      "type": "registry:ui",
+      "content": "'use client'\n\nimport * as React from 'react'\nimport { Slot } from '@radix-ui/react-slot'\nimport { cva, type VariantProps } from 'class-variance-authority'\n\nimport { cn } from '@/lib/utils'\nimport { SimpleTooltip } from '@/components/ui/tooltip'\n\n// Size and color types matching old IconButton\nexport type IconButtonSize = 'M' | 'S' | 'XS'\nexport type IconButtonColor = 'Blue' | 'Black'\n\nconst iconButtonVariants = cva(\n  [\n    'inline-flex items-center justify-center',\n    'border-0 bg-transparent',\n    'cursor-pointer',\n    'rounded-[var(--radius-xs)]',\n    'transition-all duration-200 ease-out',\n    'box-border relative',\n    // Focus state\n    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--denim-300)]',\n    // Hover state (when not disabled)\n    'hover:not-disabled:bg-[var(--color-surface-hover)]',\n    // Pressed state\n    'active:not-disabled:bg-[var(--denim-100)]',\n    // Disabled state\n    'disabled:text-[var(--color-icon-disabled)] disabled:bg-transparent disabled:opacity-60 disabled:cursor-not-allowed',\n  ],\n  {\n    variants: {\n      size: {\n        M: 'w-8 h-8',      // 32px\n        S: 'w-6 h-6',      // 24px\n        XS: 'w-4 h-4 p-0.5', // 16px with 2px padding\n      },\n      color: {\n        Blue: 'text-[var(--color-icon-brand)]',\n        Black: 'text-[var(--color-icon-dark)]',\n      },\n      isActive: {\n        true: 'bg-[var(--color-surface-selected)] hover:not-disabled:bg-[var(--color-surface-selected)]',\n        false: '',\n      },\n    },\n    compoundVariants: [\n      // Blue M gets padding on hover/active/pressed\n      {\n        color: 'Blue',\n        size: 'M',\n        className: 'hover:not-disabled:p-0.5 active:not-disabled:p-0.5',\n      },\n      {\n        color: 'Blue',\n        size: 'M',\n        isActive: true,\n        className: 'p-0.5',\n      },\n    ],\n    defaultVariants: {\n      size: 'M',\n      color: 'Blue',\n      isActive: false,\n    },\n  }\n)\n\nexport interface IconButtonProps\n  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'color'>,\n    VariantProps<typeof iconButtonVariants> {\n  /**\n   * Accessible label for the icon button.\n   * Required for accessibility and shown in the tooltip.\n   */\n  ariaLabel: string\n  /**\n   * The icon element to be rendered inside the button.\n   */\n  children: React.ReactNode\n  /**\n   * The size of the icon button.\n   * @default 'M'\n   */\n  size?: IconButtonSize\n  /**\n   * The color scheme of the icon button.\n   * @default 'Blue'\n   */\n  color?: IconButtonColor\n  /**\n   * If `true`, the button will be in an active state (e.g., selected).\n   * @default false\n   */\n  isActive?: boolean\n  /**\n   * The preferred side of the trigger to render the tooltip.\n   */\n  tooltipSide?: 'top' | 'right' | 'bottom' | 'left'\n  /**\n   * The offset of the tooltip from the trigger.\n   * @default 5\n   */\n  tooltipSideOffset?: number\n  /**\n   * The delay duration for the tooltip to open, in milliseconds.\n   * @default 700\n   */\n  tooltipDelayDuration?: number\n  /**\n   * Allows the component to be rendered as a child of another component.\n   * @default false\n   */\n  asChild?: boolean\n}\n\nconst IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(\n  (\n    {\n      ariaLabel,\n      children,\n      size = 'M',\n      color = 'Blue',\n      isActive = false,\n      disabled = false,\n      className,\n      tooltipSide,\n      tooltipSideOffset = 5,\n      tooltipDelayDuration = 700,\n      asChild = false,\n      ...props\n    },\n    ref\n  ) => {\n    const Comp = asChild ? Slot : 'button'\n\n    const buttonElement = (\n      <Comp\n        ref={ref}\n        className={cn(iconButtonVariants({ size, color, isActive }), className)}\n        disabled={disabled}\n        aria-disabled={disabled}\n        aria-label={ariaLabel}\n        data-active={isActive ? '' : undefined}\n        data-size={size}\n        data-color={color}\n        {...props}\n      >\n        {children}\n      </Comp>\n    )\n\n    // Don't wrap with tooltip if disabled or asChild\n    if (disabled || asChild) {\n      return buttonElement\n    }\n\n    // Wrap enabled button with Tooltip showing ariaLabel\n    return (\n      <SimpleTooltip\n        content={ariaLabel}\n        side={tooltipSide}\n        sideOffset={tooltipSideOffset}\n        delayDuration={tooltipDelayDuration}\n      >\n        {buttonElement}\n      </SimpleTooltip>\n    )\n  }\n)\n\nIconButton.displayName = 'IconButton'\n\nexport { IconButton, iconButtonVariants }\n\n"
+    }
+  ]
+}

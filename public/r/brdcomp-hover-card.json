@@ -1,0 +1,39 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-hover-card",
+  "type": "registry:ui",
+  "title": "Hover Card",
+  "description": "A lightweight preview panel that appears on hover or focus, useful for quick summaries. Similar to Popover but optimized for hover.",
+  "dependencies": [
+    "@radix-ui/react-hover-card",
+    "class-variance-authority"
+  ],
+  "categories": [
+    "overlay",
+    "data-display"
+  ],
+  "meta": {
+    "tags": [
+      "hover-card",
+      "preview",
+      "overlay",
+      "tooltip"
+    ],
+    "examples": [
+      {
+        "title": "Hover preview",
+        "code": "import { HoverCard, HoverCardTrigger, HoverCardContent } from \"@/components/ui/hover-card\"\n\n<HoverCard>\n  <HoverCardTrigger>Hover me</HoverCardTrigger>\n  <HoverCardContent>Preview content</HoverCardContent>\n</HoverCard>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/hover-card.tsx",
+      "type": "registry:ui",
+      "content": "'use client'\n\nimport * as React from 'react'\nimport * as HoverCardPrimitive from '@radix-ui/react-hover-card'\nimport { cva, type VariantProps } from 'class-variance-authority'\n\nimport { cn } from '@/lib/utils'\n\n// Size variants matching old Popover\nconst hoverCardContentVariants = cva(\n  [\n    // Base styles\n    'bg-[var(--color-surface-foreground)]',\n    'text-[var(--color-text-primary)]',\n    'rounded-[var(--radius-s)]',\n    'z-[200]',\n    'shadow-[0px_4px_12px_rgba(0,0,0,0.1),0px_0px_2px_rgba(0,0,0,0.06)]',\n    'outline-hidden',\n    // Animations\n    'data-[state=open]:animate-in data-[state=closed]:animate-out',\n    'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',\n    'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',\n    'data-[side=bottom]:slide-in-from-top-2',\n    'data-[side=left]:slide-in-from-right-2',\n    'data-[side=right]:slide-in-from-left-2',\n    'data-[side=top]:slide-in-from-bottom-2',\n    'origin-(--radix-hover-card-content-transform-origin)',\n  ],\n  {\n    variants: {\n      size: {\n        m: 'p-6', // 24px - spacing-sp-24\n        s: 'p-4', // 16px - spacing-sp-16\n        xs: 'p-3', // 12px - spacing-sp-12\n      },\n    },\n    defaultVariants: {\n      size: 'm',\n    },\n  }\n)\n\nexport type HoverCardSize = 'm' | 's' | 'xs'\n\nfunction HoverCard({\n  ...props\n}: React.ComponentProps<typeof HoverCardPrimitive.Root>) {\n  return <HoverCardPrimitive.Root data-slot=\"hover-card\" {...props} />\n}\n\nfunction HoverCardTrigger({\n  ...props\n}: React.ComponentProps<typeof HoverCardPrimitive.Trigger>) {\n  return (\n    <HoverCardPrimitive.Trigger data-slot=\"hover-card-trigger\" {...props} />\n  )\n}\n\nexport interface HoverCardContentProps\n  extends Omit<React.ComponentProps<typeof HoverCardPrimitive.Content>, 'size'>,\n    VariantProps<typeof hoverCardContentVariants> {\n  /** Size variant affecting padding */\n  size?: HoverCardSize\n}\n\nfunction HoverCardContent({\n  className,\n  align = 'center',\n  sideOffset = 8, // 8px default matching old Popover\n  size = 'm',\n  ...props\n}: HoverCardContentProps) {\n  return (\n    <HoverCardPrimitive.Portal>\n      <HoverCardPrimitive.Content\n        data-slot=\"hover-card-content\"\n        align={align}\n        sideOffset={sideOffset}\n        className={cn(hoverCardContentVariants({ size }), className)}\n        {...props}\n      />\n    </HoverCardPrimitive.Portal>\n  )\n}\n\nexport { HoverCard, HoverCardTrigger, HoverCardContent, hoverCardContentVariants }\n"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-link",
+  "type": "registry:ui",
+  "title": "Link",
+  "description": "A styled anchor/link component with sizing and icon support, consistent with BRD typography.",
+  "dependencies": [
+    "@radix-ui/react-slot",
+    "class-variance-authority"
+  ],
+  "categories": [
+    "navigation"
+  ],
+  "meta": {
+    "tags": [
+      "link",
+      "anchor",
+      "navigation",
+      "text"
+    ],
+    "examples": [
+      {
+        "title": "Inline link",
+        "code": "import { Link } from \"@/components/ui/link\"\n\n<Link href=\"/docs\">Documentation</Link>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/link.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\nimport { Slot } from \"@radix-ui/react-slot\"\nimport { cva, type VariantProps } from \"class-variance-authority\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst linkVariants = cva(\n  \"inline-flex items-center gap-1 font-semibold underline transition-colors cursor-pointer rounded-[var(--radius-xs)] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--denim-300)] text-[var(--color-text-link-default)] hover:text-[var(--color-text-link-hover)] active:text-[var(--color-text-link-pressed)] visited:text-[var(--color-text-link-visited)] aria-disabled:text-[var(--color-text-link-disabled)] aria-disabled:cursor-not-allowed aria-disabled:pointer-events-none\",\n  {\n    variants: {\n      size: {\n        default: \"text-sm\",\n        sm: \"text-xs\",\n        lg: \"text-base\",\n      },\n    },\n    defaultVariants: {\n      size: \"default\",\n    },\n  }\n)\n\nexport interface LinkProps\n  extends React.ComponentProps<\"a\">,\n    VariantProps<typeof linkVariants> {\n  /**\n   * Optional icon to display within the link.\n   */\n  icon?: React.ReactNode\n  /**\n   * If true, the icon will be placed after the text.\n   * @default false\n   */\n  trailingIcon?: boolean\n  /**\n   * Whether the link is disabled.\n   * @default false\n   */\n  disabled?: boolean\n  /**\n   * If true, the component will render its child and pass all props to it.\n   * @default false\n   */\n  asChild?: boolean\n}\n\nconst Link = React.forwardRef<HTMLAnchorElement, LinkProps>(\n  (\n    {\n      children,\n      icon,\n      trailingIcon = false,\n      disabled = false,\n      asChild = false,\n      className,\n      href,\n      size,\n      ...rest\n    },\n    ref\n  ) => {\n    const Comp = asChild ? Slot : \"a\"\n\n    const iconSpan = icon && (\n      <span className=\"inline-flex items-center justify-center [&>svg]:size-4\">\n        {icon}\n      </span>\n    )\n\n    if (asChild) {\n      return (\n        <Comp\n          ref={ref}\n          data-slot=\"link\"\n          className={cn(linkVariants({ size }), className)}\n          aria-disabled={disabled || undefined}\n          data-disabled={disabled ? \"\" : undefined}\n          {...rest}\n        >\n          {children}\n        </Comp>\n      )\n    }\n\n    return (\n      <Comp\n        ref={ref}\n        data-slot=\"link\"\n        className={cn(linkVariants({ size }), className)}\n        href={disabled ? undefined : href}\n        aria-disabled={disabled || undefined}\n        data-disabled={disabled ? \"\" : undefined}\n        {...(disabled && { tabIndex: -1 })}\n        {...rest}\n      >\n        {!trailingIcon && iconSpan}\n        {children}\n        {trailingIcon && iconSpan}\n      </Comp>\n    )\n  }\n)\n\nLink.displayName = \"Link\"\n\nexport { Link, linkVariants }\n\n"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-left-navigation",
+  "type": "registry:ui",
+  "title": "Left Navigation",
+  "description": "A fixed left-edge L1 navigation with icon labels and active state highlighting.",
+  "dependencies": [],
+  "categories": [
+    "navigation"
+  ],
+  "meta": {
+    "tags": [
+      "left-navigation",
+      "nav",
+      "sidebar",
+      "l1",
+      "navigation"
+    ],
+    "examples": [
+      {
+        "title": "Primary nav",
+        "code": "import { LeftNavigation } from \"@/components/ui/left-navigation\"\nimport { Home } from \"lucide-react\"\n\n<LeftNavigation items={[{ id: \"home\", label: \"Home\", icon: Home }]} />"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-button.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-tooltip.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/left-navigation.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\n\nimport { Button } from \"@/components/ui/button\"\nimport { SimpleTooltip } from \"@/components/ui/tooltip\"\nimport { cn } from \"@/lib/utils\"\n\nexport type LeftNavigationItem = {\n  id: string\n  label: string\n  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>\n  disabled?: boolean\n}\n\nexport interface LeftNavigationProps extends React.HTMLAttributes<HTMLDivElement> {\n  items: LeftNavigationItem[]\n  activeId?: string\n  onItemSelect?: (item: LeftNavigationItem) => void\n  position?: \"fixed\" | \"absolute\"\n}\n\nconst LeftNavigation = React.forwardRef<HTMLDivElement, LeftNavigationProps>(\n  ({ items, activeId, onItemSelect, position = \"fixed\", className, ...props }, ref) => {\n    return (\n      <nav\n        ref={ref}\n        aria-label=\"Primary navigation\"\n        className={cn(\n          position === \"fixed\"\n            ? \"fixed left-0 top-0 h-screen\"\n            : \"absolute left-0 top-0 h-full\",\n          \"z-30\",\n          \"flex w-[104px] flex-col items-center gap-1\",\n          \"bg-[var(--color-surface-foreground)] p-4\",\n          className\n        )}\n        {...props}\n      >\n        {items.map((item) => {\n          const Icon = item.icon\n          const isActive = item.id === activeId\n\n          return (\n            <SimpleTooltip key={item.id} content={item.label} side=\"right\">\n              <Button\n                type=\"button\"\n                variant=\"secondary\"\n                size=\"icon-lg\"\n                aria-label={item.label}\n                className={cn(\n                  \"h-[72px] w-[72px] flex-col items-center justify-center gap-0.5 rounded-[var(--radius-s)]\",\n                  \"bg-transparent text-[var(--color-text-secondary)]\",\n                  \"hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text-primary)]\",\n                  isActive &&\n                    \"bg-[var(--color-surface-selected)] text-[var(--color-text-brand)] hover:bg-[var(--color-surface-selected)]\"\n                )}\n                onClick={() => onItemSelect?.(item)}\n                disabled={item.disabled}\n              >\n                <Icon className=\"size-6 mx-auto\" aria-hidden=\"true\" />\n                <span className=\"w-full text-[11px] font-semibold text-center leading-[10px] whitespace-nowrap truncate\">\n                  {item.label}\n                </span>\n              </Button>\n            </SimpleTooltip>\n          )\n        })}\n      </nav>\n    )\n  }\n)\n\nLeftNavigation.displayName = \"LeftNavigation\"\n\nexport { LeftNavigation }\n"
+    }
+  ]
+}

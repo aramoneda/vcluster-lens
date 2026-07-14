@@ -1,0 +1,88 @@
+/**
+ * Typography tokens generated from Figma
+ */
+
+:root {
+
+  /* Font-size */
+  --font-body-large-size: var(--font-size-16); /* References: font-size-16 */
+  --font-body-medium-size: var(--font-size-14); /* References: font-size-14 */
+  --font-body-small-size: var(--font-size-12); /* References: font-size-12 */
+  --font-headline-h1-size: var(--font-size-32); /* References: font-size-32 */
+  --font-headline-h2-size: var(--font-size-28); /* References: font-size-28 */
+  --font-headline-h3-size: var(--font-size-24); /* References: font-size-24 */
+  --font-headline-h4-size: var(--font-size-20); /* References: font-size-20 */
+  --font-headline-h5-size: var(--font-size-16); /* References: font-size-16 */
+  --font-size-12: 0.75rem;
+  --font-size-14: 0.875rem;
+  --font-size-16: 1rem;
+  --font-size-20: 1.25rem;
+  --font-size-24: 1.5rem;
+  --font-size-28: 1.75rem;
+  --font-size-32: 2rem;
+  --font-utility-link-size: var(--font-size-14); /* References: font-size-14 */
+
+  /* Line-height */
+  --line-height-16: 16px;
+  --line-height-20: 20px;
+  --line-height-22: 22px;
+  --line-height-24: 24px;
+  --line-height-28: 28px;
+  --line-height-32: 32px;
+  --line-height-36: 36px;
+  --font-body-large-line-height: var(--line-height-24); /* References: line-height-24 */
+  --font-body-medium-line-height: var(--line-height-20); /* References: line-height-20 */
+  --font-body-small-line-height: var(--line-height-16); /* References: line-height-16 */
+  --font-headline-h1-line-height: var(--line-height-36); /* References: line-height-36 */
+  --font-headline-h2-line-height: var(--line-height-32); /* References: line-height-32 */
+  --font-headline-h3-line-height: var(--line-height-28); /* References: line-height-28 */
+  --font-headline-h4-line-height: var(--line-height-24); /* References: line-height-24 */
+  --font-headline-h5-line-height: var(--line-height-20); /* References: line-height-20 */
+  --font-utility-link-line-height: var(--line-height-20); /* References: line-height-20 */
+
+  /* Font-weight */
+  --font-body-large-bold-weight: var(--font-weight-bold); /* References: font-weight-bold */
+  --font-body-large-regular-weight: var(--font-weight-regular); /* References: font-weight-regular */
+  --font-body-large-semibold-weight: var(--font-weight-semibold); /* References: font-weight-semibold */
+  --font-body-medium-bold-weight: var(--font-weight-bold); /* References: font-weight-bold */
+  --font-body-medium-regular-weight: var(--font-weight-regular); /* References: font-weight-regular */
+  --font-body-medium-semibold-weight: var(--font-weight-semibold); /* References: font-weight-semibold */
+  --font-body-small-bold-weight: var(--font-weight-bold); /* References: font-weight-bold */
+  --font-body-small-regular-weight: var(--font-weight-regular); /* References: font-weight-regular */
+  --font-body-small-semibold-weight: var(--font-weight-semibold); /* References: font-weight-semibold */
+  --font-headline-h1-weight: var(--font-weight-extrabold); /* References: font-weight-extrabold */
+  --font-headline-h2-weight: var(--font-weight-extrabold); /* References: font-weight-extrabold */
+  --font-headline-h3-weight: var(--font-weight-bold); /* References: font-weight-bold */
+  --font-headline-h4-weight: var(--font-weight-bold); /* References: font-weight-bold */
+  --font-headline-h5-weight: var(--font-weight-semibold); /* References: font-weight-semibold */
+  --font-utility-link-weight: var(--font-weight-semibold); /* References: font-weight-semibold */
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+
+  /* Font-family */
+  --font-family-brand: "Inter";
+
+  /* Typography Styles - Combined tokens */
+  --font-body-large: var(--font-body-large-regular-weight) var(--font-body-large-size)/var(--font-body-large-line-height) var(--font-family-brand);
+  --font-body-large-bold: var(--font-body-large-bold-weight) var(--font-body-large-size)/var(--font-body-large-line-height) var(--font-family-brand);
+  --font-body-large-semibold: var(--font-body-large-semibold-weight) var(--font-body-large-size)/var(--font-body-large-line-height) var(--font-family-brand);
+
+  --font-body-medium: var(--font-body-medium-regular-weight) var(--font-body-medium-size)/var(--font-body-medium-line-height) var(--font-family-brand);
+  --font-body-medium-bold: var(--font-body-medium-bold-weight) var(--font-body-medium-size)/var(--font-body-medium-line-height) var(--font-family-brand);
+  --font-body-medium-semibold: var(--font-body-medium-semibold-weight) var(--font-body-medium-size)/var(--font-body-medium-line-height) var(--font-family-brand);
+
+  --font-body-small: var(--font-body-small-regular-weight) var(--font-body-small-size)/var(--font-body-small-line-height) var(--font-family-brand);
+  --font-body-small-bold: var(--font-body-small-bold-weight) var(--font-body-small-size)/var(--font-body-small-line-height) var(--font-family-brand);
+  --font-body-small-semibold: var(--font-body-small-semibold-weight) var(--font-body-small-size)/var(--font-body-small-line-height) var(--font-family-brand);
+
+  --font-headline-h1: var(--font-headline-h1-weight) var(--font-headline-h1-size)/var(--font-headline-h1-line-height) var(--font-family-brand);
+  --font-headline-h2: var(--font-headline-h2-weight) var(--font-headline-h2-size)/var(--font-headline-h2-line-height) var(--font-family-brand);
+  --font-headline-h3: var(--font-headline-h3-weight) var(--font-headline-h3-size)/var(--font-headline-h3-line-height) var(--font-family-brand);
+  --font-headline-h4: var(--font-headline-h4-weight) var(--font-headline-h4-size)/var(--font-headline-h4-line-height) var(--font-family-brand);
+  --font-headline-h5: var(--font-headline-h5-weight) var(--font-headline-h5-size)/var(--font-headline-h5-line-height) var(--font-family-brand);
+
+  --font-utility-link: var(--font-utility-link-weight) var(--font-utility-link-size)/var(--font-utility-link-line-height) var(--font-family-brand);
+}

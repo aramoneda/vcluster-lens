@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-page-container",
+  "type": "registry:ui",
+  "title": "Page Container",
+  "description": "Responsive page container with header and content spacing.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "categories": [
+    "layout"
+  ],
+  "meta": {
+    "tags": [
+      "page-container",
+      "layout",
+      "header"
+    ],
+    "examples": [
+      {
+        "title": "Page container",
+        "code": "import { PageContainer, PageHeader } from \"@/components/ui/page-container\"\n\n<PageContainer>\n  <PageHeader title=\"Overview\" />\n  <div>Content</div>\n</PageContainer>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-icon-button.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/page-container.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport { RefreshCw } from \"lucide-react\"\n\nimport { IconButton } from \"@/components/ui/icon-button\"\nimport { LiveTimestamp } from \"@/components/ui/live-timestamp\"\nimport type { TimestampValue } from \"@/lib/format-timestamp\"\nimport { cn } from \"@/lib/utils\"\n\nexport interface PageContainerProps extends React.HTMLAttributes<HTMLDivElement> {\n  layout?: \"default\" | \"shell\"\n  /** When true (shell layout), reserves right padding for the fixed SideToolbar. Defaults to false. */\n  sideToolbarReserved?: boolean\n}\n\nexport interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {\n  title: string\n  /**\n   * Last-updated time as a real timestamp (`Date` or epoch ms). Rendered as a\n   * live, self-refreshing \"Updated … ago\" label — never a pre-formatted string.\n   */\n  timestamp?: TimestampValue\n  onRefresh?: () => void\n  actions?: React.ReactNode\n}\n\nfunction PageHeader({\n  title,\n  timestamp,\n  onRefresh,\n  actions,\n  className,\n  ...props\n}: PageHeaderProps) {\n  return (\n    <div\n      className={cn(\"flex flex-col gap-2 min-[768px]:flex-row min-[768px]:items-center min-[768px]:justify-between\", className)}\n      {...props}\n    >\n      <div className=\"flex flex-wrap items-center gap-3\">\n        <h3 className=\"text-xl font-semibold text-[var(--color-text-primary)]\">\n          {title}\n        </h3>\n        {(timestamp != null || onRefresh) && (\n          <div className=\"flex items-center gap-2 text-sm text-[var(--color-text-secondary)]\">\n            {timestamp != null && <LiveTimestamp value={timestamp} />}\n            {onRefresh && (\n              <IconButton\n                ariaLabel=\"Refresh\"\n                size=\"S\"\n                color=\"Black\"\n                onClick={onRefresh}\n              >\n                <RefreshCw className=\"h-4 w-4\" />\n              </IconButton>\n            )}\n          </div>\n        )}\n      </div>\n      {actions && <div className=\"flex flex-wrap items-center gap-3\">{actions}</div>}\n    </div>\n  )\n}\n\nfunction PageContainer({\n  className,\n  layout = \"default\",\n  sideToolbarReserved = false,\n  children,\n  ...props\n}: PageContainerProps) {\n  const isShellLayout = layout === \"shell\"\n\n  return (\n    <div\n      className={cn(\n        \"w-full bg-[var(--color-surface-dashboard)]\",\n        isShellLayout && (sideToolbarReserved ? \"pl-6 pr-[72px]\" : \"px-6\"),\n        !isShellLayout && \"px-6\",\n        !isShellLayout && \"min-[768px]:px-6\",\n        !isShellLayout && \"min-[968px]:px-12\",\n        !isShellLayout && \"min-[1280px]:px-12\",\n        !isShellLayout && \"min-[1600px]:px-12\",\n        !isShellLayout && \"min-[1920px]:px-0\",\n        !isShellLayout && \"min-[1920px]:max-w-[calc(100%-96px)]\",\n        !isShellLayout && \"min-[1920px]:mx-auto\",\n        isShellLayout && \"max-w-none\",\n        className\n      )}\n      {...props}\n    >\n      <div className=\"flex flex-col gap-6\">\n        {children}\n      </div>\n    </div>\n  )\n}\n\nexport { PageContainer, PageHeader }\n"
+    }
+  ]
+}

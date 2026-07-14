@@ -1,0 +1,132 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: transparent; /* Default resting state, overridden by states */
+  cursor: pointer;
+  padding: 0; /* Base padding, overridden by size/variant/state specific */
+  border-radius: var(--radius-xs); /* Universal, from Figma JSON */
+  transition: background-color 0.2s ease-out, box-shadow 0.2s ease-out, color 0.2s ease-out, padding 0.2s ease-out;
+  box-sizing: border-box;
+  position: relative; /* For focus outline and other pseudo-elements */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Size Variants --- */
+/* Values from Figma JSON for State=Default for each size */
+.sizeM {
+  width: 32px; /* Figma: State=Default, Size=M -> layout.width */
+  height: 32px; /* Figma: State=Default, Size=M -> layout.height */
+  /* Default padding for M is 0. Specific states for Blue variant will add padding. */
+  /* Figma: State=Default, Size=M, Color=Blue -> no padding specified */
+}
+
+.sizeS {
+  width: 24px; /* Figma: State=Default, Size=S -> layout.width */
+  height: 24px; /* Figma: State=Default, Size=S -> layout.height */
+  /* No padding specified for S in any state in Figma JSON */
+}
+
+.sizeXS {
+  width: 16px; /* Figma: State=Default, Size=XS -> layout.width */
+  height: 16px; /* Figma: State=Default, Size=XS -> layout.height */
+  /* Figma: State=Default, Size=XS, Color=Blue -> layout.padding (token: --spacing-sp-2) */
+  /* This padding is consistent for XS across its states in the JSON. */
+  padding: var(--spacing-sp-2);
+}
+
+/* --- Color Variants & Default (Resting) State Icon Colors --- */
+.variantBlue {
+  /* Icon color for Blue variant - resting state */
+  /* This is an interpretation, as Figma JSON points to icon component colors.
+     Using a standard token for brand-colored icons. */
+  color: var(--color-icon-brand);
+}
+
+.variantBlack {
+  /* Icon color for Black variant - resting state */
+  color: var(--color-icon-dark);
+}
+
+/* --- Interactive States --- */
+
+/* Hover States */
+/* Common hover background from Figma JSON: State=Hover -> colors."state=hover..._fill0" (token: --color-surface-hover) */
+.iconButton:hover:not([data-disabled='true']) {
+  background-color: var(--color-surface-hover);
+}
+/* Specific padding for Blue M on hover from Figma JSON: State=Hover, Size=M, Color=Blue -> layout.padding */
+.iconButton.variantBlue.sizeM:hover:not([data-disabled='true']) {
+  padding: var(--spacing-sp-2);
+}
+/* Note: Figma JSON for State=Hover, Size=M, Color=Black does NOT specify padding. */
+
+/* Pressed (Active Mouse Down) States */
+/* Common pressed background from Figma JSON: State=Pressed -> colors."state=pressed..._fill0" (token: --denim-100) */
+.iconButton:active:not([data-disabled='true']) {
+  background-color: var(--denim-100);
+}
+/* Specific padding for Blue M on pressed from Figma JSON: State=Pressed, Size=M, Color=Blue -> layout.padding */
+.iconButton.variantBlue.sizeM:active:not([data-disabled='true']) {
+  padding: var(--spacing-sp-2);
+}
+/* Note: Figma JSON for State=Pressed, Size=M, Color=Black does NOT specify padding. */
+
+
+/* Active (Selected) States - applied via .isActive class in TSX */
+/* Common active/selected background from Figma JSON: State=Active -> colors."state=active..._fill0" (token: --color-surface-selected) */
+.iconButton.isActive:not([data-disabled='true']) {
+  background-color: var(--color-surface-selected);
+}
+/* Specific padding for Blue M on active/selected from Figma JSON: State=Active, Size=M, Color=Blue -> layout.padding */
+.iconButton.variantBlue.sizeM.isActive:not([data-disabled='true']) {
+  padding: var(--spacing-sp-2);
+}
+/* Note: Figma JSON for State=Active, Size=M, Color=Black does NOT specify padding. */
+
+/* Ensure active state maintains its style on hover */
+.iconButton.isActive:hover:not([data-disabled='true']) {
+  background-color: var(--color-surface-selected); /* Or a specific active+hover token if available */
+  /* Padding for Blue M active+hover is covered by the .isActive rule for padding if applicable */
+}
+
+
+/* Focus-Visible State */
+/* Adheres to ai_rules.md for focus rings. */
+/* Figma JSON: State=Focused mentions a .focus_ring_component but no specific fill for the button itself. */
+.iconButton:focus-visible:not([data-disabled='true']) {
+  outline: 2px solid var(--denim-300);
+  outline-offset: 2px;
+  /* Figma JSON for State=Focused, Size=M (Blue/Black) does NOT specify padding. */
+}
+
+/* Disabled State */
+/* Figma JSON: State=Disabled does not specify a background for the button, only icon properties.
+   Applying common disabled styling. */
+.iconButton[data-disabled='true'] {
+  color: var(--color-icon-disabled) !important; /* Ensure icon color is for disabled state */
+  background-color: transparent !important; /* Ensure no other background from other states */
+  opacity: var(--opacity-60);
+  cursor: not-allowed;
+  /* Padding for disabled state:
+     - XS already has its padding via .sizeXS (consistent with Figma JSON for disabled XS states).
+     - M Blue disabled does not specify padding in JSON (State=Disabled, Size=M, Color=Blue).
+     - M Black disabled does not specify padding in JSON (State=Disabled, Size=M, Color=Black).
+     - S disabled does not specify padding.
+     So, no specific padding changes for disabled state beyond what base sizes define.
+  */
+}
+
+/*
+  Icon Sizing Note:
+  The IconButton component itself is sized (width, height, padding).
+  The actual SVG icon passed as children should be styled to respect its container.
+  If using `fill="currentColor"` on SVGs, the `color` property of the button will style the icon.
+  The `Icon` component used internally should handle its own sizing based on props like `iconSize`.
+*/

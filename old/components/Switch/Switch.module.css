@@ -1,0 +1,141 @@
+/* Import global design tokens */
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css'; /* Although not used directly by switch, good practice */
+
+/* --- Base Container --- */
+.switchContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sp-8); /* Default gap between switch and label */
+  cursor: default; /* Default cursor for the container */
+  vertical-align: middle; /* Align with surrounding text/elements */
+}
+
+.switchContainer.disabled {
+  cursor: not-allowed;
+}
+
+/* Label positioning */
+.switchContainer.labelLeft {
+  flex-direction: row-reverse;
+}
+
+.switchContainer.labelRight {
+  flex-direction: row;
+}
+
+/* --- Label Styles --- */
+.label {
+  /* Add typography and color tokens if label styles were defined */
+  /* Example:
+  font: var(--typography-body-medium-regular);
+  color: var(--color-text-primary);
+  */
+  cursor: pointer; /* Make label clickable */
+  user-select: none; /* Prevent text selection */
+  color: var(--color-text-primary);
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+}
+
+.switchContainer.disabled .label {
+  /* Example: color: var(--color-text-disabled); */
+  cursor: not-allowed;
+}
+
+/* --- Switch Root Styles --- */
+.switchRoot {
+  /* Base styles from Figma JSON layout */
+  position: relative;
+  border: none; /* Assuming no border unless specified */
+  padding: 0; /* Padding is internal for thumb positioning */
+  border-radius: 9999px; /* ছিল var(--radius-r-full), JSON থেকে কাঁচা মান ব্যবহার করা হচ্ছে (pill shape) */
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out;
+  flex-shrink: 0; /* Prevent shrinking in flex layouts */
+  outline: none; /* Remove default outline, handle focus with focus-visible */
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
+/* Default Size - From Figma JSON variants/layout */
+.sizeDefault {
+  width: 40px;
+  height: 24px;
+}
+
+/* Small Size - From Figma JSON variants/layout */
+.sizeSmall {
+  width: 28px;
+  height: 16px;
+}
+
+/* --- Switch Thumb Styles --- */
+.switchThumb {
+  /* Base thumb styles */
+  display: block;
+  background-color: var(--color-surface-toggle-ellipse); /* #ffffff - From Figma JSON variants/colors */
+  border-radius: 9999px; /* Pill shape */
+  transition: transform 150ms ease-in-out;
+  transform: translateX(var(--thumb-translate-x-unchecked)); /* Initial position */
+  will-change: transform; /* Optimize animation */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Small shadow for thumb */
+}
+
+/* Thumb Size & Position - Default */
+.sizeDefault {
+  --thumb-size: calc(24px - 2 * var(--spacing-sp-4)); /* height - 2 * padding = 24 - 2*4 = 16px */
+  --thumb-translate-x-unchecked: var(--spacing-sp-4); /* padding = 4px */
+  --thumb-translate-x-checked: calc(40px - var(--thumb-size) - var(--spacing-sp-4)); /* width - thumbSize - padding = 40 - 16 - 4 = 20px */
+}
+.sizeDefault .switchThumb {
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+}
+
+/* Thumb Size & Position - Small */
+.sizeSmall {
+  --thumb-size: calc(16px - 2 * var(--spacing-sp-2)); /* height - 2 * padding = 16 - 2*2 = 12px */
+  --thumb-translate-x-unchecked: var(--spacing-sp-2); /* padding = 2px */
+  --thumb-translate-x-checked: calc(28px - var(--thumb-size) - var(--spacing-sp-2)); /* width - thumbSize - padding = 28 - 12 - 2 = 14px */
+}
+.sizeSmall .switchThumb {
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+}
+
+/* --- State Styles --- */
+
+/* Unchecked State (Default) */
+.switchRoot[data-state='unchecked'] {
+  background-color: var(--color-surface-toggle-default); /* #bfc4c8 - From Figma JSON variants/colors */
+}
+.switchRoot[data-state='unchecked'] .switchThumb {
+  transform: translateX(var(--thumb-translate-x-unchecked));
+}
+
+/* Checked State */
+.switchRoot[data-state='checked'] {
+  background-color: var(--color-surface-toggle-active); /* #0b49ea - From Figma JSON variants/colors */
+}
+.switchRoot[data-state='checked'] .switchThumb {
+  transform: translateX(var(--thumb-translate-x-checked));
+}
+
+/* Focus State (using :focus-visible for accessibility) */
+.switchRoot:focus-visible {
+  box-shadow: 0 0 0 2px var(--brand-300), 0 0 0 4px var(--color-stroke-brand);
+}
+
+/* Disabled State */
+.switchRoot[data-disabled] {
+  background-color: var(--color-surface-toggle-disabled); /* #656c70 - From Figma JSON variants/colors */
+  cursor: not-allowed;
+}
+
+.switchRoot[data-disabled] .switchThumb {
+  opacity: 0.6;
+  /* No background color change needed for thumb in disabled state per JSON */
+}

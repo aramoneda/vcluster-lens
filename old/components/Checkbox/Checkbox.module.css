@@ -1,0 +1,219 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+.wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sp-12); /* Default gap from Figma structure */
+  cursor: default;
+}
+
+.wrapper.disabled {
+  cursor: not-allowed;
+}
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xxs); /* From Figma structure */
+  border-width: var(--border-width-200); /* From Figma structure */
+  border-style: solid;
+  background-color: transparent;
+  box-sizing: border-box; /* Ensure border/padding are included in width/height */
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
+  flex-shrink: 0; /* Prevent checkbox from shrinking */
+  padding: 0; /* Reset button padding */
+  font-size: 0; /* Prevent font-size from affecting button dimensions */
+  line-height: 0; /* Prevent line-height from affecting button dimensions */
+}
+
+/* Size Variants for Root */
+.wrapper.size-18 .root {
+  width: 18px;
+  height: 18px;
+}
+
+.wrapper.size-24 .root {
+  width: 24px;
+  height: 24px;
+}
+
+/* Unchecked State */
+.root[data-state='unchecked'] {
+  border-color: var(--color-stroke-controls-default); /* Figma: Size=18px, State=Unchecked -> checkbox_checkbox_stroke0 */
+}
+
+.root[data-state='unchecked']:hover:not([data-disabled]) {
+  border-color: var(--color-stroke-controls-hover); /* Figma: Size=18px, State=Hover -> checkbox_checkbox_stroke0 */
+}
+
+/* Checked State */
+.root[data-state='checked'] {
+  background-color: var(--color-surface-controls-selected); /* Figma: Size=18px, State=Checked -> checkbox_checkbox_checkbox_fill0 */
+  border-width: 0px; /* No border specified for checked state in Figma, only fill */
+}
+
+.root[data-state='checked']:hover:not([data-disabled]) {
+  background-color: var(--brand-600); /* Darken selected color on hover */
+}
+
+/* Indeterminate State */
+.root[data-state='indeterminate'] {
+  background-color: var(--color-surface-controls-selected); /* Figma: Size=18px, State=Some Checked -> checkbox_checkbox_checkbox_fill0 */
+  border-width: 0px; /* No border specified for indeterminate state in Figma, only fill */
+}
+
+.root[data-state='indeterminate']:hover:not([data-disabled]) {
+  background-color: var(--brand-600); /* Darken selected color on hover */
+}
+
+/* Focused State */
+.root:focus-visible {
+  outline: 2px solid var(--color-surface-focused); /* Standard focus ring */
+  outline-offset: 2px;
+}
+
+/* Disabled State */
+/* Default disabled (unchecked) */
+.root[data-disabled] {
+  background-color: var(--color-surface-controls-disabled); /* Figma: State=Disabled -> checkbox_checkbox_fill0 */
+  border-color: var(--color-stroke-controls-disabled); /* Figma: State=Disabled -> checkbox_checkbox_stroke0 */
+  cursor: not-allowed;
+}
+
+/* Checked & Disabled (Locked Checked) */
+.root[data-disabled][data-state='checked'] {
+  background-color: var(--color-surface-controls-locked); /* Figma: State=Locked Checked -> checkbox_checkbox_checkbox_fill0 */
+  border-width: 0px; /* No border specified for locked checked state in Figma, only fill */
+}
+
+/* Indeterminate & Disabled (Locked Some Checked) */
+.root[data-disabled][data-state='indeterminate'] {
+  background-color: var(--color-surface-controls-locked); /* Figma: State=Locked Some Checked -> checkbox_checkbox_checkbox_fill0 */
+  border-width: 0px; /* No border specified for locked indeterminate state in Figma, only fill */
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--neutral-50); /* Default icon color for active states */
+}
+
+/* --- Lucide Icon Styling --- */
+.icon {
+  display: none; /* Hide icons by default, show based on data-state */
+  /* Default Lucide icons have an internal stroke-width of 2 (viewBox units) */
+  /* We can override with CSS stroke-width if needed */
+}
+
+.checkIcon {
+  /* For Check, we usually want it to scale proportionally. */
+  /* Default stroke-width from Lucide is fine. */
+}
+
+.minusIcon {
+  stroke-width: 2px; /* Make the line 2px thick visually. */
+  /* The length of the line will be proportional to the icon's width. */
+}
+
+/* Show correct icon based on Radix's data-state on the root */
+.root[data-state='checked'] .checkIcon {
+  display: block;
+}
+.root[data-state='indeterminate'] .minusIcon {
+  display: block;
+}
+
+/* Icon sizes for 18px Checkbox */
+.wrapper.size-18 .checkIcon {
+  width: 12px;
+  height: 12px;
+}
+.wrapper.size-18 .minusIcon {
+  width: 8px;  /* Width of the dash from Figma */
+  height: 8px; /* Give the SVG container some height so the 2px stroke is visible */
+                /* The line inside will be centered and 2px thick. */
+}
+
+/* Icon sizes for 24px Checkbox */
+.wrapper.size-24 .checkIcon {
+  width: 16px;
+  height: 16px;
+}
+.wrapper.size-24 .minusIcon {
+  width: 12px; /* Width of the dash from Figma */
+  height: 12px;/* Give the SVG container some height */
+}
+
+/* Disabled state for indicator/icon color */
+/* Color is applied to the .indicator, and icons inherit via 'currentColor' */
+.root[data-disabled] .indicator { /* Targets both checked and indeterminate disabled states */
+  color: var(--color-text-controls-disabled);
+}
+
+
+/* Text Container */
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sp-2); /* Small gap between label and supporting text */
+}
+
+/* Label Styling */
+.label {
+  cursor: pointer; /* Make label clickable */
+}
+.wrapper.disabled .label {
+  cursor: not-allowed;
+  color: var(--color-text-controls-disabled); /* Figma: Size=18px, State=Disabled -> text_checkbox_label_checkbox_label_fill0 */
+}
+
+/* Supporting Text Styling */
+.supportingText {
+  color: var(--color-text-secondary); /* Figma: Size=18px, State=Unchecked -> text_supporting_text_supporting_text_fill0 */
+}
+.wrapper.disabled .supportingText {
+  /* Supporting text color for disabled state from Figma: --color-text-secondary.
+     If it should be muted further, this would need a different token or direct color.
+     For now, matching Figma's spec for disabled state's supporting text. */
+  color: var(--color-text-secondary);
+}
+
+/* Typography for Label - Size 18px */
+.wrapper.size-18 .label {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-primary); /* Figma: Size=18px, State=Unchecked -> text_checkbox_label_checkbox_label_fill0 */
+}
+
+/* Typography for Supporting Text - Size 18px */
+.wrapper.size-18 .supportingText {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+}
+
+/* Typography for Label - Size 24px */
+.wrapper.size-24 .label {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-large-size);
+  font-weight: var(--font-body-large-semibold-weight);
+  line-height: var(--font-body-large-line-height);
+  color: var(--color-text-primary); /* Figma: Size=24px, State=Unchecked -> text_checkbox_label_checkbox_label_fill0 */
+}
+
+/* Typography for Supporting Text - Size 24px */
+.wrapper.size-24 .supportingText {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-large-size);
+  font-weight: var(--font-body-large-regular-weight);
+  line-height: var(--font-body-large-line-height);
+}

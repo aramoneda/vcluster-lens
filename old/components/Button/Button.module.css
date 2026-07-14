@@ -1,0 +1,351 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Base Button Styles from Figma JSON layout */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* For focus ring and spinner positioning */
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out, color 0.2s ease-out, box-shadow 0.2s ease-out;
+  font-family: var(--font-family-brand); /* Default from typography */
+  border-radius: var(--radius-xs); /* from layout.cornerRadius */
+}
+
+.contentWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0; /* Let LabelContainer's padding define space next to icon */
+}
+
+.iconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.labelContainer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Apply padding from Figma's "Label Container" spec */
+  padding-left: var(--spacing-sp-4);
+  padding-right: var(--spacing-sp-4);
+}
+
+/* Size Variants from Figma JSON layout and typography */
+.defaultSize {
+  min-width: 72px; /* from layout.minWidth */
+  height: 36px; /* from layout.height */
+  padding-top: var(--spacing-sp-6); /* from layout.paddingTop */
+  padding-bottom: var(--spacing-sp-6); /* from layout.paddingBottom */
+  /* Main button padding */
+  padding-left: var(--spacing-sp-8);
+  padding-right: var(--spacing-sp-8);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+}
+
+.defaultSize .iconWrapper {
+  width: 24px;
+  height: 24px;
+  padding: var(--spacing-sp-2);
+  box-sizing: border-box;
+}
+.defaultSize .iconWrapper svg {
+  width: 20px;
+  height: 20px;
+}
+
+.smallSize {
+  min-width: 56px; /* from variants.layout.minWidth */
+  height: 24px; /* from variants.layout.height */
+  /* Main button padding for small size */
+  padding: var(--spacing-sp-4);
+  font-size: var(--font-body-small-size); 
+  font-weight: var(--font-body-small-semibold-weight);
+  line-height: var(--font-body-small-line-height);
+  letter-spacing: 0;
+}
+
+.smallSize .iconWrapper {
+  width: 16px;
+  height: 16px;
+  padding: var(--spacing-sp-2);
+  box-sizing: border-box;
+}
+.smallSize .iconWrapper svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Style Variants from Figma JSON variants.colors */
+
+/* --- Primary Style --- */
+.primary {
+  background-color: var(--color-surface-button-primary-default);
+  color: var(--color-text-button-primary-default);
+}
+.primary .iconWrapper svg {
+  fill: var(--color-text-button-primary-default);
+}
+.primary:hover:not([data-disabled]) {
+  background-color: var(--color-surface-button-primary-hover);
+  color: var(--color-text-button-primary-hover);
+}
+.primary:hover:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-primary-hover);
+}
+.primary:active:not([data-disabled]) {
+  background-color: var(--color-surface-button-primary-pressed);
+  color: var(--color-text-button-primary-pressed);
+}
+.primary:active:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-primary-pressed);
+}
+.primary:focus-visible:not([data-disabled]) {
+  background-color: var(--color-surface-button-primary-focused);
+  color: var(--color-text-button-primary-focused);
+  outline: 2px solid var(--denim-300); /* Example focus, replace with token if available */
+  outline-offset: 2px;
+}
+.primary:focus-visible:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-primary-focused);
+}
+.primary[data-disabled] {
+  background-color: var(--color-surface-button-primary-disabled);
+  color: var(--color-text-button-primary-disabled);
+  cursor: not-allowed;
+}
+.primary[data-disabled] .iconWrapper svg {
+  fill: var(--color-text-button-primary-disabled);
+}
+
+/* --- Secondary Style --- */
+.secondary {
+  background-color: var(--color-surface-button-secondary-default);
+  color: var(--color-text-button-secondary-default);
+  border: var(--border-width-100) solid var(--color-text-button-secondary-default); /* stroke0 */
+}
+.secondary .iconWrapper svg {
+  fill: var(--color-text-button-secondary-default);
+}
+.secondary:hover:not([data-disabled]) {
+  background-color: var(--color-surface-button-secondary-hover);
+  color: var(--color-text-button-secondary-hover);
+  border-color: var(--color-text-button-secondary-hover);
+}
+.secondary:hover:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-secondary-hover);
+}
+.secondary:active:not([data-disabled]) {
+  background-color: var(--color-surface-button-secondary-pressed);
+  color: var(--color-text-button-secondary-pressed);
+  border-color: var(--color-text-button-secondary-pressed);
+}
+.secondary:active:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-secondary-pressed);
+}
+.secondary:focus-visible:not([data-disabled]) {
+  background-color: var(--color-surface-button-secondary-focused);
+  color: var(--color-text-button-secondary-focused);
+  border-color: var(--color-text-button-secondary-focused);
+  outline: 2px solid var(--denim-300); /* Example focus */
+  outline-offset: 1px; /* Adjust offset for bordered buttons */
+}
+.secondary:focus-visible:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-secondary-focused);
+}
+.secondary[data-disabled] {
+  background-color: var(--color-surface-button-secondary-disabled);
+  color: var(--color-text-button-secondary-disabled);
+  border-color: var(--color-stroke-default); /* From Figma: style=secondary,_state=disabled,_size=default_stroke0 */
+  cursor: not-allowed;
+}
+.secondary[data-disabled] .iconWrapper svg {
+  fill: var(--color-text-button-secondary-disabled);
+}
+
+/* --- Tertiary Style --- */
+.tertiary {
+  background-color: var(--color-surface-button-tertiary-default);
+  color: var(--color-text-button-tertiary-default);
+}
+.tertiary .iconWrapper svg {
+  fill: var(--color-text-button-tertiary-default);
+}
+.tertiary:hover:not([data-disabled]) {
+  background-color: var(--color-surface-button-tertiary-hover);
+  color: var(--color-text-button-tertiary-hover);
+}
+.tertiary:hover:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-tertiary-hover);
+}
+.tertiary:active:not([data-disabled]) {
+  background-color: var(--color-surface-button-tertiary-pressed);
+  color: var(--color-text-button-tertiary-pressed);
+}
+.tertiary:active:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-tertiary-pressed);
+}
+.tertiary:focus-visible:not([data-disabled]) {
+  background-color: var(--color-surface-button-tertiary-focused);
+  color: var(--color-text-button-tertiary-focused);
+  outline: 2px solid var(--denim-300); 
+  outline-offset: 2px;
+}
+.tertiary:focus-visible:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-tertiary-focused);
+}
+.tertiary[data-disabled] {
+  background-color: var(--color-surface-button-tertiary-disabled);
+  color: var(--color-text-button-tertiary-disabled);
+  cursor: not-allowed;
+}
+.tertiary[data-disabled] .iconWrapper svg {
+  fill: var(--color-text-button-tertiary-disabled);
+}
+
+/* --- Error Style --- */
+.error {
+  background-color: var(--color-surface-button-error-default);
+  color: var(--color-text-button-error-default);
+}
+.error .iconWrapper svg {
+  fill: var(--color-text-button-error-default);
+}
+.error:hover:not([data-disabled]) {
+  background-color: var(--color-surface-button-error-hover);
+  color: var(--color-text-button-error-hover);
+}
+.error:hover:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-error-hover);
+}
+.error:active:not([data-disabled]) {
+  background-color: var(--color-surface-button-error-pressed);
+  color: var(--color-text-button-error-pressed);
+}
+.error:active:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-error-pressed);
+}
+.error:focus-visible:not([data-disabled]) {
+  background-color: var(--color-surface-button-error-focused);
+  color: var(--color-text-button-error-focused); /* Figma JSON uses 'pressed' color for focused text */
+  outline: 2px solid var(--denim-300); /* Example focus, replace with specific error focus token */
+  outline-offset: 2px;
+}
+.error:focus-visible:not([data-disabled]) .iconWrapper svg {
+  fill: var(--color-text-button-error-focused); /* Figma JSON uses 'pressed' color for focused text */
+}
+.error[data-disabled] {
+  background-color: var(--color-surface-button-error-disabled);
+  color: var(--color-text-button-error-disabled);
+  cursor: not-allowed;
+}
+.error[data-disabled] .iconWrapper svg {
+  fill: var(--color-text-button-error-disabled);
+}
+
+/* Loading State */
+/* The loading state should always reflect the default (non-hover, non-active) state of the button. */
+.primary.loading,
+.primary.loading:hover,
+.primary.loading:active,
+.primary.loading:focus-visible {
+  background-color: var(--color-surface-button-primary-default);
+  color: var(--color-text-button-primary-default);
+  outline: none;
+  box-shadow: none;
+}
+.primary.loading .iconWrapper svg {
+  fill: var(--color-text-button-primary-default);
+}
+
+.secondary.loading,
+.secondary.loading:hover,
+.secondary.loading:active,
+.secondary.loading:focus-visible {
+  background-color: var(--color-surface-button-secondary-default);
+  color: var(--color-text-button-secondary-default);
+  border-color: var(--color-text-button-secondary-default);
+  outline: none;
+  box-shadow: none;
+}
+.secondary.loading .iconWrapper svg {
+  fill: var(--color-text-button-secondary-default);
+}
+
+.tertiary.loading,
+.tertiary.loading:hover,
+.tertiary.loading:active,
+.tertiary.loading:focus-visible {
+  background-color: var(--color-surface-button-tertiary-default);
+  color: var(--color-text-button-tertiary-default);
+  outline: none;
+  box-shadow: none;
+}
+.tertiary.loading .iconWrapper svg {
+  fill: var(--color-text-button-tertiary-default);
+}
+
+.error.loading,
+.error.loading:hover,
+.error.loading:active,
+.error.loading:focus-visible {
+  background-color: var(--color-surface-button-error-default);
+  color: var(--color-text-button-error-default);
+  outline: none;
+  box-shadow: none;
+}
+.error.loading .iconWrapper svg {
+  fill: var(--color-text-button-error-default);
+}
+
+.loading {
+  cursor: wait;
+}
+
+/* New Loading Dots Animation */
+.loadingDots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: currentColor; /* Inherits color from the button's text color */
+  margin: 0 2px;
+  animation: flicker 1.4s infinite both;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes flicker {
+  0%, 80%, 100% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+}

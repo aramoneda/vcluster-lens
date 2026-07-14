@@ -1,0 +1,67 @@
+/* AG Grid CSS fixes to override Tailwind resets */
+
+.ag-theme-alpine {
+  /* Ensure the grid has proper dimensions */
+  box-sizing: border-box !important;
+}
+
+.ag-theme-alpine * {
+  box-sizing: border-box !important;
+}
+
+.ag-theme-alpine .ag-root-wrapper {
+  border: 1px solid var(--ag-border-color, #ddd) !important;
+  background-color: var(--ag-background-color, #fff) !important;
+}
+
+.ag-theme-alpine .ag-header {
+  background-color: var(--ag-header-background-color, #f8f9fa) !important;
+  border-bottom: 1px solid var(--ag-border-color, #ddd) !important;
+}
+
+.ag-theme-alpine .ag-header-cell {
+  background-color: var(--ag-header-background-color, #f8f9fa) !important;
+  color: var(--ag-header-foreground-color, #212529) !important;
+  border-right: 1px solid var(--ag-border-color, #ddd) !important;
+  padding: 8px 12px !important;
+  font-weight: 600 !important;
+}
+
+.ag-theme-alpine .ag-cell {
+  background-color: var(--ag-background-color, #fff) !important;
+  color: var(--ag-foreground-color, #212529) !important;
+  border-right: 1px solid var(--ag-border-color, #ddd) !important;
+  border-bottom: 1px solid var(--ag-border-color, #ddd) !important;
+  padding: 8px 12px !important;
+  line-height: 1.4 !important;
+}
+
+.ag-theme-alpine .ag-row {
+  background-color: var(--ag-background-color, #fff) !important;
+}
+
+.ag-theme-alpine .ag-row:hover {
+  background-color: var(--ag-row-hover-color, #f5f5f5) !important;
+}
+
+.ag-theme-alpine .ag-row-odd {
+  background-color: var(--ag-odd-row-background-color, #fff) !important;
+}
+
+/* Force visibility */
+.ag-theme-alpine .ag-header,
+.ag-theme-alpine .ag-body,
+.ag-theme-alpine .ag-root,
+.ag-theme-alpine .ag-root-wrapper {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure proper font rendering */
+.ag-theme-alpine {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+

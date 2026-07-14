@@ -1,0 +1,46 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+
+/* Base spinner styles */
+.spinner {
+  display: inline-block;
+  border-radius: 50%; /* Makes it a circle */
+  animation: spin 1s linear infinite;
+  border-style: solid;
+  /* Default border color (track) from Figma JSON: background_background_stroke0 */
+  border-color: var(--color-surface-progress-foreground);
+  /* Active segment color from Figma JSON: active_segment_active_segment_fill0 */
+  border-top-color: var(--color-surface-progress-active);
+}
+
+/* Size variants based on Figma JSON layout properties */
+/* Size: Large (64x64px) */
+.size-large {
+  width: 64px; /* From Figma JSON variants.layout.width for Size=Large */
+  height: 64px; /* From Figma JSON variants.layout.height for Size=Large */
+  border-width: 8px; /* Assumed reasonable thickness for large spinner */
+}
+
+/* Size: Medium (Default in Figma JSON, 32x32px) */
+.size-medium {
+  width: 32px; /* From Figma JSON variants.layout.width for Size=Default */
+  height: 32px; /* From Figma JSON variants.layout.height for Size=Default */
+  border-width: var(--border-width-400); /* Assumed reasonable thickness for medium spinner */
+}
+
+/* Size: Small (24x24px) */
+.size-small {
+  width: 24px; /* From Figma JSON variants.layout.width for Size=Small */
+  height: 24px; /* From Figma JSON variants.layout.height for Size=Small */
+  border-width: var(--border-width-200); /* Assumed reasonable thickness for small spinner */
+}
+
+/* Animation definition */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

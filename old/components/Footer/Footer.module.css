@@ -1,0 +1,66 @@
+@import "../../../globalTokens/figma-color-tokens.css";
+@import "../../../globalTokens/figma-numeric-tokens.css";
+@import "../../../globalTokens/figma-typography-tokens.css";
+
+/* Footer.module.css */
+/* Simplified to match Figma JSON specification */
+
+.root {
+  /* Background from Figma JSON */
+  background-color: var(--color-surface-background);
+  padding-top: var(--spacing-sp-8);
+  padding-bottom: var(--spacing-sp-8);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+
+  /* Viewport-based padding as specified */
+  padding-left: var(--spacing-sp-24);
+  padding-right: var(--spacing-sp-24);
+}
+
+/* Responsive padding for .container */
+@media (min-width: 1280px) {
+  .container {
+    padding-left: var(--spacing-sp-48);
+    padding-right: var(--spacing-sp-48);
+  }
+}
+
+/* Main layout matching Figma JSON specification */
+.layout {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  min-height: calc(var(--spacing-sp-32) + var(--spacing-sp-12)); /* Approx 44px */
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  /* Using text placeholder as specified */
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-large-size);
+  font-weight: var(--font-body-large-semibold-weight);
+  line-height: var(--font-body-large-line-height);
+  color: var(--color-text-secondary);
+}
+
+.copyrightText {
+  /* Typography from Figma JSON: Body/Large/SemiBold */
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-large-size);
+  font-weight: var(--font-body-large-semibold-weight);
+  line-height: var(--font-body-large-line-height);
+  color: var(--color-text-secondary);
+  margin: 0;
+  text-align: right;
+}
+

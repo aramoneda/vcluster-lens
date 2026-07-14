@@ -1,0 +1,35 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-skeleton",
+  "type": "registry:ui",
+  "title": "Skeleton",
+  "description": "A placeholder shimmer used while content is loading, providing visual continuity.",
+  "dependencies": [],
+  "categories": [
+    "feedback"
+  ],
+  "meta": {
+    "tags": [
+      "skeleton",
+      "loading",
+      "placeholder",
+      "progress"
+    ],
+    "examples": [
+      {
+        "title": "Loading placeholder",
+        "code": "import { Skeleton } from \"@/components/ui/skeleton\"\n\n<Skeleton className=\"h-4 w-40\" />"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/skeleton.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from 'react'\n\nimport { cn } from '@/lib/utils'\n\nfunction Skeleton({ className, ...props }: React.ComponentProps<'div'>) {\n  return (\n    <div\n      data-slot=\"skeleton\"\n      className={cn('bg-accent animate-pulse rounded-md', className)}\n      {...props}\n    />\n  )\n}\n\nexport { Skeleton }\n"
+    }
+  ]
+}

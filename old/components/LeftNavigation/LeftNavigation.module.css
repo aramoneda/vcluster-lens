@@ -1,0 +1,119 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* LeftNavigation Container */
+.leftNavigation {
+  display: flex;
+  flex-direction: column;
+  width: 317px;
+  padding: var(--spacing-sp-16) var(--spacing-sp-32);
+  background-color: var(--neutral-100, #f6f7f8); /* --surface-sidenav fallback */
+  box-sizing: border-box;
+}
+
+/* Minimised variant */
+.leftNavigation.minimised {
+  width: 104px;
+  padding: var(--spacing-sp-16);
+  align-items: center;
+}
+
+/* Item container */
+.itemContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sp-4);
+  width: 100%;
+}
+
+/* Nav Item base styles - Full mode (State=Default, Type=Full) */
+.navItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-8); /* itemSpacing from JSON */
+  padding: var(--spacing-sp-12); /* padding from JSON */
+  border-radius: var(--radius-xs); /* cornerRadius from JSON */
+  border: none;
+  background-color: transparent; /* --surface-sidenav-default #f6f7f8 - transparent to show parent bg */
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  height: 48px; /* Fixed height from JSON */
+  box-sizing: border-box;
+  transition: background-color 0.15s ease;
+}
+
+/* Nav Item typography - Full mode (14px/20px) */
+.navItem .navItemLabel {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--denim-900, #001f5a); /* --surface-sidenav-text-default fallback */
+}
+
+/* Nav Item icon styles */
+.navItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--denim-600, #0f3db5); /* --surface-sidenav-text-selected fallback */
+}
+
+.navItemIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Hover state (State=Hover) */
+.navItem:hover {
+  background-color: var(--neutral-100, #f6f7f8); /* --surface-sidenav-hover fallback */
+}
+
+/* Active state (State=Active) */
+.navItem.navItemActive {
+  background-color: var(--denim-100, #e7f1fc); /* --surface-sidenav-selected fallback */
+}
+
+.navItem.navItemActive .navItemLabel {
+  color: var(--denim-600, #0f3db5); /* --surface-sidenav-text-selected fallback */
+  font-weight: 600; /* Body/Medium/SemiBold for Full mode */
+}
+
+.navItem.navItemActive .navItemIcon {
+  color: var(--denim-600, #0f3db5); /* --surface-sidenav-text-selected fallback */
+}
+
+/* Active state for Minimised */
+.navItem.navItemMinimised.navItemActive .navItemLabel {
+  font-weight: 700; /* Bold for Minimised mode */
+}
+
+/* Minimised nav item styles (State=Default, Type=Minimised) */
+.navItem.navItemMinimised {
+  flex-direction: column;
+  gap: var(--spacing-sp-2); /* itemSpacing from JSON */
+  padding: 0; /* No padding in minimised */
+  align-items: center;
+  justify-content: center;
+  width: 72px; /* Fixed width from JSON */
+  height: 72px; /* Fixed height from JSON */
+}
+
+.navItem.navItemMinimised .navItemLabel {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 12px;
+  text-align: center;
+  max-width: 100%;
+}
+
+/* Focus styles */
+.navItem:focus-visible {
+  outline: 2px solid var(--color-stroke-brand);
+  outline-offset: 2px;
+}
+

@@ -1,0 +1,150 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Base Callout Styles */
+.callout {
+  display: flex;
+  align-items: flex-start; /* Align main container and dismiss button to the top */
+  padding: var(--spacing-sp-12);
+  border-radius: var(--radius-s);
+  border-style: solid;
+  border-width: var(--border-width-100);
+  position: relative; /* For absolute positioning of dismiss button if needed */
+  gap: var(--spacing-sp-12); /* Space between main container and dismiss button */
+}
+
+/* Icon Container and Icon Styles */
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Prevent icon from shrinking */
+  /* Vertically align icon with the first line of text if possible,
+     or ensure it's nicely aligned with the title/content block.
+     Using margin-top to roughly align with text. Adjust as needed. */
+  margin-top: var(--spacing-sp-2); /* Small adjustment for visual alignment */
+}
+
+.icon {
+  /* Default icon size, can be overridden by specific icon component */
+  width: 20px;
+  height: 20px;
+  /* Icon color will be inherited (currentColor) or set by variant */
+}
+
+/* Main Container - matches Figma's mainContainer structure */
+.mainContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sp-12); /* Default spacing between icon and text container */
+  flex-grow: 1; /* Allow main container to take available space */
+}
+
+/* Text Container - matches Figma's textContainer structure */
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sp-4); /* Space between title, description, and actions */
+  flex-grow: 1; /* Allow text content to take available space */
+}
+
+/* Title Styles */
+.title {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-primary); /* Default, overridden by variant */
+  margin: 0; /* Reset default heading margin */
+}
+
+/* Description Styles */
+.description {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-primary); /* Default, overridden by variant */
+}
+
+/* Dismiss Button Styles */
+.dismissButton {
+  /* Positioned to the top-right. IconButton itself has some padding. */
+  /* Adjust if IconButton's internal padding/sizing makes this awkward. */
+  margin-left: var(--spacing-sp-12); /* Space from content to button */
+  flex-shrink: 0;
+  /* Align with the icon container or top of the text slightly */
+  margin-top: calc(var(--spacing-sp-2) * -1); /* Align with top of text content */
+}
+
+/* Variant Styles */
+
+/* Info Variant */
+/* Figma: Type=Info */
+/* Background: type=info_fill0 (token: --brand-200, hex: #e7f1fc) */
+/* Border: type=info_stroke0 (token: --brand-300, hex: #bad1f5) */
+/* Text: maincontainer_textcontainer_title_of_notification_title_of_notification_fill0 (token: --color-text-primary) */
+.Info {
+  background-color: var(--brand-200);
+  border-color: var(--brand-300);
+  color: var(--color-text-primary); /* For text and icon via currentColor */
+}
+.Info .icon {
+  fill: var(--brand-500); /* Or a specific info icon color token if available */
+}
+/* For IconButton in Info variant, if it needs specific color */
+.Info .dismissButton {
+  /* Assuming IconButton's 'Black' color is suitable or a specific token is used */
+  /* Example: color: var(--brand-500); if IconButton supports it */
+}
+
+
+/* Success Variant */
+/* Figma: Type=Success */
+/* Background: type=success_fill0 (hex: #f8fbf8, tokenValidation: missing) */
+/* Border: type=success_stroke0 (hex: #c0d9c6, tokenValidation: missing) */
+/* Text: (token: --color-text-primary) */
+.Success {
+  background-color: #f8fbf8; /* From Figma JSON type=success_fill0 - no design token available */
+  border-color: #c0d9c6;   /* From Figma JSON type=success_stroke0 - no design token available */
+  color: var(--color-text-primary);
+}
+.Success .icon {
+  fill: var(--success-accent); /* Green-500 for success icon */
+}
+
+/* Warning Variant */
+/* Figma: Type=Warning */
+/* Background: type=warning_fill0 (hex: #fffdfc, tokenValidation: missing) */
+/* Border: type=warning_stroke0 (token: --orange-haze-200, hex: #ffc6ad) */
+/* Text: (token: --color-text-primary) */
+/* Note: Warning variant has different spacing - mainContainer uses --spacing-sp-8 instead of --spacing-sp-12 */
+.Warning {
+  background-color: #fffdfc; /* From Figma JSON type=warning_fill0 - no design token available */
+  border-color: var(--orange-haze-200);
+  color: var(--color-text-primary);
+}
+.Warning .mainContainer {
+  gap: var(--spacing-sp-8); /* Warning variant specific spacing from Figma JSON */
+}
+.Warning .icon {
+  fill: var(--warning-accent); /* Orange-500 for warning icon */
+}
+
+/* Critical Variant (Figma: Type=Critical) */
+/* Figma: Type=Critical */
+/* Background: type=critical_fill0 (hex: #fef6f7, tokenValidation: missing) */
+/* Border: type=critical_stroke0 (hex: #eccaca, tokenValidation: missing) */
+/* Text: (token: --color-text-primary) */
+.Critical {
+  background-color: #fef6f7; /* From Figma JSON type=critical_fill0 - no design token available */
+  border-color: #eccaca;   /* From Figma JSON type=critical_stroke0 - no design token available */
+  color: var(--color-text-primary);
+}
+.Critical .icon {
+  fill: var(--error-accent); /* Red-500 for critical/danger icon */
+}
+.actionsArea {
+  margin-top: var(--spacing-sp-8);
+}

@@ -1,0 +1,54 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Base styles for the BackFunction component, derived from Figma JSON layout and Link component references */
+.backFunction {
+  display: inline-flex; /* To align icon and label */
+  align-items: center;
+  gap: var(--spacing-sp-4); /* itemSpacing from Figma JSON boundVariables */
+  padding-left: var(--spacing-sp-4); /* paddingLeft from Figma JSON layout */
+  padding-right: var(--spacing-sp-4); /* paddingRight from Figma JSON layout */
+  text-decoration: none; /* Default for links, can be overridden by typography tokens */
+  cursor: pointer;
+  color: var(--color-text-link-default); /* Default link color */
+  font-family: var(--font-family-brand);
+  font-size: var(--font-utility-link-size);
+  font-weight: var(--font-utility-link-weight);
+  line-height: var(--font-utility-link-line-height);
+  letter-spacing: 0%; /* From Figma JSON typography */
+  text-decoration: underline; /* From Figma JSON typography */
+  transition: color 0.2s ease-in-out; /* Smooth transition for color changes */
+}
+
+/* Icon styles */
+.icon {
+  /* Icon color should inherit from parent .backFunction or be set by a specific token if needed */
+  /* Size is typically controlled by the Lucide icon component itself (e.g., default 24x24 or specified size prop) */
+  /* The Figma JSON specifies "Icons_16px/arrow-left", implying a 16px size. */
+  /* Lucide icons default to currentcolor for fill/stroke, so they will pick up the parent's text color. */
+  width: 16px; /* Directly from Figma "Icons_16px/arrow-left" */
+  height: 16px; /* Directly from Figma "Icons_16px/arrow-left" */
+  flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+/* Label styles */
+.label {
+  /* Typography is largely handled by the .backFunction root, but specific overrides can go here if needed */
+}
+
+/* Hover state - Derived from Figma JSON "State=Hover" which references Link component "State=Hover" */
+.backFunction:hover {
+  color: var(--color-text-link-hover); /* Hover link color */
+  text-decoration: underline; /* Ensure underline on hover as per typical link behavior */
+}
+
+/* Focus state - Derived from Figma JSON "State=Focused" which references Link component "State=Default" and a .Focus_Ring */
+/* We apply standard focus-visible styling. The .Focus_Ring component mentioned in Figma JSON */
+/* would typically be an absolutely positioned element or an outline managed by a global focus ring style. */
+/* For this CSS module, we'll ensure a basic visible focus state. */
+.backFunction:focus-visible {
+  outline: 2px solid var(--denim-300); /* Using token from Button.module.css */
+  outline-offset: 2px;
+  color: var(--color-text-link-default); /* Focused state uses default link color as per Figma JSON */
+}

@@ -1,0 +1,45 @@
+/* Import global tokens */
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Styles for the ButtonGroup container itself */
+.buttonGroupContainer {
+  display: inline-flex;
+  box-sizing: border-box;
+  /* border-radius from buttongroup.json properties.layout.cornerRadius.token */
+  border-radius: var(--radius-s);
+  /* padding from buttongroup.json properties.layout.padding.token */
+  /* This padding creates space around the items, allowing the container's background to act as a border/spacing */
+  padding: var(--spacing-sp-4);
+  /* background-color from buttongroup.json variants[*].colors.type=text..._fill0.token */
+  /* All specified sizes (S, M, L) for Type=Text use the same background color token */
+  background-color: var(--color-surface-button-group-background);
+  /* Gap is now applied via CSS classes below based on group size. */
+}
+
+/* Group size variants */
+/* Consistent padding and background for all group sizes. Gap is size-dependent. Height is determined by items. */
+.groupSizeS {
+  gap: var(--spacing-sp-4);
+}
+.groupSizeM {
+  gap: var(--spacing-sp-8);
+}
+.groupSizeL {
+  gap: var(--spacing-sp-8);
+}
+
+/* Styles for the disabled state of the group container */
+/* Radix UI applies data-disabled attribute to the root when disabled. */
+.buttonGroupContainer[data-disabled] {
+  /* e.g., opacity: 0.6; cursor: not-allowed; */
+  /* Individual items will also get data-disabled and should be styled in ButtonGroupItem.module.css */
+}
+
+/*
+  The ButtonGroup.module.css NO LONGER handles:
+  - Border radius of individual items (done by ButtonGroupItem.module.css)
+  - Margin collapse for shared borders (now using gap property)
+  - Hover/active/focus states of items (done by ButtonGroupItem.module.css using Radix data-state attributes)
+*/

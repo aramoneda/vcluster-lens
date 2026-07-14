@@ -1,0 +1,365 @@
+/* src/components/Input/Input.module.css */
+
+/* Import Global Tokens */
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* --- Wrapper --- */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sp-4);
+  width: 100%; /* Default to full width */
+}
+
+.wrapperLeft {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-12);
+}
+
+/* --- Label --- */
+/* Styles from figma-jsons/input-label.json */
+.label {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-secondary);
+  display: inline-flex; /* Use inline-flex to align items */
+  align-items: center;
+  gap: var(--spacing-sp-2);
+}
+
+.requiredIndicator {
+  color: var(--error-accent); /* Use error color for asterisk */
+  margin-left: var(--spacing-sp-2, 2px);
+  font-weight: var(--font-body-medium-semibold-weight); /* Make asterisk slightly bolder */
+}
+
+.infoIcon {
+  color: var(--color-text-secondary); /* Style based on figma-jsons/input-label.json info icon */
+  margin-left: var(--spacing-sp-2, 2px);
+  cursor: help; /* Indicate it provides info */
+  /* Add size/display properties if needed */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; /* Assuming 16px icon size */
+  height: 16px;
+}
+
+.labelWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sp-4, 4px); /* Gap between label and info icon/required indicator */
+  /* Adjust if the label itself should not grow/shrink: */
+  /* justify-content: space-between; */ /* If you want to push info icon to the far right of this wrapper */
+}
+
+.infoIconWrapper {
+  display: inline-flex; /* To keep icon and its potential required indicator together */
+  align-items: center;
+  gap: var(--spacing-sp-2, 2px); /* Gap between info icon and its required indicator */
+}
+
+/* New required indicators, original .requiredIndicator might be unused or for other contexts */
+.requiredIndicatorAfterLabel,
+.requiredIndicatorAfterLabelInfo {
+  color: var(--error-accent);
+  font-weight: var(--font-body-medium-semibold-weight);
+  /* No margin-left needed as 'gap' from parent flex container handles spacing */
+  line-height: var(--font-body-medium-line-height); /* Ensure consistent line height with label */
+}
+
+
+/* --- Input Container (for positioning icon) --- */
+.inputContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sp-12);
+  padding: 0 var(--spacing-sp-12);
+  border: var(--border-width-100) solid var(--color-stroke-default);
+  border-radius: var(--radius-xs);
+  background-color: var(--color-surface-input-default);
+  height: 36px;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.inputContainer[data-multiline='true'] {
+  height: auto;
+  min-height: 74px;
+}
+
+.inputContainer:hover {
+  border-color: var(--color-stroke-dark);
+}
+
+.inputContainer:focus-within {
+  border-color: var(--color-stroke-brand);
+  box-shadow: 0 0 0 1px var(--color-stroke-brand), 0 0 0 2px var(--denim-300);
+  outline: none;
+}
+
+.inputContainer.invalid {
+  border-color: var(--error-accent);
+}
+
+.inputContainer.invalid:focus-within {
+  border-color: var(--error-accent);
+  box-shadow: 0 0 0 1px var(--error-accent), 0 0 0 2px var(--error-accent);
+}
+
+.inputContainer.disabled {
+  background-color: var(--color-surface-input-disabled);
+  border-color: var(--color-stroke-default);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.inputContainer.readOnly {
+  background-color: var(--color-surface-input-default);
+  border-color: var(--color-stroke-default);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.inputContainer.readOnly:focus-within {
+  border-color: var(--color-stroke-default);
+  box-shadow: none;
+}
+
+/* --- Base Input/Textarea Styles --- */
+.input {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-primary);
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.input::placeholder {
+  color: var(--color-text-secondary);
+  /* Placeholder typography from figma-jsons/input.json (Default state) */
+  /* Revert placeholder weight to regular as per Figma spec */
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight); /* Reverted to regular */
+  line-height: var(--font-body-medium-line-height); /* Ensure line-height is explicitly set here too */
+  opacity: 1; /* Ensure placeholder is fully visible */
+}
+
+/* --- Variants --- */
+/* Secondary Variant */
+.secondary {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  position: relative;
+}
+
+.secondary::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--border-width-100);
+  background-color: var(--color-stroke-default);
+  transform-origin: bottom;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.secondary:focus-within::after {
+  background-color: var(--color-stroke-brand);
+  transform: scaleY(2);
+}
+
+/* --- Specific Input Type Styles --- */
+/* .inputField class might not be strictly necessary anymore if base .input has height */
+/* Keep it for potential future variations or clarity */
+.inputField {
+  /* Height is now set on base .input */
+}
+
+/* --- Specific Textarea Styles --- */
+.textarea {
+  height: auto;
+  min-height: 74px;
+  resize: none;
+  padding: var(--spacing-sp-8, 8px) 0;
+  line-height: var(--font-body-medium-line-height);
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.icon {
+  width: 16px; /* Standard icon size */
+  height: 16px;
+}
+
+.leftIcon {
+  order: -1;
+  color: var(--color-icon-dark);
+}
+
+.rightIcon {
+  order: 1;
+  color: var(--color-icon-brand);
+}
+
+.rightIconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; /* Match icon size */
+  height: 16px; /* Match icon size */
+}
+
+/* --- States --- */
+/* Hover State (from figma-jsons/input.json, State=Hover) */
+.input:not([data-disabled]):not([data-invalid]):hover {
+  border-color: var(--color-stroke-dark);
+}
+
+/* REMOVED: .input:not(:placeholder-shown) rule for font-weight */
+/* Font weight is now applied by default to .input */
+
+/* Focus State (from figma-jsons/input.json, State=Focused) */
+.input:not([data-disabled]):focus {
+  border-color: var(--color-stroke-brand);
+  border-width: var(--border-width-200); /* Use thicker border on focus */
+  /* Simulate focus ring - adjust as needed for accessibility */
+  box-shadow: 0 0 0 2px var(--denim-300), 0 0 0 2px var(--denim-300);
+  outline: none; /* Remove default outline */
+}
+/* Alternative focus-visible for better accessibility */
+.input:not([data-disabled]):focus-visible {
+  border-color: var(--color-stroke-brand);
+  border-width: var(--border-width-200); /* Use thicker border on focus */
+  box-shadow: 0 0 0 2px var(--brand-300), 0 0 0 4px var(--color-stroke-brand);
+  outline: none;
+}
+
+
+/* Disabled State (from figma-jsons/input.json, State=Disabled) */
+.input[data-disabled] {
+  background-color: var(--color-surface-input-disabled);
+  border-color: var(--color-stroke-default);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.input[data-disabled]::placeholder {
+  color: var(--color-text-secondary);
+}
+
+/* ReadOnly State (Locked) */
+/* Radix Form.Control adds data-readonly attribute */
+.input[data-readonly] {
+  background-color: var(--color-surface-input-disabled); /* Similar to disabled, but might differ based on Figma */
+  border-color: var(--color-stroke-default);
+  color: var(--color-text-secondary); /* Or a specific "read-only" text color */
+  cursor: default; /* Not not-allowed, as content is readable */
+  /* Potentially remove focus styles if readOnly inputs shouldn't appear focusable */
+}
+
+.input[data-readonly]:focus,
+.input[data-readonly]:focus-visible {
+  border-color: var(--color-stroke-default); /* Keep border same as non-focused readOnly */
+  box-shadow: none; /* No focus ring for readOnly */
+  outline: none;
+}
+
+
+/* Error/Invalid State (from figma-jsons/input.json, State=Error) */
+/* Radix Form.Control adds data-invalid attribute */
+.input[data-invalid] {
+  border-color: var(--error-accent);
+  color: var(--color-text-primary); /* Text color might remain primary in error state */
+}
+
+.input[data-invalid]:focus,
+.input[data-invalid]:focus-visible {
+   border-color: var(--error-accent); /* Keep error border on focus */
+   border-width: var(--border-width-200); /* Use thicker border on focus */
+   /* Adjust focus ring for error state if needed */
+   box-shadow: 0 0 0 2px var(--error-accent), 0 0 0 2px var(--error-accent); /* Example error focus ring */
+   outline: none;
+}
+
+/* --- Feedback Message --- */
+/* Styles from figma-jsons/input-feedback.json */
+.feedback {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size); /* Assuming same size as label/input */
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-secondary); /* Default feedback color */
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sp-4, 4px);
+  padding-top: var(--spacing-sp-2, 2px); /* Small gap above feedback */
+}
+
+/* Error Feedback State */
+.feedbackError {
+  color: var(--color-state-error-accent); /* Error feedback color from input-feedback.json */
+}
+
+/* Typed Feedback States */
+.feedback.error { /* Matches data-feedback-type="error" */
+  color: var(--color-state-error-accent);
+}
+.feedback.success { /* Matches data-feedback-type="success" */
+  color: var(--color-state-success-accent); /* Assuming a success token exists */
+}
+.feedback.warning { /* Matches data-feedback-type="warning" */
+  color: var(--color-state-warning-accent); /* Assuming a warning token exists */
+}
+.feedback.info { /* Matches data-feedback-type="info" */
+  color: var(--color-text-secondary); /* Default/info feedback color */
+}
+
+
+.feedbackIcon {
+  /* Basic placeholder for feedback icon */
+  color: inherit; /* Inherit color from parent (.feedback or .feedbackError) */
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Prevent icon from shrinking */
+  /* Add specific icon styles if needed */
+}
+
+.pointer {
+  cursor: pointer;
+}

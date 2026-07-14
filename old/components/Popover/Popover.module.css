@@ -1,0 +1,89 @@
+/* Import global design tokens */
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/*
+  Base styles for the Popover Content
+  Targets RadixPopover.Content via the className applied in Popover.tsx
+*/
+.content {
+  /* From Figma JSON: variants.Size=M.colors.size=m_fill0.token (applies to all sizes) */
+  background-color: var(--color-surface-foreground);
+  /* From Figma JSON: layout.cornerRadius.token (applies to all sizes) */
+  border-radius: var(--radius-s);
+  /* Standard popover behavior: ensure it's above other content */
+  z-index: 200; /* Ensure it's above header (z-index: 100) and other content */
+  /*
+    No explicit shadow defined in the provided figma-jsons/popover.json for the content itself.
+    Adding a common, subtle placeholder shadow.
+    If specific shadow values are required, they should be added to the Figma JSON or provided.
+    Example: box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1), 0px 0px 2px rgba(0, 0, 0, 0.06);
+  */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1), 0px 0px 2px rgba(0, 0, 0, 0.06); /* Updated from Figma reference comment */
+
+  /*
+    No explicit border defined in the provided figma-jsons/popover.json.
+    If a border is required, it should be added to the Figma JSON and corresponding tokens used.
+    Example: border: 1px solid var(--color-border-neutral);
+  */
+
+  /* Add some default animation for open/close, Radix handles states */
+  animation-duration: 200ms;
+  animation-timing-function: ease-out;
+}
+
+/* Styling for Radix data states on the content */
+.content[data-state='open'] {
+  /* Example: could add specific open animation if needed, Radix handles visibility */
+  /* animation-name: fadeIn; */
+}
+
+.content[data-state='closed'] {
+  /* Example: could add specific close animation if needed, Radix handles visibility */
+  /* animation-name: fadeOut; */
+}
+
+/*
+  Size-specific styles for Popover Content
+  These classes are applied in Popover.tsx based on the 'size' prop.
+*/
+
+/* Size M */
+.contentM {
+  /* From Figma JSON: variants[Size=M].layout.padding.token */
+  padding: var(--spacing-sp-24);
+  /*
+    Figma JSON specifies width/height for variants (e.g., Size=M width: 426, height: 106).
+    For a generic popover content area, fixed dimensions are often too restrictive.
+    We use padding as specified, and content will determine dimensions.
+    If max-width/max-height are desired, they can be added here or via props.
+  */
+}
+
+/* Size S */
+.contentS {
+  /* From Figma JSON: variants[Size=S].layout.padding.token */
+  padding: var(--spacing-sp-16);
+}
+
+/* Size XS */
+.contentXS {
+  /* From Figma JSON: variants[Size=XS].layout.padding.token */
+  padding: var(--spacing-sp-12);
+}
+
+/* Arrow styles removed as Popover.Arrow is no longer exported or used. */
+
+/* Example keyframes for animations (optional, Radix handles show/hide) */
+/*
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.95); }
+}
+*/

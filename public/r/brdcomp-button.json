@@ -1,0 +1,43 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-button",
+  "type": "registry:ui",
+  "title": "Button",
+  "description": "An interactive control for actions and form submissions. Variants: default (primary), outline (secondary), secondary (tertiary), destructive (error). Sizes: sm, default, lg, icon, icon-sm, icon-lg. For labeled buttons with icons, compose the icon and text as children. Use IconButton for icon-only actions. Ghost and link are deprecated.",
+  "dependencies": [
+    "@radix-ui/react-slot",
+    "class-variance-authority"
+  ],
+  "categories": [
+    "forms",
+    "actions"
+  ],
+  "meta": {
+    "tags": [
+      "button",
+      "action",
+      "cta",
+      "form"
+    ],
+    "examples": [
+      {
+        "title": "Primary action",
+        "code": "import { Button } from \"@/components/ui/button\"\n\n<Button>Save changes</Button>"
+      },
+      {
+        "title": "Button with leading icon",
+        "code": "import { Download } from \"lucide-react\"\nimport { Button } from \"@/components/ui/button\"\n\n<Button variant=\"outline\">\n  <Download className=\"size-4\" />\n  Export\n</Button>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/button.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport { Slot } from \"@radix-ui/react-slot\"\nimport { cva, type VariantProps } from \"class-variance-authority\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst buttonVariants = cva(\n  \"inline-flex flex-row flex-nowrap items-center justify-center gap-1 whitespace-nowrap rounded-[var(--radius-xs)] font-semibold transition-all disabled:pointer-events-none disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:shrink-0 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--denim-300)]\",\n  {\n    variants: {\n      variant: {\n        // Primary (default) - solid blue button\n        default:\n          \"bg-[var(--color-surface-button-primary-default)] text-[var(--color-text-button-primary-default)] hover:bg-[var(--color-surface-button-primary-hover)] active:bg-[var(--color-surface-button-primary-pressed)] focus-visible:bg-[var(--color-surface-button-primary-focused)] disabled:bg-[var(--color-surface-button-primary-disabled)] disabled:text-[var(--color-text-button-primary-disabled)]\",\n        // Destructive/Error - solid red button\n        destructive:\n          \"bg-[var(--color-surface-button-error-default)] text-[var(--color-text-button-error-default)] hover:bg-[var(--color-surface-button-error-hover)] active:bg-[var(--color-surface-button-error-pressed)] focus-visible:bg-[var(--color-surface-button-error-focused)] disabled:bg-[var(--color-surface-button-error-disabled)] disabled:text-[var(--color-text-button-error-disabled)]\",\n        // Outline/Secondary - bordered button\n        outline:\n          \"bg-[var(--color-surface-button-secondary-default)] text-[var(--color-text-button-secondary-default)] border border-[var(--color-stroke-button-secondary-default)] hover:bg-[var(--color-surface-button-secondary-hover)] hover:text-[var(--color-text-button-secondary-hover)] hover:border-[var(--color-stroke-button-secondary-hover)] active:bg-[var(--color-surface-button-secondary-pressed)] active:text-[var(--color-text-button-secondary-pressed)] active:border-[var(--color-stroke-button-secondary-pressed)] focus-visible:bg-[var(--color-surface-button-secondary-focused)] disabled:bg-[var(--color-surface-button-secondary-disabled)] disabled:text-[var(--color-text-button-secondary-disabled)] disabled:border-[var(--color-stroke-default)]\",\n        // Secondary/Tertiary - light blue background\n        secondary:\n          \"bg-[var(--color-surface-button-tertiary-default)] text-[var(--color-text-button-tertiary-default)] hover:bg-[var(--color-surface-button-tertiary-hover)] active:bg-[var(--color-surface-button-tertiary-pressed)] focus-visible:bg-[var(--color-surface-button-tertiary-focused)] disabled:bg-[var(--color-surface-button-tertiary-disabled)] disabled:text-[var(--color-text-button-tertiary-disabled)]\",\n        // Ghost - deprecated, kept for backward compatibility\n        ghost:\n          \"hover:bg-accent hover:text-accent-foreground\",\n        // Link - deprecated, use Link component instead\n        link: \"text-primary underline-offset-4 hover:underline\",\n      },\n      size: {\n        default: \"min-w-[72px] h-9 px-2 py-1.5 text-sm [&_svg]:size-5\",\n        sm: \"min-w-[56px] h-6 px-1 py-1 text-xs [&_svg]:size-3\",\n        lg: \"min-w-[88px] h-10 px-3 py-2 text-base [&_svg]:size-6\",\n        icon: \"size-9 p-2\",\n        \"icon-sm\": \"size-6 p-1\",\n        \"icon-lg\": \"size-10 p-2\",\n      },\n    },\n    defaultVariants: {\n      variant: \"default\",\n      size: \"default\",\n    },\n  }\n)\n\nexport interface ButtonProps\n  extends React.ComponentProps<\"button\">,\n    VariantProps<typeof buttonVariants> {\n  asChild?: boolean\n  isLoading?: boolean\n  /** @deprecated Prefer placing the icon directly inside the button before the label. Use IconButton for icon-only actions. */\n  icon?: React.ReactNode\n}\n\nconst Button = React.forwardRef<HTMLButtonElement, ButtonProps>(\n  (\n    {\n      className,\n      variant,\n      size,\n      asChild = false,\n      isLoading = false,\n      icon,\n      children,\n      disabled,\n      ...props\n    },\n    ref\n  ) => {\n    const localRef = React.useRef<HTMLButtonElement | null>(null)\n    const composedRef = React.useCallback(\n      (node: HTMLButtonElement | null) => {\n        localRef.current = node\n        if (typeof ref === \"function\") {\n          ref(node)\n        } else if (ref) {\n          ;(ref as React.MutableRefObject<HTMLButtonElement | null>).current = node\n        }\n      },\n      [ref]\n    )\n    const Comp = asChild ? Slot : \"button\"\n\n    // Loading dots component\n    const LoadingDots = () => (\n      <span className=\"flex items-center justify-center gap-0.5\">\n        <span className=\"size-1 rounded-full bg-current animate-[flicker_1.4s_infinite_both]\" />\n        <span className=\"size-1 rounded-full bg-current animate-[flicker_1.4s_0.2s_infinite_both]\" />\n        <span className=\"size-1 rounded-full bg-current animate-[flicker_1.4s_0.4s_infinite_both]\" />\n      </span>\n    )\n\n    if (asChild) {\n      return (\n        <Comp\n          ref={composedRef}\n          data-slot=\"button\"\n          className={cn(buttonVariants({ variant, size }), className)}\n          disabled={disabled || isLoading}\n          data-loading={isLoading ? \"\" : undefined}\n          {...props}\n        >\n          {children}\n        </Comp>\n      )\n    }\n\n    return (\n      <Comp\n        ref={composedRef}\n        data-slot=\"button\"\n        className={cn(\n          buttonVariants({ variant, size }),\n          isLoading && \"cursor-wait\",\n          className\n        )}\n        disabled={disabled || isLoading}\n        data-loading={isLoading ? \"\" : undefined}\n        {...props}\n      >\n        {isLoading ? (\n          <LoadingDots />\n        ) : (\n          <span className=\"inline-flex flex-row flex-nowrap items-center gap-1\">\n            {icon && <span className=\"inline-flex items-center justify-center shrink-0\">{icon}</span>}\n            {children && <span className=\"px-1\">{children}</span>}\n          </span>\n        )}\n      </Comp>\n    )\n  }\n)\n\nButton.displayName = \"Button\"\n\nexport { Button, buttonVariants }\n"
+    }
+  ]
+}

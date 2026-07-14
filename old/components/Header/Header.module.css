@@ -1,0 +1,423 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Header Container */
+.header {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #f6f7f8; /* --surface-navmain fallback */
+  box-sizing: border-box;
+}
+
+/* Primary Row */
+.primaryRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 72px;
+  padding: var(--spacing-sp-12) var(--spacing-sp-24);
+  box-sizing: border-box;
+}
+
+/* Secondary Row - Mobile only */
+.secondaryRow {
+  display: none; /* Hidden by default, shown at <480px */
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--spacing-sp-24);
+  box-sizing: border-box;
+  border-top: 1px solid var(--color-stroke-light);
+}
+
+/* Left Container */
+.leftContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-16);
+  min-width: 0; /* Allow shrinking below content size */
+  flex-shrink: 1; /* Allow shrinking */
+}
+
+/* Logo Container */
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 20px;
+  width: auto;
+}
+
+/* Divider */
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: #9ea4a8; /* --neutral-550 fallback */
+}
+
+/* InView Wrapper */
+.inViewWrapper {
+  display: flex;
+  align-items: center;
+  min-width: 0; /* Allow shrinking */
+  overflow: hidden;
+  flex-shrink: 1; /* Allow shrinking but don't expand */
+}
+
+/* InView in Header - for responsive truncation */
+.headerInView {
+  min-width: 0; /* Allow shrinking */
+  max-width: 100%;
+}
+
+/* Target the trigger inside headerInView for truncation */
+.headerInView :global(.trigger) {
+  max-width: 100%;
+}
+
+.headerInView :global(.triggerInfoContainer) {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.headerInView :global(.triggerLabel) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Currency Dropdown - Tertiary/Borderless Style */
+.currencyDropdown {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-4);
+  padding: var(--spacing-sp-8) var(--spacing-sp-12);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-xs);
+  transition: background-color 0.2s ease-out;
+}
+
+.currencyDropdown:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Compact Dropdown Content - 60% smaller width for currency/language selectors */
+.compactDropdownContent {
+  min-width: 100px; /* Reduced from 256px by ~60% */
+}
+
+/* Right Container */
+.rightContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-12); /* sp-12 for <1280 when search icon is shown */
+}
+
+/* Right Actions Group - Language, Notification, User Menu with sp-12 gap */
+.rightActionsGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-12);
+}
+
+/* Search Input Wrapper */
+.searchInputWrapper {
+  width: 280px;
+}
+
+.searchInput {
+  width: 100%;
+}
+
+/* Search Icon Button */
+.searchIcon {
+  /* Visibility controlled by media queries */
+}
+
+/* Language Dropdown - Tertiary/Borderless Style */
+.languageDropdown {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-4);
+  padding: var(--spacing-sp-8) var(--spacing-sp-12);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-xs);
+  transition: background-color 0.2s ease-out;
+}
+
+.languageDropdown:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Notification Wrapper */
+.notificationWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background-color: var(--color-state-error-light);
+  color: white;
+  font-family: var(--font-family-brand);
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* User Dropdown - Full Name (aligned with usermenu.json) */
+.userDropdownFull {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-4);
+  padding: var(--spacing-sp-6);
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: background-color 0.2s ease-out;
+  box-sizing: border-box;
+}
+
+.userDropdownFull:hover {
+  background-color: var(--color-navigation-hover);
+}
+
+/* Selected state when dropdown is open (per usermenu.json) */
+.userDropdownFull[data-state='open'],
+.userDropdownInitials[data-state='open'] {
+  background-color: var(--color-navigation-selected);
+}
+
+.userName {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-navigation-active);
+}
+
+/* Chevron icon in user dropdown */
+.userDropdownFull svg,
+.userDropdownInitials svg {
+  color: var(--color-navigation-active);
+}
+
+/* User Menu Dropdown Content */
+.userMenuContent {
+  min-width: 160px;
+}
+
+/* User Menu Dropdown Content - Mobile with ButtonGroups */
+.userMenuContentMobile {
+  min-width: 180px;
+}
+
+/* ButtonGroup wrapper in mobile menu */
+.mobileMenuButtonGroup {
+  padding: var(--spacing-sp-8) var(--spacing-sp-12);
+}
+
+/* Menu Button - Uses Button component with tertiary style */
+.menuButton {
+  /* Minimal overrides - Button component handles tertiary styling */
+}
+
+/* Navigation Menu Content */
+.navigationMenuContent {
+  min-width: 200px;
+}
+
+/* Mobile InView Selector */
+.mobileInViewSelector {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-8);
+  padding: var(--spacing-sp-8) var(--spacing-sp-12);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-xs);
+  transition: background-color 0.2s ease-out;
+  max-width: 50%;
+}
+
+.mobileInViewSelector:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.mobileInViewSelector span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobileInViewSelector svg {
+  color: var(--color-icon-brand);
+  flex-shrink: 0;
+}
+
+/* User Dropdown - Initials */
+.userDropdownInitials {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sp-4);
+  padding: var(--spacing-sp-6);
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: background-color 0.2s ease-out;
+  box-sizing: border-box;
+}
+
+.userDropdownInitials:hover {
+  background-color: var(--color-navigation-hover);
+}
+
+/* User Initials text styling (no badge on minimised version) */
+.userInitials {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  color: var(--color-navigation-active);
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   Based on Figma: 320, 480, 720, 968, 1280, 1920
+   ============================================ */
+
+/* Default (Mobile first - 320px+) - Figma 480 variant */
+/* Hide elements that shouldn't appear on smallest screens */
+.divider,
+.inViewWrapper,
+.currencyDropdown,
+.searchInputWrapper,
+.languageDropdown,
+.userDropdownFull {
+  display: none;
+}
+
+/* Show mobile elements */
+.searchIcon,
+.userDropdownInitials {
+  display: flex;
+}
+
+/* Show secondary row on smallest screens (<480px) */
+.secondaryRow {
+  display: flex;
+}
+
+/* Hide badge in InView on small screens (<720px) */
+.headerInView :global([class*="badge"]) {
+  display: none;
+}
+
+/* 480px+ - Figma 720 variant */
+@media (min-width: 480px) {
+  /* Hide secondary row */
+  .secondaryRow {
+    display: none;
+  }
+
+  .divider {
+    display: block;
+  }
+
+  .inViewWrapper {
+    display: flex;
+  }
+}
+
+/* 720px+ - Figma 968 variant */
+@media (min-width: 720px) {
+  /* Show the badge in InView (hidden at <720px) */
+  .headerInView :global([class*="badge"]) {
+    display: inline-flex;
+  }
+}
+
+/* 968px+ - Figma 1280 variant */
+@media (min-width: 968px) {
+  /* Show currency dropdown */
+  .currencyDropdown {
+    display: flex;
+  }
+
+  /* Show language dropdown */
+  .languageDropdown {
+    display: flex;
+  }
+
+  /* Show full user name, hide initials */
+  .userDropdownFull {
+    display: flex;
+  }
+
+  .userDropdownInitials {
+    display: none;
+  }
+}
+
+/* 1280px+ - Figma 1920 variant */
+@media (min-width: 1280px) {
+  /* At 1280+, change rightContainer gap to sp-32 since search input is visible */
+  .rightContainer {
+    gap: var(--spacing-sp-32);
+  }
+
+  /* Show search input, hide search icon */
+  .searchInputWrapper {
+    display: block;
+  }
+
+  .searchIcon {
+    display: none;
+  }
+}
+

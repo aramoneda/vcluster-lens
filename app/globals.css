@@ -1,0 +1,1094 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  color-scheme: light;
+
+  /* ===========================================
+     FIGMA DESIGN TOKENS - Primitives (oklch)
+     =========================================== */
+
+  /* Blue Palette */
+  --blue-50: oklch(0.99 0.01 264);
+  --blue-100: oklch(0.98 0.01 264);
+  --blue-150: oklch(0.95 0.03 254);
+  --blue-200: oklch(0.91 0.05 254);
+  --blue-250: oklch(0.85 0.07 254);
+  --blue-300: oklch(0.79 0.10 254);
+  --blue-350: oklch(0.71 0.14 254);
+  --blue-400: oklch(0.62 0.17 254);
+  --blue-450: oklch(0.53 0.20 264);
+  --blue-500: oklch(0.45 0.21 264);
+  --blue-550: oklch(0.40 0.16 264);
+  --blue-600: oklch(0.35 0.14 264);
+  --blue-650: oklch(0.30 0.12 264);
+  --blue-700: oklch(0.28 0.11 264);
+  --blue-750: oklch(0.24 0.09 264);
+  --blue-800: oklch(0.20 0.08 264);
+  --blue-850: oklch(0.15 0.06 264);
+
+  /* Grey Palette */
+  --grey-50: oklch(1.00 0 0);
+  --grey-100: oklch(0.98 0.00 264);
+  --grey-150: oklch(0.97 0.00 264);
+  --grey-200: oklch(0.96 0.00 264);
+  --grey-250: oklch(0.94 0.01 250);
+  --grey-300: oklch(0.91 0.01 250);
+  --grey-350: oklch(0.88 0.01 250);
+  --grey-400: oklch(0.85 0.01 250);
+  --grey-450: oklch(0.81 0.01 250);
+  --grey-500: oklch(0.77 0.01 250);
+  --grey-550: oklch(0.72 0.01 250);
+  --grey-600: oklch(0.65 0.01 250);
+  --grey-650: oklch(0.61 0.01 250);
+  --grey-700: oklch(0.57 0.01 250);
+  --grey-750: oklch(0.52 0.01 250);
+  --grey-800: oklch(0.48 0.01 250);
+  --grey-850: oklch(0.43 0.01 250);
+  --grey-900: oklch(0.38 0.01 250);
+  --grey-950: oklch(0.32 0.01 250);
+  --grey-1000: oklch(0.27 0.01 250);
+  --grey-1050: oklch(0.23 0.01 250);
+  --grey-1100: oklch(0.18 0.01 250);
+
+  /* Green Palette */
+  --green-50: oklch(0.98 0.01 145);
+  --green-100: oklch(0.96 0.02 145);
+  --green-200: oklch(0.89 0.05 150);
+  --green-300: oklch(0.77 0.10 150);
+  --green-400: oklch(0.67 0.13 150);
+  --green-500: oklch(0.54 0.13 150);
+  --green-600: oklch(0.47 0.11 150);
+  --green-700: oklch(0.40 0.09 150);
+  --green-800: oklch(0.33 0.07 150);
+  --green-900: oklch(0.27 0.05 150);
+
+  /* Red Palette */
+  --red-50: oklch(0.98 0.01 25);
+  --red-100: oklch(0.95 0.03 25);
+  --red-200: oklch(0.86 0.08 20);
+  --red-300: oklch(0.70 0.15 20);
+  --red-400: oklch(0.60 0.19 22);
+  --red-500: oklch(0.50 0.19 25);
+  --red-600: oklch(0.43 0.16 25);
+  --red-700: oklch(0.36 0.13 25);
+  --red-800: oklch(0.29 0.10 25);
+  --red-900: oklch(0.22 0.07 25);
+
+  /* Orange Palette */
+  --orange-50: oklch(0.99 0.01 60);
+  --orange-100: oklch(0.95 0.04 60);
+  --orange-200: oklch(0.87 0.10 60);
+  --orange-300: oklch(0.77 0.15 55);
+  --orange-400: oklch(0.70 0.17 50);
+  --orange-500: oklch(0.65 0.18 50);
+  --orange-600: oklch(0.55 0.15 50);
+  --orange-700: oklch(0.45 0.12 50);
+  --orange-800: oklch(0.36 0.09 50);
+  --orange-900: oklch(0.27 0.06 50);
+
+  /* Denim Palette */
+  --denim-100: oklch(0.92 0.05 254);
+  --denim-200: oklch(0.81 0.08 254);
+  --denim-300: oklch(0.70 0.11 254);
+  --denim-400: oklch(0.59 0.14 254);
+  --denim-500: oklch(0.46 0.15 254);
+  --denim-600: oklch(0.38 0.12 254);
+  --denim-700: oklch(0.31 0.09 254);
+  --denim-800: oklch(0.21 0.06 254);
+  --denim-900: oklch(0.16 0.04 254);
+
+  /* Azure Palette */
+  --azure-100: oklch(0.94 0.04 230);
+  --azure-200: oklch(0.87 0.08 230);
+  --azure-300: oklch(0.80 0.11 230);
+  --azure-400: oklch(0.74 0.13 230);
+  --azure-500: oklch(0.67 0.15 230);
+  --azure-600: oklch(0.54 0.12 230);
+  --azure-700: oklch(0.43 0.09 230);
+  --azure-800: oklch(0.28 0.06 230);
+  --azure-900: oklch(0.21 0.04 230);
+
+  /* Green Haze Palette */
+  --green-haze-100: oklch(0.95 0.05 165);
+  --green-haze-200: oklch(0.90 0.09 165);
+  --green-haze-300: oklch(0.84 0.12 165);
+  --green-haze-400: oklch(0.79 0.14 165);
+  --green-haze-500: oklch(0.73 0.16 165);
+  --green-haze-600: oklch(0.59 0.12 165);
+  --green-haze-700: oklch(0.47 0.09 165);
+  --green-haze-800: oklch(0.31 0.06 165);
+  --green-haze-900: oklch(0.23 0.04 165);
+
+  /* Orange Haze Palette */
+  --orange-haze-100: oklch(0.94 0.05 45);
+  --orange-haze-200: oklch(0.87 0.10 45);
+  --orange-haze-300: oklch(0.79 0.14 45);
+  --orange-haze-400: oklch(0.71 0.17 40);
+  --orange-haze-500: oklch(0.63 0.20 35);
+  --orange-haze-600: oklch(0.52 0.15 35);
+  --orange-haze-700: oklch(0.42 0.11 35);
+  --orange-haze-800: oklch(0.29 0.07 35);
+  --orange-haze-900: oklch(0.22 0.05 35);
+
+  /* Chetwode Palette (Purple/Violet) */
+  --chetwode-100: oklch(0.93 0.04 290);
+  --chetwode-200: oklch(0.85 0.07 290);
+  --chetwode-300: oklch(0.76 0.10 290);
+  --chetwode-400: oklch(0.67 0.12 290);
+  --chetwode-500: oklch(0.55 0.14 290);
+  --chetwode-600: oklch(0.44 0.11 290);
+  --chetwode-700: oklch(0.35 0.08 290);
+  --chetwode-800: oklch(0.23 0.05 290);
+  --chetwode-900: oklch(0.17 0.04 290);
+
+  /* ===========================================
+     FIGMA COMPONENT TOKENS (flattened oklch)
+     =========================================== */
+
+  /* Text - Button Primary (hex for v0 compatibility) */
+  --color-text-button-primary-default: #ffffff;
+  --color-text-button-primary-hover: #ffffff;
+  --color-text-button-primary-pressed: #ffffff;
+  --color-text-button-primary-focused: #ffffff;
+  --color-text-button-primary-disabled: #b8bdc2;
+
+  /* Text - Button Secondary (hex for v0 compatibility) */
+  --color-text-button-secondary-default: #6d757c;
+  --color-text-button-secondary-hover: #7c848b;
+  --color-text-button-secondary-pressed: #2a3036;
+  --color-text-button-secondary-focused: #4d555c;
+  --color-text-button-secondary-disabled: #909aa1;
+
+  /* Text - Button Tertiary (hex for v0 compatibility) */
+  --color-text-button-tertiary-default: #0b49ea;
+  --color-text-button-tertiary-hover: #0b49ea;
+  --color-text-button-tertiary-pressed: #0b49ea;
+  --color-text-button-tertiary-focused: #0b49ea;
+  --color-text-button-tertiary-disabled: #4d555c;
+
+  /* Text - Button Error (hex for v0 compatibility) */
+  --color-text-button-error-default: #ffffff;
+  --color-text-button-error-hover: #ffffff;
+  --color-text-button-error-pressed: #ffffff;
+  --color-text-button-error-focused: #ffffff;
+  --color-text-button-error-disabled: #e57a7a;
+
+  /* Surface - Button Primary */
+  --color-surface-button-primary-default: oklch(0.45 0.21 264);
+  --color-surface-button-primary-hover: oklch(0.40 0.16 264);
+  --color-surface-button-primary-pressed: oklch(0.24 0.09 264);
+  --color-surface-button-primary-focused: oklch(0.45 0.21 264);
+  --color-surface-button-primary-disabled: oklch(0.57 0.01 250);
+
+  /* Surface - Button Secondary */
+  --color-surface-button-secondary-default: oklch(1.00 0 0);
+  --color-surface-button-secondary-hover: oklch(0.91 0.01 250);
+  --color-surface-button-secondary-pressed: oklch(0.88 0.01 250);
+  --color-surface-button-secondary-focused: oklch(1.00 0 0);
+  --color-surface-button-secondary-disabled: oklch(0.88 0.01 250);
+
+  /* Surface - Button Tertiary */
+  --color-surface-button-tertiary-default: oklch(0.96 0.00 264);
+  --color-surface-button-tertiary-hover: oklch(0.91 0.01 250);
+  --color-surface-button-tertiary-pressed: oklch(0.92 0.05 254);
+  --color-surface-button-tertiary-focused: oklch(0.96 0.00 264);
+  --color-surface-button-tertiary-disabled: oklch(0.85 0.01 250);
+
+  /* Surface - Dashboard */
+  --color-surface-dashboard: var(--grey-150);
+
+  /* Surface - Button Error */
+  --color-surface-button-error-default: oklch(0.50 0.19 25);
+  --color-surface-button-error-hover: oklch(0.36 0.13 25);
+  --color-surface-button-error-pressed: oklch(0.29 0.10 25);
+  --color-surface-button-error-focused: oklch(0.50 0.19 25);
+  --color-surface-button-error-disabled: oklch(0.95 0.03 25);
+
+  /* Stroke - Button Secondary */
+  --color-stroke-button-secondary-default: oklch(0.52 0.01 250);
+  --color-stroke-button-secondary-hover: oklch(0.57 0.01 250);
+  --color-stroke-button-secondary-pressed: oklch(0.23 0.01 250);
+  --color-stroke-button-secondary-focused: oklch(0.45 0.21 264);
+  --color-stroke-button-secondary-disabled: oklch(0.65 0.01 250);
+
+  /* Badge - Filled Colors */
+  --color-badge-filled-default-bg: oklch(0.93 0.04 290);
+  --color-badge-filled-default-text: oklch(0.44 0.11 290);
+  --color-badge-filled-sky-bg: oklch(0.94 0.04 230);
+  --color-badge-filled-sky-text: oklch(0.43 0.09 230);
+  --color-badge-filled-grass-bg: oklch(0.95 0.05 165);
+  --color-badge-filled-grass-text: oklch(0.47 0.09 165);
+  --color-badge-filled-bored-bg: oklch(0.94 0.05 45);
+  --color-badge-filled-bored-text: oklch(0.42 0.11 35);
+  --color-badge-filled-negative-bg: oklch(0.98 0.01 25);
+  --color-badge-filled-negative-text: oklch(0.50 0.19 25);
+  --color-badge-filled-neutral-bg: oklch(0.91 0.01 250);
+  --color-badge-filled-neutral-text: oklch(0.23 0.01 250);
+  --color-badge-filled-neutral-border: oklch(0.81 0.01 250);
+  --color-badge-filled-dark-bg: oklch(0.27 0.01 250);
+  --color-badge-filled-dark-text: oklch(1.00 0 0);
+
+  /* Badge - Outline Colors */
+  --color-badge-outline-default-border: oklch(0.85 0.07 290);
+  --color-badge-outline-default-text: oklch(0.55 0.14 290);
+  --color-badge-outline-sky-border: oklch(0.87 0.08 230);
+  --color-badge-outline-sky-text: oklch(0.54 0.12 230);
+  --color-badge-outline-grass-border: oklch(0.90 0.09 165);
+  --color-badge-outline-grass-text: oklch(0.54 0.13 150);
+  --color-badge-outline-bored-border: oklch(0.87 0.10 45);
+  --color-badge-outline-bored-text: oklch(0.52 0.15 35);
+  --color-badge-outline-negative-border: oklch(0.95 0.04 60);
+  --color-badge-outline-negative-text: oklch(0.50 0.19 25);
+  --color-badge-outline-neutral-border: oklch(0.81 0.01 250);
+  --color-badge-outline-neutral-text: oklch(0.23 0.01 250);
+  --color-badge-outline-dark-border: oklch(0.27 0.01 250);
+  --color-badge-outline-dark-text: oklch(0.27 0.01 250);
+
+  /* ===========================================
+     Alert/Callout Component Tokens
+     =========================================== */
+  /* Info variant - brand blue */
+  --color-alert-info-bg: oklch(0.95 0.03 250);
+  --color-alert-info-border: oklch(0.85 0.06 250);
+  --color-alert-info-icon: oklch(0.45 0.21 264);
+
+  /* Success variant - green */
+  --color-alert-success-bg: oklch(0.98 0.02 145);
+  --color-alert-success-border: oklch(0.85 0.06 145);
+  --color-alert-success-icon: oklch(0.55 0.15 145);
+
+  /* Warning variant - orange */
+  --color-alert-warning-bg: oklch(0.99 0.02 70);
+  --color-alert-warning-border: oklch(0.85 0.12 50);
+  --color-alert-warning-icon: oklch(0.65 0.18 50);
+
+  /* Critical/Destructive variant - red */
+  --color-alert-critical-bg: oklch(0.97 0.02 25);
+  --color-alert-critical-border: oklch(0.85 0.06 25);
+  --color-alert-critical-icon: oklch(0.55 0.20 25);
+
+  /* ===========================================
+     Link Component Tokens (hex for v0 compatibility)
+     =========================================== */
+  --color-text-link-default: #0b49ea;
+  --color-text-link-hover: #1a3db8;
+  --color-text-link-pressed: #0f2163;
+  --color-text-link-visited: #1a3399;
+  --color-text-link-disabled: #909aa1;
+  --color-icon-brand: oklch(0.45 0.21 264);
+
+  /* ===========================================
+     FIGMA DESIGN TOKENS - Numeric (Spacing, Radius, Border)
+     =========================================== */
+
+  /* Primitive Pixels */
+  --px-1: 1px;
+  --px-2: 2px;
+  --px-3: 3px;
+  --px-4: 4px;
+  --px-6: 6px;
+  --px-8: 8px;
+  --px-12: 12px;
+  --px-16: 16px;
+  --px-24: 24px;
+  --px-32: 32px;
+  --px-36: 36px;
+  --px-40: 40px;
+  --px-48: 48px;
+  --px-64: 64px;
+  --px-80: 80px;
+  --px-96: 96px;
+
+  /* Spacing */
+  --spacing-sp-2: var(--px-2);
+  --spacing-sp-4: var(--px-4);
+  --spacing-sp-6: var(--px-6);
+  --spacing-sp-8: var(--px-8);
+  --spacing-sp-12: var(--px-12);
+  --spacing-sp-16: var(--px-16);
+  --spacing-sp-24: var(--px-24);
+  --spacing-sp-32: var(--px-32);
+  --spacing-sp-36: var(--px-36);
+  --spacing-sp-40: var(--px-40);
+  --spacing-sp-48: var(--px-48);
+  --spacing-sp-64: var(--px-64);
+  --spacing-sp-80: var(--px-80);
+  --spacing-sp-96: var(--px-96);
+
+  /* Radius */
+  --radius-xxs: var(--px-2);
+  --radius-xs: var(--px-4);
+  --radius-s: var(--px-8);
+  --radius-m: var(--px-12);
+  --radius-l: var(--px-16);
+  --radius-xl: var(--px-24);
+  --radius-xxl: var(--px-32);
+
+  /* Border Width */
+  --border-width-100: var(--px-1);
+  --border-width-200: var(--px-2);
+  --border-width-300: var(--px-3);
+  --border-width-400: var(--px-4);
+
+  /* ===========================================
+     FIGMA DESIGN TOKENS - Typography
+     =========================================== */
+
+  /* Font Family */
+  --font-family-brand: "Inter", sans-serif;
+
+  /* Font Sizes */
+  --font-size-12: 0.75rem;
+  --font-size-14: 0.875rem;
+  --font-size-16: 1rem;
+  --font-size-20: 1.25rem;
+  --font-size-24: 1.5rem;
+  --font-size-28: 1.75rem;
+  --font-size-32: 2rem;
+
+  /* Line Heights */
+  --line-height-16: 16px;
+  --line-height-20: 20px;
+  --line-height-22: 22px;
+  --line-height-24: 24px;
+  --line-height-28: 28px;
+  --line-height-32: 32px;
+  --line-height-36: 36px;
+
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Body Typography */
+  --font-body-small-size: var(--font-size-12);
+  --font-body-small-line-height: var(--line-height-16);
+  --font-body-small-regular-weight: var(--font-weight-regular);
+  --font-body-small-semibold-weight: var(--font-weight-semibold);
+  --font-body-small-bold-weight: var(--font-weight-bold);
+
+  --font-body-medium-size: var(--font-size-14);
+  --font-body-medium-line-height: var(--line-height-20);
+  --font-body-medium-regular-weight: var(--font-weight-regular);
+  --font-body-medium-semibold-weight: var(--font-weight-semibold);
+  --font-body-medium-bold-weight: var(--font-weight-bold);
+
+  --font-body-large-size: var(--font-size-16);
+  --font-body-large-line-height: var(--line-height-24);
+  --font-body-large-regular-weight: var(--font-weight-regular);
+  --font-body-large-semibold-weight: var(--font-weight-semibold);
+  --font-body-large-bold-weight: var(--font-weight-bold);
+
+  /* Headline Typography */
+  --font-headline-h1-size: var(--font-size-32);
+  --font-headline-h1-line-height: var(--line-height-36);
+  --font-headline-h1-weight: var(--font-weight-extrabold);
+
+  --font-headline-h2-size: var(--font-size-28);
+  --font-headline-h2-line-height: var(--line-height-32);
+  --font-headline-h2-weight: var(--font-weight-extrabold);
+
+  --font-headline-h3-size: var(--font-size-24);
+  --font-headline-h3-line-height: var(--line-height-28);
+  --font-headline-h3-weight: var(--font-weight-bold);
+
+  --font-headline-h4-size: var(--font-size-20);
+  --font-headline-h4-line-height: var(--line-height-24);
+  --font-headline-h4-weight: var(--font-weight-bold);
+
+  --font-headline-h5-size: var(--font-size-16);
+  --font-headline-h5-line-height: var(--line-height-20);
+  --font-headline-h5-weight: var(--font-weight-semibold);
+
+  /* Utility Typography */
+  --font-utility-link-size: var(--font-size-14);
+  --font-utility-link-line-height: var(--line-height-20);
+  --font-utility-link-weight: var(--font-weight-semibold);
+
+  /* ===========================================
+     CHECKBOX / CONTROLS TOKENS
+     =========================================== */
+  --color-stroke-controls-default: oklch(0.74 0.01 250);  /* neutral-450 */
+  --color-stroke-controls-hover: oklch(0.23 0.01 250);    /* neutral-1050 */
+  --color-stroke-controls-disabled: oklch(0.63 0.01 250); /* neutral-900 */
+  --color-surface-controls-selected: oklch(0.45 0.21 264); /* brand-500 */
+  --color-surface-controls-hover: oklch(0.40 0.16 264);   /* brand-600 */
+  --color-surface-controls-disabled: oklch(0.74 0.01 250); /* neutral-450 */
+  --color-surface-controls-locked: oklch(0.74 0.01 250);  /* neutral-450 */
+  --color-text-controls-disabled: #8a939a;   /* neutral-900 - hex for v0 */
+  --color-surface-focused: oklch(0.85 0.07 254);          /* ring color */
+
+  /* Tooltip tokens */
+  --color-surface-tooltip: oklch(0.23 0.01 250);          /* neutral-1000 / foreground-dark */
+  --color-text-tooltip: #ffffff;                   /* white / text-inverse - hex for v0 */
+
+  /* ButtonGroup / ToggleGroup tokens */
+  --color-surface-button-group-background: oklch(0.93 0.01 250); /* neutral-250 / #e9ecee */
+  --color-surface-button-group-hover: oklch(0.96 0.00 250);      /* neutral-200 / #f2f4f5 */
+  --color-surface-button-group-active: oklch(1.00 0 0);          /* neutral-50 / white */
+
+  /* Tabs / Tabset tokens */
+  --color-stroke-default: oklch(0.79 0.01 250);   /* neutral-450 / #bfc4c8 */
+  --color-stroke-brand: oklch(0.45 0.21 264);     /* brand-500 / #0b49ea */
+  --color-stroke-dark: oklch(0.20 0.01 250);      /* neutral-1050 / #1c1f22 */
+
+  /* Switch / Toggle tokens */
+  --color-surface-toggle-ellipse: oklch(1.00 0 0);       /* neutral-50 / white - thumb color */
+  --color-surface-toggle-default: oklch(0.79 0.01 250);  /* neutral-450 / #bfc4c8 - unchecked bg */
+  --color-surface-toggle-active: oklch(0.45 0.21 264);   /* brand-500 / #0b49ea - checked bg */
+  --color-surface-toggle-focused: oklch(0.80 0.08 254);  /* brand-250 / #bad1f5 - focus ring */
+  --color-surface-toggle-disabled: oklch(0.48 0.01 250); /* neutral-750 / #656c70 - disabled bg */
+
+  /* Popover tokens */
+  --color-surface-foreground: oklch(1.00 0 0);           /* neutral-50 / white - popover bg */
+
+  /* IconButton tokens */
+  --color-icon-dark: oklch(0.20 0.01 250);               /* neutral-1050 / #242e35 - black icon */
+  --color-icon-disabled: oklch(0.65 0.01 250);           /* neutral-900 / #3b464f - disabled icon */
+  --color-surface-hover: oklch(0.91 0.01 250);           /* neutral-200 / #e5e7e9 - hover bg */
+  --color-surface-selected: oklch(0.92 0.04 254);        /* brand-150 / #dde9fa - active/selected bg */
+
+  /* Input tokens (hex for v0 compatibility) */
+  --color-text-primary: #1c1f22;            /* neutral-1050 - input value text */
+  --color-text-secondary: #656c73;          /* neutral-750 - label, placeholder */
+  --color-surface-input-default: oklch(1.00 0 0);        /* neutral-50 / #ffffff - input background */
+  --color-surface-input-disabled: oklch(0.91 0.01 250);  /* neutral-300 / #e0e3e6 - disabled background */
+  --color-surface-input-locked: oklch(0.88 0.01 250);    /* neutral-350 / #d6dade - read-only background */
+
+  /* State tokens (feedback colors) */
+  --color-state-error: oklch(0.50 0.19 25);              /* red-500 / #cc2330 - error accent */
+  --color-state-success: oklch(0.52 0.12 145);           /* green-500 / #348347 - success accent */
+  --color-state-warning: oklch(0.65 0.18 50);            /* orange-500 / #ee7624 - warning accent */
+
+  /* ===========================================
+     Legacy token aliases (compatibility)
+     =========================================== */
+  --app-shell-header-height: 64px;
+  --app-shell-nav-width-minimised: 104px;
+  --app-shell-nav-width-full: 317px;
+  --app-shell-toolbar-width: 48px;
+
+  --shell-header-height: 56px;
+  --shell-topnav-height: 40px;
+  --shell-left-rail-width: 104px;
+
+  --sidebar-width: 16rem;
+  --sidebar-width-icon: 3rem;
+
+  --widget-grid-row-height: 315px;
+  --widget-grid-gutter: 24px;
+
+  --columns: 12;
+  --gutter: var(--spacing-sp-24);
+  --margin: var(--spacing-sp-24);
+  --row-height: var(--widget-grid-row-height);
+
+  --spacing-sp-1: var(--px-1);
+
+  --radius-full: 9999px;
+  --radius-r-full: 9999px;
+
+  --opacity-60: 0.6;
+  --opacity-disabled: 0.4;
+
+  --shadow-m: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-tooltip: 0 6px 18px rgba(0, 0, 0, 0.16);
+  --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.24);
+
+  --border-neutral-default: var(--color-stroke-default);
+  --border-radius-medium: var(--radius-m);
+  --focus-ring-color: var(--ring);
+
+  --thumb-size: 16px;
+  --thumb-translate-x-unchecked: 4px;
+  --thumb-translate-x-checked: 20px;
+
+  --radix-select-trigger-height: 36px;
+  --radix-select-trigger-width: 160px;
+  --radix-toast-swipe-end-x: 0px;
+  --radix-toast-swipe-move-x: 0px;
+
+  --font-body-small: var(--font-body-small-regular-weight) var(--font-body-small-size)/var(--font-body-small-line-height) var(--font-family-brand);
+  --font-body-small-semibold: var(--font-body-small-semibold-weight) var(--font-body-small-size)/var(--font-body-small-line-height) var(--font-family-brand);
+  --font-body-medium: var(--font-body-medium-regular-weight) var(--font-body-medium-size)/var(--font-body-medium-line-height) var(--font-family-brand);
+  --font-body-medium-semibold: var(--font-body-medium-semibold-weight) var(--font-body-medium-size)/var(--font-body-medium-line-height) var(--font-family-brand);
+  --font-body-medium-bold: var(--font-body-medium-bold-weight) var(--font-body-medium-size)/var(--font-body-medium-line-height) var(--font-family-brand);
+  --font-body-large: var(--font-body-large-regular-weight) var(--font-body-large-size)/var(--font-body-large-line-height) var(--font-family-brand);
+  --font-body-large-semibold: var(--font-body-large-semibold-weight) var(--font-body-large-size)/var(--font-body-large-line-height) var(--font-family-brand);
+  --font-body-large-bold: var(--font-body-large-bold-weight) var(--font-body-large-size)/var(--font-body-large-line-height) var(--font-family-brand);
+  --font-headline-h1: var(--font-headline-h1-weight) var(--font-headline-h1-size)/var(--font-headline-h1-line-height) var(--font-family-brand);
+  --font-headline-h2: var(--font-headline-h2-weight) var(--font-headline-h2-size)/var(--font-headline-h2-line-height) var(--font-family-brand);
+  --font-headline-h3: var(--font-headline-h3-weight) var(--font-headline-h3-size)/var(--font-headline-h3-line-height) var(--font-family-brand);
+  --font-headline-h4: var(--font-headline-h4-weight) var(--font-headline-h4-size)/var(--font-headline-h4-line-height) var(--font-family-brand);
+  --font-headline-h5: var(--font-headline-h5-weight) var(--font-headline-h5-size)/var(--font-headline-h5-line-height) var(--font-family-brand);
+  --font-utility-link: var(--font-utility-link-weight) var(--font-utility-link-size)/var(--font-utility-link-line-height) var(--font-family-brand);
+  --typography-body-medium-regular: var(--font-body-medium);
+
+  --brand-150: var(--blue-150);
+  --brand-200: var(--blue-150);
+  --brand-250: var(--blue-250);
+  --brand-300: var(--blue-250);
+  --brand-400: var(--blue-350);
+  --brand-500: var(--blue-500);
+  --brand-550: var(--blue-550);
+  --brand-600: var(--blue-550);
+  --brand-650: var(--blue-650);
+  --brand-750: var(--blue-750);
+
+  --neutral-50: var(--grey-50);
+  --neutral-150: var(--grey-150);
+  --neutral-200: var(--grey-200);
+  --neutral-250: var(--grey-250);
+  --neutral-300: var(--grey-300);
+  --neutral-350: var(--grey-350);
+  --neutral-400: var(--grey-400);
+  --neutral-450: var(--grey-450);
+  --neutral-600: var(--grey-600);
+  --neutral-650: var(--grey-650);
+  --neutral-700: var(--grey-700);
+  --neutral-750: var(--grey-750);
+  --neutral-800: var(--grey-800);
+  --neutral-900: var(--grey-900);
+  --neutral-1000: var(--grey-1000);
+  --neutral-1050: var(--grey-1050);
+
+  --utilities-500: var(--blue-500);
+  --utilities-550: var(--blue-550);
+  --utilities-650: var(--blue-650);
+  --utilities-750: var(--blue-750);
+
+  --status-error-light: var(--red-50);
+  --status-error-stroke: var(--red-200);
+  --status-error-accent: var(--red-500);
+  --status-info-light: var(--blue-50);
+  --status-info-stroke: var(--blue-200);
+  --status-info-accent: var(--blue-500);
+  --status-success-light: var(--green-50);
+  --status-success-stroke: var(--green-200);
+  --status-success-accent: var(--green-500);
+  --status-warning-light: var(--orange-50);
+  --status-warning-stroke: var(--orange-200);
+  --status-warning-accent: var(--orange-500);
+
+  --error-accent: var(--red-500);
+  --success-accent: var(--green-500);
+  --warning-accent: var(--orange-500);
+  --warning-light: var(--orange-100);
+
+  --color-state-error-accent: var(--status-error-accent);
+  --color-state-error-light: var(--status-error-light);
+  --color-state-error-medium: var(--red-300);
+  --color-state-success-accent: var(--status-success-accent);
+  --color-state-warning-accent: var(--status-warning-accent);
+  --color-state-info-accent: var(--status-info-accent);
+
+  --color-text-brand: var(--blue-500);
+  --color-text-link: var(--color-text-link-default);
+  --color-text-selected: var(--brand-550);
+  --color-text-dark-accent: var(--brand-750);
+  --color-text-disabled: var(--neutral-900);
+  --color-text-inverse: var(--neutral-50);
+  --color-text-input-value: var(--neutral-1050);
+  --color-text-controls-default: var(--neutral-1050);
+  --color-text-controls-focused: var(--neutral-1050);
+  --color-text-controls-hover: var(--neutral-1050);
+  --color-text-controls-selected: var(--neutral-1050);
+  --color-text-controls-locked: var(--neutral-900);
+
+  --color-icon-default: var(--color-icon-dark);
+  --color-icon-selected: var(--color-icon-brand);
+
+  --color-border-neutral: var(--color-stroke-default);
+  --color-border-neutral-subtle: var(--grey-300);
+  --color-border-focus: var(--ring);
+  --color-border-focus-shadow: var(--ring);
+  --color-border-focused: var(--ring);
+
+  --color-stroke-disabled: var(--grey-650);
+  --color-stroke-divider: var(--grey-250);
+  --color-stroke-focus: var(--ring);
+  --color-stroke-light: var(--neutral-350);
+  --color-stroke-strong: var(--grey-1050);
+  --color-stroke-table: var(--neutral-250);
+
+  --color-surface-accent: var(--brand-500);
+  --color-surface-background: var(--neutral-150);
+  --color-surface-disabled: var(--grey-300);
+  --color-surface-foreground-dark: var(--neutral-1000);
+  --color-surface-popover: var(--neutral-50);
+  --color-surface-primary-default: var(--color-surface-button-primary-default);
+  --color-surface-progress-active: var(--brand-500);
+  --color-surface-progress-foreground: var(--brand-250);
+  --color-surface-table-data-cell-border-focus: var(--denim-500);
+  --color-surface-table-data-header: var(--neutral-50);
+  --color-surface-table-row-hover: var(--brand-150);
+  --color-surface-widget: var(--neutral-50);
+  --color-surface-chip-default: var(--neutral-150);
+  --color-surface-chip-default-white: var(--neutral-50);
+  --color-surface-chip-hover: var(--neutral-200);
+  --color-surface-chip-selected: var(--brand-150);
+  --color-surface-controls-locked-icon: var(--neutral-900);
+
+  --color-surface-button-button-group-background: var(--color-surface-button-group-background);
+  --color-surface-button-button-group-hover: var(--color-surface-button-group-hover);
+  --color-surface-button-button-group-active: var(--color-surface-button-group-active);
+
+  --color-surface-toggle-Default: var(--color-surface-toggle-default);
+  --color-surface-toggle-Active: var(--color-surface-toggle-active);
+  --color-surface-toggle-Disabled: var(--color-surface-toggle-disabled);
+  --color-surface-toggle-Ellipse: var(--color-surface-toggle-ellipse);
+
+  --color-navigation-active: var(--brand-500);
+  --color-navigation-hover: var(--neutral-200);
+  --color-navigation-selected: var(--brand-150);
+
+  --color-azure: var(--azure-500);
+  --color-chetwode: var(--chetwode-500);
+  --color-denim: var(--denim-500);
+  --color-greenHaze: var(--green-haze-500);
+  --color-orange: var(--orange-500);
+  --color-desktop: var(--chart-1);
+  --color-mobile: var(--chart-4);
+  --color-product: var(--chart-1);
+  --color-services: var(--chart-4);
+  --color-support: var(--chart-7);
+  --color-revenue: var(--chart-1);
+  --color-expenses: var(--chart-14);
+  --color-profit: var(--chart-4);
+  --color-sessions: var(--chart-7);
+  --color-users: var(--chart-9);
+  --color-other: var(--chart-12);
+
+  /* ===========================================
+     SHADCN/UI SEMANTIC TOKENS (direct oklch - REQUIRED)
+     =========================================== */
+
+  --background: oklch(1.00 0 0);
+  --foreground: oklch(0.23 0.01 250);
+  --card: oklch(1.00 0 0);
+  --card-foreground: oklch(0.23 0.01 250);
+  --popover: oklch(1.00 0 0);
+  --popover-foreground: oklch(0.23 0.01 250);
+  --primary: oklch(0.45 0.21 264);
+  --primary-foreground: oklch(1.00 0 0);
+  --secondary: oklch(0.96 0.00 264);
+  --secondary-foreground: oklch(0.52 0.01 250);
+  --muted: oklch(0.97 0.00 264);
+  --muted-foreground: oklch(0.52 0.01 250);
+  --accent: oklch(0.96 0.00 264);
+  --accent-foreground: oklch(0.23 0.01 250);
+  --destructive: oklch(0.50 0.19 25);
+  --destructive-foreground: oklch(1.00 0 0);
+  --border: oklch(0.91 0.01 250);
+  --input: oklch(0.81 0.01 250);
+  --ring: oklch(0.85 0.07 254);
+
+  /* Chart Swatches (1-26) - mapped from old Figma tokens */
+  --chart-1: oklch(0.67 0.15 230);   /* azure-500 */
+  --chart-2: oklch(0.87 0.08 230);   /* azure-200 */
+  --chart-3: oklch(0.43 0.09 230);   /* azure-700 */
+  --chart-4: oklch(0.73 0.16 165);   /* green-haze-500 */
+  --chart-5: oklch(0.47 0.09 165);   /* green-haze-700 */
+  --chart-6: oklch(0.90 0.09 165);   /* green-haze-200 */
+  --chart-7: oklch(0.55 0.14 290);   /* chetwode-500 */
+  --chart-8: oklch(0.85 0.07 290);   /* chetwode-200 */
+  --chart-9: oklch(0.46 0.15 254);   /* denim-500 */
+  --chart-10: oklch(0.81 0.08 254);  /* denim-200 */
+  --chart-11: oklch(0.31 0.09 254);  /* denim-700 */
+  --chart-12: oklch(0.87 0.10 45);   /* orange-haze-200 */
+  --chart-13: oklch(0.42 0.11 35);   /* orange-haze-700 */
+  --chart-14: oklch(0.63 0.20 35);   /* orange-haze-500 */
+  --chart-15: oklch(0.80 0.11 230);  /* azure-300 */
+  --chart-16: oklch(0.28 0.06 230);  /* azure-800 */
+  --chart-17: oklch(0.84 0.12 165);  /* green-haze-300 */
+  --chart-18: oklch(0.31 0.06 165);  /* green-haze-800 */
+  --chart-19: oklch(0.59 0.12 165);  /* green-haze-600 */
+  --chart-20: oklch(0.76 0.10 290);  /* chetwode-300 */
+  --chart-21: oklch(0.44 0.11 290);  /* chetwode-600 */
+  --chart-22: oklch(0.70 0.11 254);  /* denim-300 */
+  --chart-23: oklch(0.38 0.12 254);  /* denim-600 */
+  --chart-24: oklch(0.79 0.14 45);   /* orange-haze-300 */
+  --chart-25: oklch(0.29 0.07 35);   /* orange-haze-800 */
+  --chart-26: oklch(0.52 0.15 35);   /* orange-haze-600 */
+
+  --radius: 0.25rem;
+  --sidebar: oklch(0.97 0.00 264);
+  --sidebar-foreground: oklch(0.23 0.01 250);
+  --sidebar-primary: oklch(0.45 0.21 264);
+  --sidebar-primary-foreground: oklch(1.00 0 0);
+  --sidebar-accent: oklch(0.95 0.03 254);
+  --sidebar-accent-foreground: oklch(0.40 0.16 264);
+  --sidebar-border: oklch(0.91 0.01 250);
+  --sidebar-ring: oklch(0.85 0.07 254);
+}
+
+/* Dark theme */
+.dark {
+  --background: oklch(0.23 0.01 250);
+  --foreground: oklch(1.00 0 0);
+  --card: oklch(0.27 0.01 250);
+  --card-foreground: oklch(1.00 0 0);
+  --popover: oklch(0.27 0.01 250);
+  --popover-foreground: oklch(1.00 0 0);
+  --primary: oklch(0.45 0.21 264);
+  --primary-foreground: oklch(1.00 0 0);
+  --secondary: oklch(0.38 0.01 250);
+  --secondary-foreground: oklch(1.00 0 0);
+  --muted: oklch(0.38 0.01 250);
+  --muted-foreground: oklch(0.77 0.01 250);
+  --accent: oklch(0.38 0.01 250);
+  --accent-foreground: oklch(1.00 0 0);
+  --destructive: oklch(0.43 0.16 25);
+  --destructive-foreground: oklch(1.00 0 0);
+  --border: oklch(0.43 0.01 250);
+  --input: oklch(0.43 0.01 250);
+  --ring: oklch(0.71 0.14 254);
+  --sidebar: oklch(0.27 0.01 250);
+  --sidebar-foreground: oklch(1.00 0 0);
+  --sidebar-primary: oklch(0.71 0.14 254);
+  --sidebar-primary-foreground: oklch(1.00 0 0);
+  --sidebar-accent: oklch(0.38 0.01 250);
+  --sidebar-accent-foreground: oklch(1.00 0 0);
+  --sidebar-border: oklch(0.43 0.01 250);
+  --sidebar-ring: oklch(0.71 0.14 254);
+
+  color-scheme: dark;
+
+  /* ===========================================
+     BRD SEMANTIC TOKENS - DARK
+     Only SEMANTIC tokens are remapped here. Raw palette
+     primitives (grey-*, blue-*, red-*, ...) are NOT touched.
+     Every value references an existing primitive so the
+     dark theme stays inside the registry token set.
+     =========================================== */
+
+  /* ---------- Surfaces ---------- */
+  --color-surface-background: var(--grey-1100);          /* 0.18 - shell base */
+  --color-surface-dashboard: var(--grey-1050);           /* 0.23 - content area */
+  --color-surface-foreground: var(--grey-1000);          /* 0.27 - header/nav/popover (elevated) */
+  --color-surface-widget: var(--grey-1000);              /* 0.27 - widget panels */
+  --color-surface-popover: var(--grey-1000);
+  --color-surface-hover: var(--grey-950);                /* 0.32 - hover bg */
+  --color-surface-selected: var(--blue-750);             /* dark brand-tinted selected */
+  --color-surface-disabled: var(--grey-950);
+  --color-surface-accent: var(--blue-400);
+  --color-surface-foreground-dark: var(--grey-950);
+
+  /* Inputs */
+  --color-surface-input-default: var(--grey-1000);
+  --color-surface-input-disabled: var(--grey-1050);
+  --color-surface-input-locked: var(--grey-1050);
+
+  /* Tables */
+  --color-surface-table-data-header: var(--grey-950);
+  --color-surface-table-row-hover: var(--blue-800);
+  --color-surface-table-data-cell-border-focus: var(--denim-300);
+
+  /* Chips */
+  --color-surface-chip-default: var(--grey-950);
+  --color-surface-chip-default-white: var(--grey-1000);
+  --color-surface-chip-hover: var(--grey-900);
+  --color-surface-chip-selected: var(--blue-750);
+
+  /* Progress */
+  --color-surface-progress-active: var(--blue-400);
+  --color-surface-progress-foreground: var(--blue-800);
+
+  /* Controls */
+  --color-surface-controls-selected: var(--blue-400);
+  --color-surface-controls-hover: var(--blue-450);
+  --color-surface-controls-disabled: var(--grey-900);
+  --color-surface-controls-locked: var(--grey-900);
+
+  /* Button group / toggle */
+  --color-surface-button-group-background: var(--grey-1050);
+  --color-surface-button-group-hover: var(--grey-950);
+  --color-surface-button-group-active: var(--grey-900);
+  --color-surface-toggle-default: var(--grey-800);
+  --color-surface-toggle-active: var(--blue-400);
+  --color-surface-toggle-ellipse: var(--grey-50);
+  --color-surface-toggle-disabled: var(--grey-900);
+
+  /* Secondary button surfaces (white in light) */
+  --color-surface-button-secondary-default: var(--grey-1000);
+  --color-surface-button-secondary-hover: var(--grey-950);
+  --color-surface-button-secondary-pressed: var(--grey-900);
+  --color-surface-button-secondary-focused: var(--grey-1000);
+  --color-surface-button-secondary-disabled: var(--grey-950);
+
+  /* Tertiary button surfaces */
+  --color-surface-button-tertiary-default: var(--grey-1000);
+  --color-surface-button-tertiary-hover: var(--grey-950);
+  --color-surface-button-tertiary-pressed: var(--blue-800);
+  --color-surface-button-tertiary-focused: var(--grey-1000);
+  --color-surface-button-tertiary-disabled: var(--grey-1000);
+
+  /* Tooltip stays dark with white text */
+  --color-surface-tooltip: var(--grey-900);
+
+  /* ---------- Text ---------- */
+  --color-text-primary: var(--grey-100);                 /* near-white */
+  --color-text-secondary: var(--grey-500);               /* muted but readable */
+  --color-text-brand: var(--blue-350);
+  --color-text-selected: var(--blue-300);
+  --color-text-dark-accent: var(--blue-250);
+  --color-text-disabled: var(--grey-700);
+  --color-text-inverse: var(--grey-1050);                /* inverts to dark */
+  --color-text-input-value: var(--grey-100);
+
+  /* Links */
+  --color-text-link-default: var(--blue-350);
+  --color-text-link-hover: var(--blue-300);
+  --color-text-link-pressed: var(--blue-250);
+  --color-text-link-visited: var(--chetwode-300);
+  --color-text-link-disabled: var(--grey-700);
+
+  /* Controls text */
+  --color-text-controls-default: var(--grey-100);
+  --color-text-controls-focused: var(--grey-100);
+  --color-text-controls-hover: var(--grey-100);
+  --color-text-controls-selected: var(--grey-100);
+  --color-text-controls-locked: var(--grey-600);
+  --color-text-controls-disabled: var(--grey-700);
+
+  /* Secondary button text */
+  --color-text-button-secondary-default: var(--grey-450);
+  --color-text-button-secondary-hover: var(--grey-400);
+  --color-text-button-secondary-pressed: var(--grey-200);
+  --color-text-button-secondary-focused: var(--grey-300);
+  --color-text-button-secondary-disabled: var(--grey-700);
+
+  /* Tertiary button text */
+  --color-text-button-tertiary-default: var(--blue-350);
+  --color-text-button-tertiary-hover: var(--blue-300);
+  --color-text-button-tertiary-pressed: var(--blue-300);
+  --color-text-button-tertiary-focused: var(--blue-350);
+  --color-text-button-tertiary-disabled: var(--grey-700);
+
+  /* ---------- Strokes ---------- */
+  --color-stroke-default: var(--grey-900);
+  --color-stroke-divider: var(--grey-950);
+  --color-stroke-dark: var(--grey-300);                  /* emphasis border inverts to light */
+  --color-stroke-light: var(--grey-1000);
+  --color-stroke-strong: var(--grey-200);                /* inverts */
+  --color-stroke-table: var(--grey-950);
+  --color-stroke-disabled: var(--grey-900);
+  --color-stroke-brand: var(--blue-350);
+  --color-border-neutral-subtle: var(--grey-1000);
+
+  /* Secondary button strokes */
+  --color-stroke-button-secondary-default: var(--grey-700);
+  --color-stroke-button-secondary-hover: var(--grey-600);
+  --color-stroke-button-secondary-pressed: var(--grey-300);
+  --color-stroke-button-secondary-focused: var(--blue-350);
+  --color-stroke-button-secondary-disabled: var(--grey-900);
+
+  /* Controls strokes */
+  --color-stroke-controls-default: var(--grey-700);
+  --color-stroke-controls-hover: var(--grey-300);
+  --color-stroke-controls-disabled: var(--grey-900);
+
+  /* ---------- Icons ---------- */
+  --color-icon-dark: var(--grey-100);
+  --color-icon-disabled: var(--grey-700);
+  --color-icon-brand: var(--blue-350);
+
+  /* ---------- State (accents lifted for dark contrast) ---------- */
+  --color-state-error: var(--red-300);                   /* red-300 clears AA 4.5:1 on dark surfaces */
+  --color-state-success: var(--green-400);
+  --color-state-warning: var(--orange-400);
+  --color-state-error-medium: var(--red-300);
+
+  /* ---------- Navigation ---------- */
+  --color-navigation-active: var(--blue-350);
+  --color-navigation-hover: var(--grey-950);
+  --color-navigation-selected: var(--blue-750);
+
+  /* ---------- Status (callout/badge surfaces) ---------- */
+  --status-error-light: var(--red-900);
+  --status-error-stroke: var(--red-700);
+  --status-info-light: var(--blue-850);
+  --status-info-stroke: var(--blue-700);
+  --status-success-light: var(--green-900);
+  --status-success-stroke: var(--green-700);
+  --status-warning-light: var(--orange-900);
+  --status-warning-stroke: var(--orange-700);
+  --warning-light: var(--orange-900);
+
+  /* ---------- Alerts ---------- */
+  --color-alert-info-bg: var(--blue-800);
+  --color-alert-info-border: var(--blue-700);
+  --color-alert-info-icon: var(--blue-350);
+  --color-alert-success-bg: var(--green-900);
+  --color-alert-success-border: var(--green-700);
+  --color-alert-success-icon: var(--green-400);
+  --color-alert-warning-bg: var(--orange-900);
+  --color-alert-warning-border: var(--orange-700);
+  --color-alert-warning-icon: var(--orange-400);
+  --color-alert-critical-bg: var(--red-900);
+  --color-alert-critical-border: var(--red-700);
+  --color-alert-critical-icon: var(--red-400);
+
+  /* ---------- Badges (filled: dark bg + light text) ---------- */
+  --color-badge-filled-default-bg: var(--chetwode-800);
+  --color-badge-filled-default-text: var(--chetwode-200);
+  --color-badge-filled-sky-bg: var(--azure-800);
+  --color-badge-filled-sky-text: var(--azure-200);
+  --color-badge-filled-grass-bg: var(--green-haze-800);
+  --color-badge-filled-grass-text: var(--green-haze-200);
+  --color-badge-filled-bored-bg: var(--orange-haze-800);
+  --color-badge-filled-bored-text: var(--orange-haze-200);
+  --color-badge-filled-negative-bg: var(--red-800);
+  --color-badge-filled-negative-text: var(--red-200);
+  --color-badge-filled-neutral-bg: var(--grey-900);
+  --color-badge-filled-neutral-text: var(--grey-100);
+  --color-badge-filled-neutral-border: var(--grey-800);
+  --color-badge-filled-dark-bg: var(--grey-200);         /* dark badge inverts to light */
+  --color-badge-filled-dark-text: var(--grey-1050);
+
+  /* ---------- Badges (outline) ---------- */
+  --color-badge-outline-default-border: var(--chetwode-600);
+  --color-badge-outline-default-text: var(--chetwode-300);
+  --color-badge-outline-sky-border: var(--azure-600);
+  --color-badge-outline-sky-text: var(--azure-300);
+  --color-badge-outline-grass-border: var(--green-haze-600);
+  --color-badge-outline-grass-text: var(--green-haze-300);
+  --color-badge-outline-bored-border: var(--orange-haze-600);
+  --color-badge-outline-bored-text: var(--orange-haze-300);
+  --color-badge-outline-negative-border: var(--red-600);
+  --color-badge-outline-negative-text: var(--red-300);
+  --color-badge-outline-neutral-border: var(--grey-800);
+  --color-badge-outline-neutral-text: var(--grey-200);
+  --color-badge-outline-dark-border: var(--grey-300);
+  --color-badge-outline-dark-text: var(--grey-200);
+}
+
+/* ===========================================
+   SHELL DENSITY TOKENS
+   Size-only tokens (identical in light + dark) scoped by the `data-density`
+   attribute that the Shell sets on its root. `comfortable` preserves the
+   standard BRD scale; `compact` tightens spacing/control/grid sizing for
+   high-density personas (Trader/Ops). Consume via var(--shell-density-*).
+   =========================================== */
+[data-density="comfortable"] {
+  --shell-density-gap: var(--spacing-sp-24); /* primary content gap (24px) */
+  --shell-density-gap-tight: var(--spacing-sp-16); /* secondary gap (16px) */
+  --shell-density-section-gap: var(--spacing-sp-24); /* page section gap */
+  --shell-density-control-height: 40px; /* default control height */
+  --shell-density-grid-row-height: 40px; /* AG Grid data row */
+  --shell-density-grid-header-height: 44px; /* AG Grid header */
+  --shell-density-grid-spacing: 8px; /* AG Grid internal spacing */
+  --shell-density-chart-spacing: 16px; /* Highcharts chart spacing */
+}
+
+[data-density="compact"] {
+  --shell-density-gap: var(--spacing-sp-12); /* tighter primary gap (12px) */
+  --shell-density-gap-tight: var(--spacing-sp-8); /* tighter secondary gap (8px) */
+  --shell-density-section-gap: var(--spacing-sp-16); /* tighter section gap */
+  --shell-density-control-height: 32px; /* small control height */
+  --shell-density-grid-row-height: 24px; /* dense blotter row (hard cap) */
+  --shell-density-grid-header-height: 28px; /* dense grid header */
+  --shell-density-grid-spacing: 4px; /* dense AG Grid spacing */
+  --shell-density-chart-spacing: 8px; /* tighter Highcharts spacing */
+}
+
+@theme inline {
+  /* ===========================================
+     TAILWIND THEME - Standard shadcn/ui tokens only
+     =========================================== */
+
+  /* Core Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Chart Colors (1-26) */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-7: var(--chart-7);
+  --color-chart-8: var(--chart-8);
+  --color-chart-9: var(--chart-9);
+  --color-chart-10: var(--chart-10);
+  --color-chart-11: var(--chart-11);
+  --color-chart-12: var(--chart-12);
+  --color-chart-13: var(--chart-13);
+  --color-chart-14: var(--chart-14);
+  --color-chart-15: var(--chart-15);
+  --color-chart-16: var(--chart-16);
+  --color-chart-17: var(--chart-17);
+  --color-chart-18: var(--chart-18);
+  --color-chart-19: var(--chart-19);
+  --color-chart-20: var(--chart-20);
+  --color-chart-21: var(--chart-21);
+  --color-chart-22: var(--chart-22);
+  --color-chart-23: var(--chart-23);
+  --color-chart-24: var(--chart-24);
+  --color-chart-25: var(--chart-25);
+  --color-chart-26: var(--chart-26);
+
+  /* Radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Font */
+  --font-sans: var(--font-family-brand);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-family-brand);
+  }
+}
+
+/* Button Loading Animation */
+@keyframes flicker {
+  0%, 80%, 100% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+}

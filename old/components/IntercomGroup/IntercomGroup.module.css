@@ -1,0 +1,306 @@
+/* Import global design tokens */
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Base IntercomGroup styles */
+/* Figma: Intercom/Group component */
+/* Layout: auto-layout vertical for expanded state */
+.intercomGroup {
+  /* Base layout */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: fit-content; /* Hug behavior from Figma JSON */
+
+  /* No padding by default as per Figma JSON */
+  padding: 0;
+}
+
+/* Container for stacked effect in collapse mode */
+.stackedContainer {
+  position: relative;
+  width: 853px;
+  max-width: 100%;
+}
+
+/* Stacked mock intercoms for grouping effect */
+.stackedMocks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 853px;
+  height: 56px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mockIntercom {
+  position: absolute;
+  height: 56px;
+  border-radius: var(--radius-s);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1), 0px 0px 2px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Second mock intercom (furthest back) */
+.mockIntercom2 {
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  width: calc(100% - 16px);
+  opacity: 0.6;
+  transform: scale(0.94);
+  z-index: 1;
+}
+
+/* First mock intercom (middle layer) */
+.mockIntercom1 {
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  width: calc(100% - 8px);
+  opacity: 0.8;
+  transform: scale(0.97);
+  z-index: 2;
+}
+
+/* Individual notification styling within the group */
+.notification {
+  /* Notifications inherit their own styling from IntercomOverlay */
+  width: 100%;
+}
+
+/* Summary notification in collapse mode */
+.summaryNotification {
+  /* Same styling as regular notifications */
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+/* Mock intercom background colors for each type */
+.mockIntercom.typeInfo {
+  background-color: #ffffff; /* White */
+}
+
+.mockIntercom.typeWarning {
+  background-color: #fffdfd; /* Exact hex from Figma JSON */
+}
+
+.mockIntercom.typeCritical {
+  background-color: #fffbfc; /* Exact hex from Figma JSON */
+}
+
+.mockIntercom.typeSuccess {
+  background-color: #fcfdfc; /* Exact hex from Figma JSON */
+}
+
+/* Fallback for mock intercoms without specific type */
+.mockIntercom:not(.typeInfo):not(.typeWarning):not(.typeCritical):not(.typeSuccess) {
+  background-color: #ffffff; /* Default to white */
+}
+
+/* Collapse control in expand mode */
+.collapseControl {
+  /* Same styling as regular notifications */
+  width: 100%;
+}
+
+/* More indicator for collapsed state */
+.moreIndicator {
+  /* Typography similar to notification content but smaller */
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-small-size, 14px);
+  font-weight: var(--font-body-small-regular-weight, 400);
+  line-height: var(--font-body-small-line-height, 1.4);
+  color: var(--color-text-secondary);
+  
+  /* Spacing and layout */
+  margin-top: var(--spacing-sp-8);
+  padding: var(--spacing-sp-8) var(--spacing-sp-16);
+  
+  /* Subtle background */
+  background-color: var(--color-surface-background);
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--color-stroke-light);
+  
+  /* Center the text */
+  text-align: center;
+  width: 100%;
+}
+
+/* Instance Variants */
+/* Based on Figma JSON variants */
+
+/* Collapse Instance */
+/* Figma: Instance=Collapse */
+/* Shows notifications in a simple vertical stack */
+.instanceCollapse {
+  /* Use default gap for collapsed state */
+  gap: var(--spacing-sp-8, 8px);
+  
+  /* Fixed width matching the overlay width */
+  width: 853px;
+  max-width: 100%;
+}
+
+/* Expand Instance */
+/* Figma: Instance=Expand */
+/* Shows notifications with proper spacing from boundVariables */
+.instanceExpand {
+  /* Gap from Figma JSON boundVariables.itemSpacing */
+  gap: var(--spacing-sp-4);
+  
+  /* Auto-layout properties from Figma JSON analysis */
+  justify-content: flex-start;
+  align-items: flex-start;
+  
+  /* Width behavior: hug content */
+  width: fit-content;
+  min-width: 853px; /* Ensure minimum width matches overlay */
+  max-width: 100%;
+}
+
+/* Animation for expanding/collapsing */
+.stackedContainer {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.instanceExpand {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.instanceExpand .notification {
+  animation: slideInFromTop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+.instanceExpand .notification:nth-child(1) { animation-delay: 0ms; }
+.instanceExpand .notification:nth-child(2) { animation-delay: 50ms; }
+.instanceExpand .notification:nth-child(3) { animation-delay: 100ms; }
+.instanceExpand .notification:nth-child(4) { animation-delay: 150ms; }
+.instanceExpand .notification:nth-child(5) { animation-delay: 200ms; }
+.instanceExpand .notification:nth-child(6) { animation-delay: 250ms; }
+.instanceExpand .notification:nth-child(7) { animation-delay: 300ms; }
+.instanceExpand .notification:nth-child(8) { animation-delay: 350ms; }
+
+.instanceCollapse {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stackedMocks {
+  animation: stackedAppear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  animation-delay: 0.1s;
+  animation-fill-mode: both;
+}
+
+.mockIntercom1 {
+  animation: mockSlideIn1 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+.mockIntercom2 {
+  animation: mockSlideIn2 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  animation-delay: 0.3s;
+  animation-fill-mode: both;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes stackedAppear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mockSlideIn1 {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 0.6;
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+@keyframes mockSlideIn2 {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.92);
+  }
+  to {
+    opacity: 0.4;
+    transform: translateY(0) scale(0.96);
+  }
+}
+
+/* Responsive behavior */
+@media (max-width: 900px) {
+  .instanceCollapse,
+  .instanceExpand {
+    width: 100%;
+    min-width: auto;
+    max-width: 100%;
+  }
+
+  .stackedContainer {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mockIntercom1 {
+    left: 2px;
+    right: 2px;
+    width: calc(100% - 4px);
+  }
+
+  .mockIntercom2 {
+    left: 4px;
+    right: 4px;
+    width: calc(100% - 8px);
+  }
+
+  .stackedMocks {
+    width: 100%;
+  }
+
+  .notification {
+    width: 100%;
+  }
+}
+
+/* Focus and interaction states */
+.intercomGroup:focus-within {
+  /* Enhance focus visibility when any child notification is focused */
+  outline: 2px solid var(--color-stroke-brand);
+  outline-offset: 2px;
+  border-radius: var(--radius-s);
+}
+
+/* Animation for expand/collapse transitions */
+.instanceCollapse .notification,
+.instanceExpand .notification {
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Hover effects for the group */
+.intercomGroup:hover .moreIndicator {
+  background-color: var(--neutral-200);
+  border-color: var(--color-stroke-brand);
+}

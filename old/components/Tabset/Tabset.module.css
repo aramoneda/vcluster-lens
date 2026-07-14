@@ -1,0 +1,274 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* --- Root --- */
+/* From tabset.json: General container for the tabset component. */
+.root {
+  /* No specific root styles from JSON, but can be used for overrides or general container behavior */
+}
+
+/* --- List --- */
+/* From tabset.json: Styles for the container of tab triggers (Tabs.List). */
+/* Defines layout (flex), bottom border, and padding. */
+.list {
+  display: flex;
+  border-bottom-style: solid;
+  padding-bottom: var(--spacing-sp-12); /* Corresponds to 'spacingBottom' in tabset.json for Title/Medium variants */
+  border-bottom-color: var(--color-stroke-default); /* From tabset.json: 'borderColor' */
+  border-bottom-width: var(--border-width-300); /* From tabset.json: 'borderWidth' */
+}
+
+/* List variants for item spacing - From tabset.json, 'gap' property for different variants. */
+/* From tabset.json: 'Type=Title', 'gap' property */
+.list-title {
+  gap: var(--spacing-sp-24);
+}
+/* From tabset.json: 'Type=Medium', 'gap' property */
+.list-medium {
+  gap: var(--spacing-sp-24);
+}
+/* From tabset.json: 'Type=Small', 'gap' property and border behavior. */
+.list-small {
+  gap: var(--spacing-sp-12);
+  border-bottom-style: none; /* Feedback 2: No general line for Small tabset - specific to 'Type=Small' in tabset.json */
+}
+
+/* --- Trigger --- */
+/* From tab.json: Base styles for individual tab triggers (Tabs.Trigger). */
+/* Covers default appearance, cursor, positioning, and accessibility. */
+.trigger {
+  background-color: transparent;
+  border: none;
+  border-radius: 0; /* Feedback: Remove unwanted border-radius */
+  padding: 0; /* Minimal horizontal padding for touch target, adjust as needed */
+  margin: 0;
+  cursor: pointer;
+  position: relative;
+  outline: none; /* Feedback: Remove default browser outline, custom focus ring will be applied */
+  /* border-bottom: var(--border-width-300) solid transparent; */ /* Removed: Underline handled by triggerLabel::after */
+  margin-bottom: 0; /* Default margin, will be overridden by variants needing alignment with list border. From tab.json, layout section. */
+  color: var(--color-text-secondary); /* Default text color from tab.json, 'State=Default', 'textColor' */
+  -webkit-tap-highlight-color: transparent;
+  display: flex; /* For centering label. From tab.json, layout considerations. */
+  align-items: center; /* For centering label. From tab.json, layout considerations. */
+  justify-content: center; /* For centering label. From tab.json, layout considerations. */
+  text-align: center;
+}
+
+/* From tab.json: Specific margin for 'Type=Small' triggers within a small list. */
+.list-small .trigger {
+   margin-bottom: 0; /* Small tabs don't overlap a list border, they have their own. From tab.json, 'Type=Small' layout. */
+}
+
+/* From tab.json: Styles for the text label within a tab trigger. */
+.triggerLabel {
+  display: inline-block;
+  position: relative; /* For ::after pseudo-element (underline). From tab.json, underline implementation. */
+  white-space: nowrap; /* Ensure tab label is on a single line. From tab.json, typography/layout. */
+  /* Vertical padding removed to fix gap - Feedback 1 */
+  /* Horizontal padding handled by trigger's padding or min-width */
+}
+
+/* From tab.json: Pseudo-element for the underline/indicator of the tab trigger. */
+/* Properties like 'indicatorHeight' and 'indicatorColor' (via states) are from tab.json. */
+.triggerLabel::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%; /* Matches the label's text width. From tab.json, underline behavior. */
+  height: var(--border-width-300); /* Corresponds to 'indicatorHeight' in tab.json. */
+  background-color: transparent; /* Default, states will change this. From tab.json, 'State=Default', 'indicatorColor'. */
+}
+
+/* Positioning the underline at the bottom of the trigger area. */
+/* Values based on (TriggerHeight - LabelLineHeight) / 2 and 'indicatorOffsetY' from tab.json. */
+/* Assuming --font-headline-h4-line-height is ~24px and --font-body-medium-line-height is ~20px */
+/* These are approximate, replace with actual token values or precise calculations if available */
+
+/* From tab.json: 'Type=Title', 'indicatorOffsetY' */
+.trigger-title .triggerLabel::after {
+  /* Top of underline is sp12 below text */
+  bottom: calc(-1 * var(--spacing-sp-12)); /* Corresponds to 'indicatorOffsetY' for Title variant in tab.json */
+}
+
+/* From tab.json: 'Type=Medium', 'indicatorOffsetY' */
+.trigger-medium .triggerLabel::after {
+  /* Top of underline is sp12 below text */
+  bottom: calc(-1 * var(--spacing-sp-12)); /* Corresponds to 'indicatorOffsetY' for Medium variant in tab.json */
+}
+
+/* From tab.json: 'Type=Small', 'indicatorOffsetY' */
+.trigger-small .triggerLabel::after {
+  /* Top of underline is sp8 below text */
+  bottom: calc(-1 * var(--spacing-sp-8)); /* Corresponds to 'indicatorOffsetY' for Small variant in tab.json */
+}
+
+
+/* Trigger Variants - Common styles */
+/* These classes group triggers by type, corresponding to 'Type=Title', 'Type=Medium', 'Type=Small' in tab.json. */
+.trigger-title,
+.trigger-medium,
+.trigger-small {
+  /* Common typography will be applied per state, sourced from tab.json for each type and state. */
+}
+
+/* Trigger Variant: Title */
+/* From tab.json: 'Type=Title' specific layout and typography. */
+.trigger-title {
+  min-width: 58px; /* From tab.json: 'Type=Title', 'minWidth' */
+  height: 36px;    /* From tab.json: 'Type=Title', 'height' */
+  /* Align Tabs.List border: calc( ( (H_trigger - ActualLineHeight_trigger) / 2 ) - Gap_trigger - Borderwidth_list ) */
+  /* This margin calculation aligns the trigger's effective bottom with the Tabs.List border. Details in tab.json layout. */
+  margin-bottom: calc( ( (36px - var(--font-headline-h4-line-height)) / 2 ) - var(--spacing-sp-12) - var(--border-width-300) );
+}
+/* From tab.json: 'Type=Title', typography properties for 'State=Default'. */
+.trigger-title .triggerLabel {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-headline-h4-size);
+  font-weight: var(--font-headline-h4-weight);
+  line-height: var(--font-headline-h4-line-height);
+}
+
+/* Trigger Variant: Medium */
+/* From tab.json: 'Type=Medium' specific layout and typography. */
+.trigger-medium {
+  min-width: 40px; /* From tab.json: 'Type=Medium', 'minWidth' */
+  height: 32px;    /* From tab.json: 'Type=Medium', 'height' */
+  /* Align Tabs.List border: calc( ( (H_trigger - ActualLineHeight_trigger) / 2 ) - Gap_trigger - Borderwidth_list ) */
+  /* This margin calculation aligns the trigger's effective bottom with the Tabs.List border. Details in tab.json layout. */
+  margin-bottom: calc( ( (32px - var(--font-body-medium-line-height)) / 2 ) - var(--spacing-sp-12) - var(--border-width-300) );
+}
+/* From tab.json: 'Type=Medium', typography properties for 'State=Default'. */
+.trigger-medium .triggerLabel {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+}
+
+/* Trigger Variant: Small */
+/* From tab.json: 'Type=Small' specific layout and typography. */
+.trigger-small {
+  min-width: 40px; /* From tab.json: 'Type=Small', 'minWidth' */
+  height: 28px;    /* From tab.json: 'Type=Small', 'height' */
+}
+/* From tab.json: 'Type=Small', typography properties for 'State=Default'. */
+.trigger-small .triggerLabel {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+}
+
+
+/* Trigger States */
+/* Styles for different interaction states of the tab trigger, sourced from tab.json under various 'State=*' variants. */
+
+/* Default/Inactive State (already covered by base .trigger and variant typography) */
+/* From tab.json: 'State=Default', 'textColor', 'indicatorColor' (transparent by default on .triggerLabel::after). */
+/* .trigger[data-state="inactive"] {} */
+
+
+/* Active State */
+/* From tab.json: 'State=Active', 'indicatorColor' and 'textColor'. */
+.trigger[data-state="active"] .triggerLabel::after {
+  background-color: var(--color-stroke-brand); /* 'indicatorColor' for Active state */
+}
+.trigger[data-state="active"] {
+  color: var(--color-text-primary); /* 'textColor' for Active state */
+}
+
+/* Hover State */
+/* From tab.json: 'State=Hover', 'indicatorColor' and 'textColor' for an inactive tab. */
+.trigger[data-state="inactive"]:hover:not([data-disabled]) .triggerLabel::after {
+  background-color: var(--color-stroke-dark); /* 'indicatorColor' for Hover state on inactive tab */
+}
+.trigger[data-state="inactive"]:hover:not([data-disabled]) {
+  color: var(--color-text-primary); /* 'textColor' for Hover state on inactive tab */
+}
+
+/* From tab.json: 'State=Hover', styles for an already active tab (usually no change from active). */
+.trigger[data-state="active"]:hover:not([data-disabled]) .triggerLabel::after {
+  background-color: var(--color-stroke-brand); /* Keep active underline ('indicatorColor' for Active state) */
+}
+.trigger[data-state="active"]:hover:not([data-disabled]) {
+  color: var(--color-text-primary); /* Keep active text color ('textColor' for Active state) */
+}
+
+/* Pressed State */
+/* From tab.json: 'State=Pressed', 'indicatorColor' and 'textColor' for an inactive tab. */
+.trigger[data-state="inactive"]:active:not([data-disabled]) .triggerLabel::after {
+  background-color: var(--color-stroke-brand); /* 'indicatorColor' for Pressed state on inactive tab */
+}
+.trigger[data-state="inactive"]:active:not([data-disabled]) {
+  color: var(--color-text-link-default); /* 'textColor' for Pressed state on inactive tab */
+}
+
+/* From tab.json: 'State=Pressed', styles for an already active tab (usually no change from active). */
+.trigger[data-state="active"]:active:not([data-disabled]) .triggerLabel::after {
+    background-color: var(--color-stroke-brand); /* Retains active underline ('indicatorColor' for Active state) */
+}
+.trigger[data-state="active"]:active:not([data-disabled]) {
+    color: var(--color-text-primary); /* Retains active text color ('textColor' for Active state) */
+}
+
+
+/* Focused State */
+/* From tab.json: 'State=Focused', 'focusRingColor' and 'focusRingOffset' (implemented via box-shadow). */
+.trigger:focus-visible:not([data-disabled]) {
+  outline: none; /* Remove default outline to use custom box-shadow. */
+  box-shadow: 0 0 0 2px var(--denim-300); /* 'focusRingColor' and width. */
+}
+
+/* From tab.json: 'State=Focused', 'indicatorColor' and 'textColor' for an inactive tab. */
+.trigger[data-state="inactive"]:focus-visible:not([data-disabled]) .triggerLabel::after {
+    background-color: var(--color-stroke-default); /* 'indicatorColor' for Focused state on inactive tab */
+}
+.trigger[data-state="inactive"]:focus-visible:not([data-disabled]) {
+    color: var(--color-text-secondary); /* 'textColor' for Focused state on inactive tab */
+}
+
+/* From tab.json: 'State=Focused', 'indicatorColor' and 'textColor' for an active tab. */
+.trigger[data-state="active"]:focus-visible:not([data-disabled]) .triggerLabel::after {
+    background-color: var(--color-stroke-brand); /* Active underline on focus ('indicatorColor' for Active state) */
+}
+.trigger[data-state="active"]:focus-visible:not([data-disabled]) {
+    color: var(--color-text-primary); /* Active text color on focus ('textColor' for Active state) */
+}
+
+
+/* Disabled State */
+/* From tab.json: 'State=Disabled', 'indicatorColor', 'textColor', and typography changes. */
+.trigger[data-disabled] .triggerLabel::after {
+  background-color: transparent; /* No underline for disabled ('indicatorColor' for Disabled state) */
+}
+.trigger[data-disabled] {
+  color: var(--color-text-disabled); /* 'textColor' for Disabled state */
+  cursor: not-allowed;
+}
+
+/* Typography for disabled state if different - From tab.json: 'State=Disabled', specific font weights for variants. */
+/* From tab.json: 'Type=Title, State=Disabled', typography (font weight often same as default). */
+.trigger-title[data-disabled] .triggerLabel {
+  /* font-weight: var(--font-headline-h4-weight); /* Remains same as per tab.json */
+}
+/* From tab.json: 'Type=Medium, State=Disabled', typography (font weight change). */
+.trigger-medium[data-disabled] .triggerLabel {
+  font-weight: var(--font-body-medium-regular-weight); /* Changes for medium disabled */
+}
+/* From tab.json: 'Type=Small, State=Disabled', typography (font weight change). */
+.trigger-small[data-disabled] .triggerLabel {
+  font-weight: var(--font-body-medium-regular-weight); /* Changes for small disabled */
+}
+
+/* Vertical styles removed as per Feedback 4 */
+
+/* --- Content --- */
+/* From tabset.json: Styles for the content panel (Tabs.Content) associated with a tab. */
+/* May include padding or other general container styles. */
+.content {
+  padding: var(--spacing-sp-16); /* Default padding, adjust as needed */
+  /* Add other content styles if specified in Figma JSONs or required */
+  outline: none; /* Radix adds tabindex="0" */
+}

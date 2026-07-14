@@ -1,0 +1,143 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Styles for the SplitButton container */
+.splitButtonContainer {
+  display: inline-flex;
+  align-items: stretch; /* Ensures buttons are same height */
+  gap: 0; /* Buttons are directly adjacent */
+  border-radius: var(--radius-xs); /* Default border radius for the group from Button component */
+  overflow: hidden; /* Ensures child button borders don't poke out */
+  border: 1px solid transparent; /* Placeholder for focus ring, actual border on buttons */
+  position: relative; /* For focus ring positioning */
+}
+
+/* Variant and Size placeholders - actual styling comes from Button component mostly */
+.variant-primary {
+  /* Container specific styles for primary variant if any */
+}
+.variant-secondary {
+  /* Container specific styles for secondary variant if any */
+}
+.variant-tertiary {
+  /* Container specific styles for tertiary variant if any */
+}
+.variant-error {
+  /* Container specific styles for error variant if any */
+}
+
+.size-default {
+  /* Container specific styles for default size if any */
+}
+.size-small {
+  /* Container specific styles for small size if any */
+}
+
+/* Adjustments for individual buttons within the split group */
+/* The Button component itself has its own border and border-radius */
+/* We need to make them appear as a single unit */
+
+.mainButton {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  /* Default: rely on Button component's own right border */
+}
+
+.triggerButton {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  /* Default: rely on Button component's own left border */
+
+  /* Square styling from previous feedback */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  min-width: unset;
+  position: relative;
+}
+
+/* Apply width based on the container's size class (for square trigger) */
+.size-default .triggerButton {
+  width: 36px; /* Match default height from Figma JSON */
+}
+
+.size-small .triggerButton {
+  width: 24px; /* Match small height from Figma JSON */
+}
+
+/* --- Separator Logic --- */
+
+/* For Secondary and Error variants:
+   Assume Button's own border is distinct.
+   mainButton's right border is removed, triggerButton's left border acts as separator.
+*/
+.variant-secondary .mainButton,
+.variant-error .mainButton {
+  border-right-width: 0;
+}
+/* For these variants, .triggerButton uses its own left border, no override needed here for border-left-width. */
+
+
+/* For Primary and Tertiary variants:
+   mainButton MUST provide the right border, as Button's own border might be indistinct.
+   triggerButton's left border is then removed to prevent double border.
+*/
+.variant-primary .mainButton,
+.variant-tertiary .mainButton {
+  border-right-width: 1px;
+  border-right-style: solid;
+  /*
+    NOTE: The following color token 'var(--border-neutral-default)' is chosen as a
+    common token for UI borders. Please verify this against your
+    '/globalTokens/figma-color-tokens.css'. If this token does not exist or is
+    not appropriate for creating a visible separator for primary/tertiary buttons,
+    replace it with the correct existing token from your design system.
+    Alternatives might include: --border-strong-default, --border-ui-default,
+    or a color that contrasts with the primary/tertiary button backgrounds.
+  */
+  border-right-color: var(--color-stroke-controls-default);
+}
+
+.variant-primary .triggerButton,
+.variant-tertiary .triggerButton {
+  border-left-width: 0;
+}
+
+/* Disabled state for the container - primarily to style focus ring if needed */
+.splitButtonContainer.disabled {
+  /* Styles for the disabled container, e.g. opacity, pointer-events */
+  /* Individual buttons handle their own disabled visual state */
+}
+
+/* Focus state for the container - applied via JS if needed, or on children */
+/* Radix DropdownMenu.Trigger will handle its own focus.
+   The main button will also handle its own focus.
+   This is for a potential focus ring around the entire group if desired.
+   However, typically focus is managed by the interactive elements within.
+*/
+.splitButtonContainer:focus-within {
+  /* Example: outline: 2px solid var(--focus-ring-color); */
+  /* outline-offset: 2px; */
+  /* This might conflict with individual button focus rings. */
+  /* Per ai_rules.md, rely on Radix data-state for focus styling on primitives. */
+  /* The Button component should have its own :focus-visible styles. */
+}
+
+/* Styling for the dropdown content, if specific adjustments are needed */
+.dropdownContent {
+  /* Example: min-width to match trigger or specific styling */
+  /* This will be based on DropdownMenu.module.css primarily */
+}
+
+/*
+  Figma JSON for SplitButton (35192:87428) indicates that the "Split" part
+  (our trigger button) uses the same Button component variant as the main action button.
+  The layout shows them as a cohesive group.
+  - `display: inline-flex` on container.
+  - `gap` is effectively 0.
+  - Border radius should apply to the group.
+  - Shared border effect is achieved by removing border-radius on adjacent sides
+    and potentially adjusting border width on one side.
+*/

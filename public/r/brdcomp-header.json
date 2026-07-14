@@ -1,0 +1,43 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-header",
+  "type": "registry:ui",
+  "title": "Header",
+  "description": "Responsive top header with logo, selectors, search, notifications, and user menu.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "categories": [
+    "navigation",
+    "layout"
+  ],
+  "meta": {
+    "tags": [
+      "header",
+      "navigation",
+      "app-shell",
+      "toolbar"
+    ],
+    "examples": [
+      {
+        "title": "App header",
+        "code": "import { Header } from \"@/components/ui/header\"\n\n<Header userName=\"John Smith\" userInitials=\"JS\" />"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-currency-selector.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-language-selector.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-user-menu.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-icon-button.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-input.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/header.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport { Bell, Search } from \"lucide-react\"\n\nimport { CurrencySelector, type CurrencyOption } from \"@/components/ui/currency-selector\"\nimport { LanguageSelector, type LanguageOption } from \"@/components/ui/language-selector\"\nimport { UserMenu, type UserMenuItem } from \"@/components/ui/user-menu\"\nimport { IconButton } from \"@/components/ui/icon-button\"\nimport { InputField } from \"@/components/ui/input\"\nimport {\n  SimpleNavigation,\n  type SimpleNavigationItem,\n} from \"@/components/ui/simple-navigation\"\nimport { ThemeToggle } from \"@/components/ui/theme-toggle\"\nimport { cn } from \"@/lib/utils\"\n\nexport type HeaderUserMenuItem = UserMenuItem\n\nexport interface HeaderProps extends React.HTMLAttributes<HTMLElement> {\n  userName?: string\n  userInitials?: string\n  userMenuItems?: UserMenuItem[]\n  /** Optional custom content rendered next to the logo (e.g. a brand/app label). Separated by a divider. */\n  logoSlot?: React.ReactNode\n  /** Optional segmented navigation rendered in the center of the header. Hidden when no items are provided. */\n  navigationItems?: SimpleNavigationItem[]\n  /** Currently active navigation item id */\n  activeNavigationId?: string\n  /** Callback when a navigation item is selected */\n  onNavigationSelect?: (item: SimpleNavigationItem) => void\n  /** Show the currency selector in the header. Hidden by default. */\n  showCurrencySelector?: boolean\n  currencyOptions?: CurrencyOption[]\n  selectedCurrencyId?: string\n  onCurrencySelect?: (option: CurrencyOption) => void\n  languageOptions?: LanguageOption[]\n  selectedLanguageId?: string\n  onLanguageSelect?: (option: LanguageOption) => void\n  searchValue?: string\n  onSearchChange?: (value: string) => void\n  onNotificationClick?: () => void\n  notificationCount?: number\n  /** Optional override for the logo source. Defaults to the BRD logo at /brd-logo.svg */\n  logoSrc?: string\n  /** Alt text for the logo. Defaults to \"Broadridge\" */\n  logoAlt?: string\n  /** Show the light/dark theme toggle. Shown by default. */\n  showThemeToggle?: boolean\n}\n\nfunction Header({\n  userName = \"John Smith\",\n  userInitials = \"JS\",\n  userMenuItems = [],\n  logoSlot,\n  navigationItems,\n  activeNavigationId,\n  onNavigationSelect,\n  showCurrencySelector = false,\n  currencyOptions = [\n    { id: \"usd\", label: \"USD\" },\n    { id: \"cad\", label: \"CAD\" },\n  ],\n  selectedCurrencyId = \"usd\",\n  onCurrencySelect,\n  languageOptions = [\n    { id: \"eng\", label: \"ENG\" },\n    { id: \"fr\", label: \"FR\" },\n  ],\n  selectedLanguageId = \"eng\",\n  onLanguageSelect,\n  searchValue,\n  onSearchChange,\n  onNotificationClick,\n  notificationCount = 0,\n  logoSrc = \"/brd-logo.svg\",\n  logoAlt = \"Broadridge\",\n  showThemeToggle = true,\n  className,\n  ...props\n}: HeaderProps) {\n  return (\n    <header\n      className={cn(\n        \"sticky top-0 z-40 w-full bg-[var(--color-surface-foreground)]\",\n        className\n      )}\n      {...props}\n    >\n      <div className=\"relative flex h-14 items-center justify-between px-4 lg:px-6\">\n        <div className=\"flex items-center gap-4\">\n          {/* eslint-disable-next-line @next/next/no-img-element */}\n          <img\n            src={logoSrc || \"/placeholder.svg\"}\n            alt={logoAlt}\n            width={121}\n            height={48}\n            className=\"shrink-0 dark:brightness-0 dark:invert\"\n          />\n          {logoSlot && (\n            <div className=\"flex items-center gap-4\">\n              <span\n                aria-hidden=\"true\"\n                className=\"h-6 w-px bg-[var(--color-stroke-default)]\"\n              />\n              <div className=\"flex items-center\">{logoSlot}</div>\n            </div>\n          )}\n          {showCurrencySelector && (\n            <div className=\"hidden min-[721px]:block\">\n              <CurrencySelector\n                options={currencyOptions}\n                selectedId={selectedCurrencyId}\n                onSelect={onCurrencySelect}\n                triggerClassName=\"h-9 px-3 py-2\"\n                menuClassName=\"min-w-[120px]\"\n              />\n            </div>\n          )}\n        </div>\n\n        {navigationItems && navigationItems.length > 0 && (\n          <div className=\"absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 min-[968px]:block\">\n            <SimpleNavigation\n              items={navigationItems}\n              activeId={activeNavigationId}\n              onSelect={onNavigationSelect}\n            />\n          </div>\n        )}\n\n        <div className=\"flex items-center gap-3\">\n          <div className=\"hidden min-[1281px]:block w-[280px] xl:w-[320px]\">\n            <InputField\n              name=\"header-search\"\n              placeholder=\"Search accounts, clients, employers\"\n              leftIcon={Search}\n              value={searchValue}\n              onChange={(event) => onSearchChange?.(event.target.value)}\n            />\n          </div>\n          <IconButton\n            ariaLabel=\"Search\"\n            size=\"M\"\n            color=\"Black\"\n            className=\"min-[1281px]:hidden\"\n          >\n            <Search className=\"h-5 w-5\" />\n          </IconButton>\n\n          <div className=\"hidden min-[721px]:block\">\n            <LanguageSelector\n              options={languageOptions}\n              selectedId={selectedLanguageId}\n              onSelect={onLanguageSelect}\n              triggerClassName=\"h-9 px-3 py-2\"\n              menuClassName=\"min-w-[120px]\"\n            />\n          </div>\n\n          {showThemeToggle && <ThemeToggle />}\n\n          <div className=\"relative\">\n            <IconButton\n              ariaLabel=\"Notifications\"\n              size=\"M\"\n              color=\"Black\"\n              onClick={onNotificationClick}\n            >\n              <Bell className=\"h-5 w-5\" />\n            </IconButton>\n            {notificationCount > 0 && (\n              <span className=\"absolute -top-1 -right-1 rounded-full bg-[var(--color-state-error)] px-1.5 text-[10px] font-semibold text-white\">\n                {notificationCount > 9 ? \"9+\" : notificationCount}\n              </span>\n            )}\n          </div>\n\n          <div className=\"hidden min-[721px]:block\">\n            <UserMenu name={userName} items={userMenuItems} />\n          </div>\n          <div className=\"min-[721px]:hidden\">\n            <UserMenu name={userInitials} items={userMenuItems} />\n          </div>\n        </div>\n      </div>\n    </header>\n  )\n}\n\nexport { Header }\n"
+    }
+  ]
+}

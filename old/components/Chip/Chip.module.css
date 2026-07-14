@@ -1,0 +1,200 @@
+@import '/globalTokens/figma-color-tokens.css';
+@import '/globalTokens/figma-numeric-tokens.css';
+@import '/globalTokens/figma-typography-tokens.css';
+
+/* Base Chip Styles */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid transparent; /* Default border, overridden by variants */
+  cursor: default; /* Default cursor, overridden if interactive */
+  user-select: none;
+  text-decoration: none;
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out, color 0.2s ease-out, box-shadow 0.2s ease-out;
+  border-radius: var(--radius-s); /* from figma-jsons/chip.json layout.cornerRadius */
+  /* Horizontal padding is now handled by textContainer and gap, remove from chip itself if it causes double padding.
+     The root chip padding in Figma JSON (e.g. layout.padding) seems to be for the overall component boundary.
+     Let's keep a minimal padding on the chip for the icon and remove button if they are at the edges,
+     and let textContainer handle its own padding.
+     The Figma JSON structure shows the icon, text-container, and icon button as direct children of the chip frame.
+     The chip frame itself has padding. The text-container also has padding.
+     This implies the chip's padding is for the outermost elements, and text-container's padding is internal to it.
+     The `gap` property will space these children.
+     Let's adjust the chip's direct padding to be only for the cases where icon/remove button are at the very start/end.
+     If textContainer is the only child, its padding would suffice.
+     Given the structure: [Icon] [TextContainer] [RemoveButton], the chip's padding should apply to the left of Icon and right of RemoveButton.
+     The gap handles spacing between them. TextContainer handles its internal padding.
+     The Figma JSON `layout.padding` for the chip component itself is `--spacing-sp-4`.
+     Let's apply this to the chip and see how it interacts with the textContainer's padding.
+     It might be that the textContainer's padding is *in addition* to the chip's overall padding.
+     If the chip has padding-left: sp-4, and textContainer also has padding-left: sp-4, the text will be indented by sp-8 from the left edge if there's no icon.
+     This needs careful interpretation.
+     Let's assume the chip's padding is the outermost padding.
+     The children (icon, textContainer, removeButton) are laid out within that padding box.
+     The `gap` spaces these children.
+     The `textContainer` then has *its own internal padding* for the text relative to its own boundaries.
+     This seems the most logical interpretation of nested paddings.
+     So, the chip's padding remains, and textContainer adds its own.
+  */
+  padding-left: var(--spacing-sp-4); /* from figma-jsons/chip.json layout.padding */
+  padding-right: var(--spacing-sp-4); /* from figma-jsons/chip.json layout.padding */
+}
+
+.chip.interactive {
+  cursor: pointer;
+}
+
+/* Size Variants */
+/* Size=Default from figma-jsons/chip.json variants[name="Size=Default..."].layout */
+.default {
+  height: 32px; /* figma-jsons/chip.json variants[name="Size=Default..."].layout.height */
+  /* Typography for Default Size - from figma-jsons/chip.json typography["Size=Default.../Name"] */
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-semibold-weight);
+  line-height: var(--font-body-medium-line-height);
+}
+
+/* Size=Small from figma-jsons/chip.json variants[name="Size=Small..."].layout */
+.small {
+  height: 24px; /* figma-jsons/chip.json variants[name="Size=Small..."].layout.height */
+   /* Typography for Small Size - from figma-jsons/chip.json typography["Size=Small.../Name"] */
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-small-size);
+  font-weight: var(--font-body-small-semibold-weight);
+  line-height: var(--font-body-small-line-height);
+}
+
+/* Color Variants - Default State */
+/* Color=Grey, State=Default from figma-jsons/chip.json variants[name="Size=..., State=Default, Color=Grey"].colors */
+.grey {
+  background-color: var(--color-surface-chip-default); /* token: --color-surface-chip-default */
+  border-color: var(--color-stroke-light); /* token: --color-stroke-light */
+  color: var(--color-text-dark-accent); /* token: --color-text-dark-accent */
+}
+
+/* Color=White, State=Default from figma-jsons/chip.json variants[name="Size=..., State=Default, Color=White"].colors */
+.white {
+  background-color: var(--color-surface-chip-default-white); /* token: --color-surface-chip-default-white */
+  border-color: var(--color-stroke-light); /* token: --color-stroke-light */
+  color: var(--color-text-dark-accent); /* token: --color-text-dark-accent */
+}
+
+/* Hover States (not disabled) */
+/* Color=Grey, State=Hover from figma-jsons/chip.json variants[name="Size=..., State=Hover, Color=Grey"].colors */
+.chip.grey:not([data-disabled]):not([aria-disabled='true']):hover,
+.chip.grey:not([data-disabled]):not([aria-disabled='true']):focus-visible {
+  background-color: var(--color-surface-chip-hover); /* token: --color-surface-chip-hover */
+  border-color: var(--brand-400); /* token: --brand-400 */
+  /* text color remains --color-text-dark-accent as per figma */
+}
+
+/* Color=White, State=Hover from figma-jsons/chip.json variants[name="Size=..., State=Hover, Color=White"].colors */
+.chip.white:not([data-disabled]):not([aria-disabled='true']):hover,
+.chip.white:not([data-disabled]):not([aria-disabled='true']):focus-visible {
+  background-color: var(--color-surface-chip-hover); /* token: --color-surface-chip-hover */
+  border-color: var(--brand-400); /* token: --brand-400 */
+  /* text color remains --color-text-dark-accent as per figma */
+}
+
+/* Selected States (not disabled) */
+/* State=Selected (applies to both Grey and White) from figma-jsons/chip.json variants[name="Size=..., State=Selected, Color=..."].colors */
+.chip.selected:not([data-disabled]):not([aria-disabled='true']),
+.chip[data-state='on']:not([data-disabled]):not([aria-disabled='true']) {
+  background-color: var(--color-surface-chip-selected); /* token: --color-surface-chip-selected */
+  border-color: var(--color-stroke-brand); /* token: --color-stroke-brand */
+  color: var(--color-text-selected); /* token: --color-text-selected */
+}
+/* Border weight for selected state - from figma-jsons/chip.json variants[name="Size=Default, State=Selected..."].layout.strokeWeight */
+.chip.default.selected:not([data-disabled]):not([aria-disabled='true']),
+.chip.default[data-state='on']:not([data-disabled]):not([aria-disabled='true']) {
+  border-width: var(--border-width-200);
+}
+/* Border weight for selected state - from figma-jsons/chip.json variants[name="Size=Small, State=Selected..."].layout.strokeWeight */
+/* Note: Figma JSON specifies --border-width-100 for Small+Selected, but Default+Selected is --border-width-200.
+   Assuming the thicker border for selected is intentional for Default, and standard for Small.
+   If Small+Selected should also be thicker, this needs clarification. For now, Small keeps its default border width.
+   The JSON for Size=Small, State=Selected, Color=Grey has strokeWeight: --border-width-100
+   The JSON for Size=Default, State=Selected, Color=Grey has strokeWeight: --border-width-200
+   This seems correct based on the JSON.
+*/
+.chip.small.selected:not([data-disabled]):not([aria-disabled='true']),
+.chip.small[data-state='on']:not([data-disabled]):not([aria-disabled='true']) {
+   border-width: var(--border-width-100); /* Explicitly setting based on Small+Selected variant */
+}
+
+
+/* Focus Visible State (distinct from hover, if needed, but Figma combines them for Chip) */
+/* Using combined hover/focus-visible for simplicity as per Figma's apparent intent */
+.chip:focus-visible:not([data-disabled]):not([aria-disabled='true']) {
+  outline: var(--px-2) solid var(--color-stroke-brand); /* Using defined brand color for focus */
+  outline-offset: var(--px-2); /* Using defined numeric token for offset */
+}
+/* If .focus_ring_component from Figma JSON is to be implemented, it would be a separate element or pseudo-element */
+
+
+/* Disabled State */
+.chip[data-disabled],
+.chip[aria-disabled='true'] {
+  cursor: not-allowed;
+  /* Assuming a generic disabled style. Figma JSON does not explicitly define disabled state colors for Chip.
+     Using common practice of reduced opacity or specific disabled tokens if available.
+     For now, let's use opacity and ensure text/icon colors are less prominent.
+     If specific disabled tokens exist for chip, they should be used.
+  */
+  opacity: 0.6; /* General disabled opacity */
+  background-color: var(--color-surface-controls-disabled); /* A generic disabled surface color */
+  border-color: var(--color-stroke-controls-disabled); /* A generic disabled stroke color */
+  color: var(--color-text-disabled); /* A generic disabled text color */
+}
+
+.chip[data-disabled] .leadingIcon,
+.chip[aria-disabled='true'] .leadingIcon,
+.chip[data-disabled] .removeIcon,
+.chip[aria-disabled='true'] .removeIcon {
+  color: var(--color-icon-disabled); /* A generic disabled icon color */
+}
+
+
+/* Internal Elements */
+.leadingIcon,
+.removeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit; /* Inherits color from parent chip, can be overridden by states */
+}
+
+.leadingIcon {
+  /* Specific styling for leading icon if needed, e.g., margin */
+  /* Icon color is based on chip's text color by default */
+}
+
+.textContainer {
+  /* From figma-jsons/chip.json structure.children[...].children (text-container).boundVariables */
+  padding-left: var(--spacing-sp-4);
+  padding-right: var(--spacing-sp-4);
+  display: inline-flex; /* To contain the label properly */
+  align-items: center;
+}
+
+.label {
+  /* Specific styling for label if needed */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Styles for .removeButton and .removeIcon are removed as IconButton is now used. */
+/* IconButton should have its own styling. */
+/* Positional adjustments for the IconButton within the Chip can be done via a wrapper or direct className if needed. */
+/* For now, assuming the gap on .chip and IconButton's default margins are sufficient. */
+
+
+/* Icon color for leading icon in selected state */
+.chip.selected:not([data-disabled]):not([aria-disabled='true']) .leadingIcon,
+.chip[data-state='on']:not([data-disabled]):not([aria-disabled='true']) .leadingIcon {
+ color: inherit; /* Inherits --color-text-selected from the parent .chip.selected state */
+}

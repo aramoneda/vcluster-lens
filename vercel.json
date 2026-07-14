@@ -1,0 +1,3 @@
+{
+  "buildCommand": "bunx tsx build.ts && next build"
+}

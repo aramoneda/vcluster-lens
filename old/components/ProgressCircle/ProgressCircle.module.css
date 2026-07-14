@@ -1,0 +1,198 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* Base progress circle styles */
+.progressCircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.svgContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.svg {
+  display: block;
+}
+
+.centerContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Ring styles */
+.backgroundRing {
+  stroke: #bad1f5; /* --color-surface-progress-foreground fallback */
+}
+
+.progressRing {
+  stroke: #0b49ea; /* --color-surface-progress-active fallback */
+}
+
+/* Size variants */
+.xxs {
+  width: 80px;
+  height: 80px;
+}
+
+.xxs .svg {
+  width: 80px;
+  height: 80px;
+}
+
+.xxs.halfcircle {
+  height: 48px;
+}
+
+.xxs.halfcircle .svg {
+  height: 48px;
+}
+
+.xs {
+  width: 160px;
+  height: 160px;
+}
+
+.xs .svg {
+  width: 160px;
+  height: 160px;
+}
+
+.xs.halfcircle {
+  height: 88px;
+}
+
+.xs.halfcircle .svg {
+  height: 88px;
+}
+
+.sm {
+  width: 200px;
+  height: 200px;
+}
+
+.sm .svg {
+  width: 200px;
+  height: 200px;
+}
+
+.sm.halfcircle {
+  height: 110px;
+}
+
+.sm.halfcircle .svg {
+  height: 110px;
+}
+
+.md {
+  width: 240px;
+  height: 240px;
+}
+
+.md .svg {
+  width: 240px;
+  height: 240px;
+}
+
+.md.halfcircle {
+  height: 132px;
+}
+
+.md.halfcircle .svg {
+  height: 132px;
+}
+
+.lg {
+  width: 280px;
+  height: 280px;
+}
+
+.lg .svg {
+  width: 280px;
+  height: 280px;
+}
+
+.lg.halfcircle {
+  height: 154px;
+}
+
+.lg.halfcircle .svg {
+  height: 154px;
+}
+
+/* Typography styles for different sizes */
+.text {
+  font-family: var(--font-family-brand);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: #1c1f22; /* --color-text-primary fallback */
+}
+
+.number {
+  font-family: var(--font-family-brand);
+  font-weight: 600;
+  color: #1c1f22; /* --color-text-primary fallback */
+}
+
+/* Size-specific number typography */
+.xs .number {
+  font-size: 24px;
+  line-height: 28px;
+}
+
+.sm .number {
+  font-size: 28px;
+  line-height: 32px;
+}
+
+.md .number,
+.lg .number {
+  font-size: 32px;
+  line-height: 36px;
+  letter-spacing: -2px;
+}
+
+/* Label styles */
+.labelContainer {
+  margin-top: var(--spacing-sp-8);
+  text-align: center;
+}
+
+.labelText {
+  font-family: var(--font-family-brand);
+  color: #656c70; /* --color-text-secondary fallback */
+}
+
+/* Size-specific label typography */
+.xs .labelText,
+.xxs .labelText {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.sm .labelText,
+.md .labelText,
+.lg .labelText {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+/* Half circle adjustments for center content positioning */
+.halfcircle .centerContent {
+  top: 60%;
+}

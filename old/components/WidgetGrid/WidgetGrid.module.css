@@ -1,0 +1,231 @@
+/* WidgetGrid Component Styles */
+/* Responsive grid container for Widget components */
+
+/* CSS Variables for grid configuration */
+:root {
+  --widget-grid-row-height: 315px;
+  --widget-grid-gutter: 24px;
+}
+
+.widgetGridContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: var(--max-width, 1920px);
+  margin: 0 auto;
+  box-sizing: border-box;
+  grid-column: 1 / -1;
+}
+
+/* Grid overlay for development */
+.gridOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  gap: var(--widget-grid-gutter);
+  padding: 0 var(--spacing-sp-24);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.gridColumn {
+  background-color: var(--color-surface-accent);
+  opacity: 0.1;
+  border-radius: var(--radius-xs);
+}
+
+/* Widget grid layout */
+.widgetGrid {
+  display: grid;
+  gap: var(--widget-grid-gutter);
+  grid-auto-rows: var(--widget-grid-row-height);
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 var(--spacing-sp-24);
+  position: relative;
+  z-index: 2;
+  /* Default: 6 columns (covers most common case) */
+  grid-template-columns: repeat(6, 1fr);
+}
+
+/* Default widget spans for base grid */
+.widgetGrid > [data-size="S"] {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.widgetGrid > [data-size="M"] {
+  grid-column: span 3;
+  grid-row: span 2;
+}
+
+.widgetGrid > [data-size="L"] {
+  grid-column: span 6;
+  grid-row: span 2;
+}
+
+/* Remove padding when inside Page component or other containers that provide padding */
+.noPadding {
+  padding: 0;
+}
+
+/* ============================= */
+/* Responsive Breakpoint Rules   */
+/* ============================= */
+
+/* 2XL (1920px+): 12 columns */
+@media (min-width: 1920px) {
+  .gridOverlay,
+  .widgetGrid {
+    grid-template-columns: repeat(12, 1fr);
+  }
+
+  /* Widget size spans for 12-column grid */
+  .widgetGrid > [data-size="S"] {
+    grid-column: span 3;
+    grid-row: span 1;
+  }
+
+  .widgetGrid > [data-size="M"] {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+
+  .widgetGrid > [data-size="L"] {
+    grid-column: span 9;
+    grid-row: span 2;
+  }
+}
+
+/* XL (1600-1919px): 12 columns */
+@media (min-width: 1600px) and (max-width: 1919px) {
+  .gridOverlay,
+  .widgetGrid {
+    grid-template-columns: repeat(12, 1fr);
+  }
+
+  .widgetGrid > [data-size="S"] {
+    grid-column: span 3;
+    grid-row: span 1;
+  }
+
+  .widgetGrid > [data-size="M"] {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+
+  .widgetGrid > [data-size="L"] {
+    grid-column: span 9;
+    grid-row: span 2;
+  }
+}
+
+/* L (1280-1599px): 6 columns */
+@media (min-width: 1280px) and (max-width: 1599px) {
+  .gridOverlay,
+  .widgetGrid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .widgetGrid > [data-size="S"] {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .widgetGrid > [data-size="M"] {
+    grid-column: span 4;
+    grid-row: span 2;
+  }
+
+  .widgetGrid > [data-size="L"] {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+}
+
+/* M+ (968-1279px): 6 columns */
+@media (min-width: 968px) and (max-width: 1279px) {
+  .gridOverlay,
+  .widgetGrid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .widgetGrid > [data-size="S"] {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .widgetGrid > [data-size="M"] {
+    grid-column: span 4;
+    grid-row: span 2;
+  }
+
+  .widgetGrid > [data-size="L"] {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+}
+
+/* M (768-967px): 6 columns */
+@media (min-width: 768px) and (max-width: 967px) {
+  .gridOverlay,
+  .widgetGrid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .widgetGrid > [data-size="S"] {
+    grid-column: span 3;
+    grid-row: span 1;
+  }
+
+  .widgetGrid > [data-size="M"] {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+
+  .widgetGrid > [data-size="L"] {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+}
+
+/* S (350-767px): 3 columns */
+@media (min-width: 350px) and (max-width: 767px) {
+  .gridOverlay,
+  .widgetGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .widgetGrid > [data-size="S"] {
+    grid-column: span 3;
+    grid-row: span 1;
+  }
+
+  .widgetGrid > [data-size="M"] {
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+
+  .widgetGrid > [data-size="L"] {
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+}
+
+/* XS (< 350px): 3 columns, all widgets full-width */
+@media (max-width: 349px) {
+  .gridOverlay,
+  .widgetGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .widgetGrid > [data-size="S"],
+  .widgetGrid > [data-size="M"],
+  .widgetGrid > [data-size="L"] {
+    grid-column: span 3;
+    grid-row: span 1;
+  }
+}

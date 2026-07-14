@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-separator",
+  "type": "registry:ui",
+  "title": "Separator",
+  "description": "A horizontal or vertical divider used to separate content and improve visual structure.",
+  "dependencies": [
+    "@radix-ui/react-separator"
+  ],
+  "categories": [
+    "layout"
+  ],
+  "meta": {
+    "tags": [
+      "separator",
+      "divider",
+      "layout",
+      "spacing"
+    ],
+    "examples": [
+      {
+        "title": "Section divider",
+        "code": "import { Separator } from \"@/components/ui/separator\"\n\n<Separator />"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/separator.tsx",
+      "type": "registry:ui",
+      "content": "'use client'\n\nimport * as React from 'react'\nimport * as SeparatorPrimitive from '@radix-ui/react-separator'\n\nimport { cn } from '@/lib/utils'\n\nfunction Separator({\n  className,\n  orientation = 'horizontal',\n  decorative = true,\n  ...props\n}: React.ComponentProps<typeof SeparatorPrimitive.Root>) {\n  return (\n    <SeparatorPrimitive.Root\n      data-slot=\"separator\"\n      decorative={decorative}\n      orientation={orientation}\n      className={cn(\n        'bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px',\n        className,\n      )}\n      {...props}\n    />\n  )\n}\n\nexport { Separator }\n"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+
+/* Custom styles for Widget Zoom Modal */
+.zoomModalContent {
+  /* Override modal max-height to accommodate L widget size */
+  max-height: 90vh;
+}
+
+/* Widget content container - L size dimensions */
+.widgetContent {
+  min-height: 580px; /* L widget content height (654px - header/footer padding) */
+  max-height: calc(90vh - 120px); /* Account for modal padding and header */
+  overflow-y: auto;
+  background-color: var(--color-surface-widget);
+  border-radius: var(--radius-xs);
+  padding: var(--spacing-sp-16);
+}
+

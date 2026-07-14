@@ -1,0 +1,47 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+
+/* SideToolbar Container */
+.sideToolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 48px;
+  padding: var(--spacing-sp-4);
+  gap: var(--spacing-sp-64); /* itemSpacing between TopGroup and BottomGroup */
+  background-color: var(--color-surface-foreground);
+  border-radius: var(--radius-s);
+  box-sizing: border-box;
+}
+
+/* Top Group - Icons at top */
+.topGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sp-12); /* itemSpacing within TopGroup */
+}
+
+/* Bottom Group - Icons at bottom */
+.bottomGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sp-12); /* itemSpacing within Bottom Icons */
+}
+
+/* Override IconButton size to 40x40 for SideToolbar */
+.topGroup button,
+.bottomGroup button {
+  width: 40px;
+  height: 40px;
+}
+
+/* Divider between bottom items */
+.divider {
+  width: 24px;
+  height: 1px;
+  background-color: var(--neutral-450, #bfc4c8);
+  flex-shrink: 0;
+}
+

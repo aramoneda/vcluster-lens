@@ -1,0 +1,43 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-shell",
+  "type": "registry:block",
+  "title": "Shell",
+  "description": "A composed application shell combining header, navigation, page container, and footer.",
+  "dependencies": [],
+  "categories": [
+    "layout",
+    "navigation"
+  ],
+  "meta": {
+    "tags": [
+      "shell",
+      "app-shell",
+      "layout",
+      "template",
+      "navigation"
+    ],
+    "examples": [
+      {
+        "title": "App shell",
+        "code": "import { Shell } from \"@/components/ui/shell\"\n\n<Shell>{/* page content */}</Shell>"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-header.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-top-navigation.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-side-toolbar.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-left-navigation.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-page-container.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-footer.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/shell.tsx",
+      "type": "registry:block",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\n\nimport { Bookmark, Calendar, Info, MessageSquare, Settings } from \"lucide-react\"\n\nimport { Header, type HeaderProps } from \"@/components/ui/header\"\nimport { TopNavigation, type TopNavigationProps } from \"@/components/ui/top-navigation\"\nimport { SideToolbar, type SideToolbarProps } from \"@/components/ui/side-toolbar\"\nimport { LeftNavigation, type LeftNavigationProps } from \"@/components/ui/left-navigation\"\nimport { PageContainer, type PageContainerProps } from \"@/components/ui/page-container\"\nimport { Footer, type FooterProps } from \"@/components/ui/footer\"\nimport { cn } from \"@/lib/utils\"\n\nexport type ShellDensity = \"comfortable\" | \"compact\"\n\nexport interface ShellProps extends React.HTMLAttributes<HTMLDivElement> {\n  headerProps?: HeaderProps\n  topNavigationProps?: TopNavigationProps\n  leftNavigationProps?: LeftNavigationProps\n  sideToolbarProps?: SideToolbarProps\n  pageContainerProps?: PageContainerProps\n  footerProps?: FooterProps\n  contentClassName?: string\n  /**\n   * Controls the information density of the shell content area. `comfortable`\n   * (default) preserves the standard BRD spacing; `compact` tightens gaps,\n   * control heights, and grid/chart sizing for high-density personas (e.g.\n   * Trader). Sets `data-density` on the root so `--shell-density-*` tokens and\n   * shell theming helpers resolve to the correct scale.\n   */\n  density?: ShellDensity\n  children?: React.ReactNode\n}\n\nconst defaultSideToolbarItems: SideToolbarProps[\"items\"] = [\n  { id: \"info\", label: \"Info\", icon: Info },\n  { id: \"bookmarks\", label: \"Bookmarks\", icon: Bookmark },\n  { id: \"messages\", label: \"Messages\", icon: MessageSquare },\n  { id: \"calendar\", label: \"Calendar\", icon: Calendar },\n  { id: \"settings\", label: \"Settings\", icon: Settings },\n]\n\nfunction Shell({\n  headerProps,\n  topNavigationProps,\n  leftNavigationProps,\n  sideToolbarProps,\n  pageContainerProps,\n  footerProps,\n  className,\n  contentClassName,\n  density = \"comfortable\",\n  children,\n  ...props\n}: ShellProps) {\n  const hasLeftNav = Boolean(leftNavigationProps?.items?.length)\n  // Side toolbar is hidden by default. It only renders when explicit items are provided.\n  const sideToolbarItems = sideToolbarProps?.items ?? defaultSideToolbarItems\n  const hasSideToolbar = Boolean(sideToolbarProps?.items?.length)\n  const hasTopNav = Boolean(topNavigationProps?.items?.length)\n  const headerHeight = \"56px\"\n  const topNavHeight = hasTopNav ? \"40px\" : \"0px\"\n  const leftRailWidth = hasLeftNav ? \"104px\" : \"0px\"\n\n  return (\n    <div\n      data-density={density}\n      className={cn(\"min-h-screen bg-[var(--color-surface-background)]\", className)}\n      style={{\n        [\"--shell-header-height\" as string]: headerHeight,\n        [\"--shell-topnav-height\" as string]: topNavHeight,\n        [\"--shell-left-rail-width\" as string]: leftRailWidth,\n        ...(props.style ?? {}),\n      }}\n      {...props}\n    >\n      <Header {...headerProps} />\n      {hasTopNav && <TopNavigation {...topNavigationProps} leftRailWidth={hasLeftNav ? leftRailWidth : undefined} />}\n\n      <div\n        className={cn(\n          \"relative\",\n          hasLeftNav && \"pl-[var(--shell-left-rail-width)]\",\n          contentClassName\n        )}\n      >\n        {hasLeftNav && (\n          <LeftNavigation\n            {...leftNavigationProps}\n            position=\"fixed\"\n            className={cn(\n              leftNavigationProps?.className,\n              \"top-[var(--shell-header-height)]\",\n              \"h-[calc(100vh-var(--shell-header-height))]\"\n            )}\n          />\n        )}\n        {hasSideToolbar && (\n          <SideToolbar\n            {...sideToolbarProps}\n            items={sideToolbarItems}\n            position={sideToolbarProps?.position ?? \"fixed\"}\n            className={sideToolbarProps?.className}\n          />\n        )}\n\n        <main className=\"bg-[var(--color-surface-dashboard)]\">\n          <PageContainer\n            {...pageContainerProps}\n            layout=\"shell\"\n            sideToolbarReserved={hasSideToolbar}\n            className={cn(\n              \"py-6\",\n              \"min-h-[calc(100vh-var(--shell-header-height)-var(--shell-topnav-height))]\",\n              \"flex flex-col\",\n              pageContainerProps?.className\n            )}\n          >\n            <div className=\"flex min-h-0 flex-1 flex-col\">\n              {children}\n            </div>\n            <Footer {...footerProps} className={cn(\"mt-12\", footerProps?.className)} />\n          </PageContainer>\n        </main>\n      </div>\n    </div>\n  )\n}\n\nexport { Shell }\n"
+    }
+  ]
+}

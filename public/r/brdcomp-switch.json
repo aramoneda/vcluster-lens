@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-switch",
+  "type": "registry:ui",
+  "title": "Switch",
+  "description": "A toggle switch for binary settings, with optional label and size variants.",
+  "dependencies": [
+    "@radix-ui/react-switch",
+    "class-variance-authority"
+  ],
+  "categories": [
+    "forms"
+  ],
+  "meta": {
+    "tags": [
+      "switch",
+      "toggle",
+      "input",
+      "form"
+    ],
+    "examples": [
+      {
+        "title": "Toggle setting",
+        "code": "import { Switch } from \"@/components/ui/switch\"\n\n<Switch label=\"Enable notifications\" />"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/switch.tsx",
+      "type": "registry:ui",
+      "content": "'use client'\n\nimport * as React from 'react'\nimport * as SwitchPrimitive from '@radix-ui/react-switch'\nimport { cva, type VariantProps } from 'class-variance-authority'\n\nimport { cn } from '@/lib/utils'\n\n// Size type\nexport type SwitchSize = 'default' | 'small'\nexport type LabelPosition = 'left' | 'right'\n\nconst switchRootVariants = cva(\n  [\n    'relative inline-flex shrink-0 items-center',\n    'rounded-full border-none p-0',\n    'cursor-pointer outline-none',\n    'transition-colors duration-150',\n    '-webkit-tap-highlight-color-transparent',\n    // Unchecked state\n    'data-[state=unchecked]:bg-[var(--color-surface-toggle-default)]',\n    // Checked state\n    'data-[state=checked]:bg-[var(--color-surface-toggle-active)]',\n    // Focus state\n    'focus-visible:ring-2 focus-visible:ring-[var(--brand-300)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-stroke-brand)]',\n    // Disabled state\n    'disabled:bg-[var(--color-surface-toggle-disabled)]',\n    'disabled:cursor-not-allowed',\n  ],\n  {\n    variants: {\n      size: {\n        default: 'w-10 h-6', // 40px x 24px\n        small: 'w-7 h-4',    // 28px x 16px\n      },\n    },\n    defaultVariants: {\n      size: 'default',\n    },\n  }\n)\n\nconst switchThumbVariants = cva(\n  [\n    'block rounded-full',\n    'bg-[var(--color-surface-toggle-ellipse)]',\n    'shadow-[0_1px_2px_rgba(0,0,0,0.05)]',\n    'transition-transform duration-150',\n    'pointer-events-none',\n    'will-change-transform',\n    // Disabled state\n    'data-[disabled]:opacity-60',\n  ],\n  {\n    variants: {\n      size: {\n        default: [\n          'size-4', // 16px (24 - 2*4)\n          'data-[state=unchecked]:translate-x-1',  // 4px padding\n          'data-[state=checked]:translate-x-5',    // 40 - 16 - 4 = 20px\n        ],\n        small: [\n          'size-3', // 12px (16 - 2*2)\n          'data-[state=unchecked]:translate-x-0.5', // 2px padding\n          'data-[state=checked]:translate-x-3.5',   // 28 - 12 - 2 = 14px\n        ],\n      },\n    },\n    defaultVariants: {\n      size: 'default',\n    },\n  }\n)\n\nexport interface SwitchProps\n  extends Omit<React.ComponentPropsWithoutRef<typeof SwitchPrimitive.Root>, 'children'>,\n    VariantProps<typeof switchRootVariants> {\n  /** The size of the switch */\n  size?: SwitchSize\n  /** Optional label text */\n  label?: React.ReactNode\n  /** Position of the label relative to the switch */\n  labelPosition?: LabelPosition\n}\n\nconst Switch = React.forwardRef<\n  React.ElementRef<typeof SwitchPrimitive.Root>,\n  SwitchProps\n>(\n  (\n    {\n      className,\n      size = 'default',\n      label,\n      labelPosition = 'right',\n      disabled,\n      id,\n      ...props\n    },\n    ref\n  ) => {\n    const generatedId = React.useId()\n    const switchId = id || generatedId\n    const labelId = `${switchId}-label`\n\n    const switchElement = (\n      <SwitchPrimitive.Root\n        ref={ref}\n        id={switchId}\n        data-slot=\"switch\"\n        disabled={disabled}\n        aria-labelledby={label ? labelId : undefined}\n        className={cn(switchRootVariants({ size }), className)}\n        {...props}\n      >\n        <SwitchPrimitive.Thumb\n          data-slot=\"switch-thumb\"\n          className={switchThumbVariants({ size })}\n        />\n      </SwitchPrimitive.Root>\n    )\n\n    if (!label) {\n      return switchElement\n    }\n\n    return (\n      <div\n        className={cn(\n          'inline-flex items-center gap-2',\n          labelPosition === 'left' && 'flex-row-reverse',\n          disabled && 'cursor-not-allowed'\n        )}\n      >\n        {switchElement}\n        <label\n          id={labelId}\n          htmlFor={switchId}\n          className={cn(\n            'font-[var(--font-family-brand)]',\n            'text-sm font-normal leading-5',\n            'text-[var(--color-text-primary)]',\n            'cursor-pointer select-none',\n            disabled && 'cursor-not-allowed text-[var(--color-text-disabled)]'\n          )}\n        >\n          {label}\n        </label>\n      </div>\n    )\n  }\n)\n\nSwitch.displayName = 'Switch'\n\nexport { Switch, switchRootVariants, switchThumbVariants }\n"
+    }
+  ]
+}

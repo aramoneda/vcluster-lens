@@ -1,0 +1,171 @@
+@import '../../../globalTokens/figma-color-tokens.css';
+@import '../../../globalTokens/figma-numeric-tokens.css';
+@import '../../../globalTokens/figma-typography-tokens.css';
+
+/* From modalBase.json - .Modals_Base */
+.overlay {
+  background-color: rgba(0, 0, 0, 0.25); /* 25% black backdrop */
+  position: fixed;
+  inset: 0;
+  z-index: 200; /* Above header (100), nav (50), sidebar (50), notifications (150) */
+  animation: fadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* From modalBase.json - .Modals_Base layout and colors */
+.content {
+  background-color: var(--color-surface-foreground); /* type=neutral_fill0 from modalBase.json */
+  border-radius: var(--radius-s); /* cornerRadius from modalBase.json */
+  /* box-shadow removed as it's not specified in modalBase.json */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 201; /* Above overlay (200) */
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sp-24); /* itemSpacing from modalBase.json (applied as gap for main sections) */
+  padding: var(--spacing-sp-24); /* padding from modalBase.json */
+  border-width: var(--border-width-200); /* strokeWeight from modalBase.json */
+  border-style: solid;
+  /* border-color removed as it's not specified in modalBase.json */
+  animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Size Variants from modal.json --- */
+/* Size=Extra Small - from modal.json variants[0].layout */
+.sizeXs {
+  width: 500px;
+  min-width: 392px;
+  max-width: 500px;
+  min-height: 260px;
+  max-height: 500px;
+}
+
+/* Size=Small - from modal.json variants[1].layout */
+.sizeSm {
+  width: 594px;
+  min-width: 594px;
+  max-width: 800px;
+  min-height: 260px;
+  max-height: 800px;
+}
+
+/* Size=Medium - from modal.json variants[2].layout */
+.sizeMd {
+  width: 882px;
+  min-width: 882px;
+  max-width: 1050px;
+  min-height: 260px;
+  max-height: 800px;
+}
+
+/* Size=Large - from modal.json variants[3].layout */
+.sizeLg {
+  width: 1172px;
+  min-width: 1172px;
+  min-height: 400px;
+  max-height: 800px;
+}
+
+
+/* --- Nested Containers from modalBase.json structure --- */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* No specific padding in JSON for header, assumes parent padding is sufficient or title/close button have margins */
+  /* gap: var(--spacing-sp-16); */ /* Optional: if space needed between title and close */
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.modalBody {
+  flex-grow: 1; /* Allow body to take available space */
+  overflow-y: auto; /* Allow scrolling for content longer than modal height */
+  /* No specific padding, assumes parent padding or content itself handles it */
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right by default */
+  align-items: center;
+  gap: var(--spacing-sp-12); /* itemSpacing from modalBase.json structure.Buttons */
+  flex-shrink: 0; /* Prevent footer from shrinking */
+  /* No specific padding, assumes parent padding or buttons have margins */
+}
+
+/* --- Typography and Specific Elements --- */
+
+/* Title - from modalBase.json typography.Type=Neutral/Title */
+.title {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-headline-h4-size);
+  font-weight: var(--font-headline-h4-weight);
+  line-height: var(--font-headline-h4-line-height);
+  color: var(--color-text-primary); /* header_title_title_text_color0 from modalBase.json */
+  margin: 0; /* Reset default heading margin */
+}
+
+/* Description - from modal.json typography (e.g., Size=Extra Small/Here is a tooltip) */
+/* Assuming Body/Medium/Regular is the default description style */
+.description {
+  font-family: var(--font-family-brand);
+  font-size: var(--font-body-medium-size);
+  font-weight: var(--font-body-medium-regular-weight);
+  line-height: var(--font-body-medium-line-height);
+  color: var(--color-text-primary); /* Changed to --color-text-primary from modalBase.json (header_title_title_text_color0) */
+  margin-top: var(--spacing-sp-4); /* Small space below title if both present */
+  margin-bottom: 0;
+}
+
+/* Close Button Wrapper - for positioning the IconButton */
+.closeButtonWrapper {
+  /* RadixDialog.Close is the child of modalHeader, which is a flex container */
+  /* No specific styles needed if IconButton itself has correct styling and alignment is handled by flex */
+  /* If absolute positioning was needed:
+  position: absolute;
+  top: var(--spacing-sp-16);
+  right: var(--spacing-sp-16);
+  */
+  color: var(--color-icon-brand); /* Default color for the X icon */
+}
+
+.closeButtonWrapper:hover {
+    color: var(--color-icon-brand); /* Hover color for the X icon */
+}
+
+
+/* Animations for Radix Dialog */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes contentShow {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes contentHide {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -48%) scale(0.96); }
+}
+
+.overlay[data-state='open'] {
+  animation: fadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.overlay[data-state='closed'] {
+  animation: fadeOut 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.content[data-state='open'] {
+  animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.content[data-state='closed'] {
+  animation: contentHide 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}

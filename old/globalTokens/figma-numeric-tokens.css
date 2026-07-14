@@ -1,0 +1,56 @@
+/**
+ * Numeric tokens (spacing, border, radius) generated from Figma
+ */
+
+:root {
+
+
+  /* Spacing */
+  --spacing-sp-12: var(--px-12); /* References: px-12 */
+  --spacing-sp-16: var(--px-16); /* References: px-16 */
+  --spacing-sp-2: var(--px-2); /* References: px-2 */
+  --spacing-sp-24: var(--px-24); /* References: px-24 */
+  --spacing-sp-32: var(--px-32); /* References: px-32 */
+  --spacing-sp-36: var(--px-36); /* References: px-36 */
+  --spacing-sp-4: var(--px-4); /* References: px-4 */
+  --spacing-sp-40: var(--px-40); /* References: px-40 */
+  --spacing-sp-48: var(--px-48); /* References: px-48 */
+  --spacing-sp-6: var(--px-6); /* References: px-6 */
+  --spacing-sp-64: var(--px-64); /* References: px-64 */
+  --spacing-sp-8: var(--px-8); /* References: px-8 */
+  --spacing-sp-80: var(--px-80); /* References: px-80 */
+  --spacing-sp-96: var(--px-96); /* References: px-96 */
+
+  /* Radius */
+  --radius-l: var(--px-16); /* References: px-16 */
+  --radius-m: var(--px-12); /* References: px-12 */
+  --radius-s: var(--px-8); /* References: px-8 */
+  --radius-xl: var(--px-24); /* References: px-24 */
+  --radius-xs: var(--px-4); /* References: px-4 */
+  --radius-xxl: var(--px-32); /* References: px-32 */
+  --radius-xxs: var(--px-2); /* References: px-2 */
+
+  /* Border-width */
+  --border-width-100: var(--px-1); /* References: px-1 */
+  --border-width-200: var(--px-2); /* References: px-2 */
+  --border-width-300: var(--px-3); /* References: px-3 */
+  --border-width-400: var(--px-4); /* References: px-4 */
+
+  /* Primitive */
+  --px-1: 1px;
+  --px-12: 12px;
+  --px-16: 16px;
+  --px-2: 2px;
+  --px-24: 24px;
+  --px-3: 3px;
+  --px-32: 32px;
+  --px-36: 36px;
+  --px-4: 4px;
+  --px-40: 40px;
+  --px-48: 48px;
+  --px-6: 6px;
+  --px-64: 64px;
+  --px-8: 8px;
+  --px-80: 80px;
+  --px-96: 96px;
+}

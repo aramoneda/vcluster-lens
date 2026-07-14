@@ -1,0 +1,39 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "brdcomp-side-toolbar",
+  "type": "registry:ui",
+  "title": "Side Toolbar",
+  "description": "A fixed right-edge vertical toolbar of icon buttons for quick actions or panels.",
+  "dependencies": [],
+  "categories": [
+    "navigation",
+    "actions"
+  ],
+  "meta": {
+    "tags": [
+      "side-toolbar",
+      "toolbar",
+      "actions",
+      "fixed",
+      "icons"
+    ],
+    "examples": [
+      {
+        "title": "Side toolbar",
+        "code": "import { SideToolbar } from \"@/components/ui/side-toolbar\"\nimport { Info } from \"lucide-react\"\n\n<SideToolbar items={[{ id: \"info\", label: \"Info\", icon: Info }]} />"
+      }
+    ]
+  },
+  "registryDependencies": [
+    "https://shad-brd-registery.vercel.app/r/theme.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-button.json",
+    "https://shad-brd-registery.vercel.app/r/brdcomp-tooltip.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/side-toolbar.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\n\nimport { Button } from \"@/components/ui/button\"\nimport { SimpleTooltip } from \"@/components/ui/tooltip\"\nimport { cn } from \"@/lib/utils\"\n\nexport type SideToolbarItem = {\n  id: string\n  label: string\n  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>\n  disabled?: boolean\n}\n\nexport interface SideToolbarProps extends React.HTMLAttributes<HTMLDivElement> {\n  items: SideToolbarItem[]\n  activeId?: string\n  onItemSelect?: (item: SideToolbarItem) => void\n  position?: \"fixed\" | \"absolute\"\n}\n\nconst SideToolbar = React.forwardRef<HTMLDivElement, SideToolbarProps>(\n  ({ items, activeId, onItemSelect, position = \"fixed\", className, ...props }, ref) => {\n    return (\n      <nav\n        ref={ref}\n        aria-label=\"Side toolbar\"\n        className={cn(\n          position === \"fixed\"\n            ? \"fixed right-0 top-1/2 -translate-y-1/2\"\n            : \"absolute right-0 top-1/2 -translate-y-1/2\",\n          \"z-30\",\n          \"flex flex-col items-center gap-3 rounded-l-[var(--radius-s)]\",\n          \"bg-[var(--color-surface-foreground)] p-1\",\n          className\n        )}\n        {...props}\n      >\n        {items.map((item) => {\n          const Icon = item.icon\n          const isActive = item.id === activeId\n\n          return (\n            <SimpleTooltip key={item.id} content={item.label} side=\"left\">\n              <Button\n                type=\"button\"\n                variant=\"secondary\"\n                size=\"icon-lg\"\n                aria-label={item.label}\n                className={cn(\n                  \"bg-[var(--color-surface-foreground)] text-[var(--color-icon-dark)]\",\n                  \"hover:bg-[var(--color-surface-hover)]\",\n                  \"active:bg-[var(--color-surface-selected)]\",\n                  \"rounded-[var(--radius-xs)]\",\n                  isActive &&\n                    \"bg-[var(--color-surface-selected)] text-[var(--color-icon-brand)] hover:bg-[var(--color-surface-selected)]\"\n                )}\n                onClick={() => onItemSelect?.(item)}\n                disabled={item.disabled}\n              >\n                <Icon className=\"size-5\" aria-hidden=\"true\" />\n              </Button>\n            </SimpleTooltip>\n          )\n        })}\n      </nav>\n    )\n  }\n)\n\nSideToolbar.displayName = \"SideToolbar\"\n\nexport { SideToolbar }\n"
+    }
+  ]
+}
