@@ -2,7 +2,6 @@ import { Summary } from '@/components/summary';
 import { SingleVMSearch } from '@/components/single-vm-search';
 import { VCenterSearch } from '@/components/vcenter-search';
 import { MultiVMSearch } from '@/components/multi-vm-search';
-import { Trends } from '@/components/trends';
 import { JSONUpload } from '@/components/json-upload';
 
 export const metadata = {
@@ -47,10 +46,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Trends Section */}
-        <section className="mt-12 pt-8 border-t border-gray-200 dark:border-slate-800">
-          <Trends />
-        </section>
       </div>
 
       {/* Footer */}

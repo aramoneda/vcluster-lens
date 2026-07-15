@@ -118,15 +118,15 @@ export function JSONUpload({ onUploadSuccess }: { onUploadSuccess?: () => void }
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm">
-      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Update Inventory</h2>
+    <div className="bg-white dark:bg-slate-900 rounded-lg p-4 shadow-sm">
+      <h2 className="text-sm font-semibold mb-3 text-gray-900 dark:text-white">Manual Update (Optional)</h2>
 
       <div
         onClick={() => fileInputRef.current?.click()}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
           isDragging
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
             : 'border-gray-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500'
@@ -140,21 +140,18 @@ export function JSONUpload({ onUploadSuccess }: { onUploadSuccess?: () => void }
           className="hidden"
         />
 
-        <Upload className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-        <p className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-          Drop your JSON file here
+        <Upload className="w-6 h-6 mx-auto mb-2 text-gray-400" />
+        <p className="text-sm font-medium text-gray-900 dark:text-white">
+          Drop JSON or click to browse
         </p>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          or click to browse from your computer
-        </p>
-        <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
-          File should be the VM inventory JSON from your PowerShell script
+        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+          Max 50MB • For emergency updates or testing
         </p>
       </div>
 
       {status.type !== 'idle' && (
         <div
-          className={`mt-4 p-4 rounded-lg flex items-start gap-3 ${
+          className={`mt-3 p-3 rounded-lg flex items-start gap-2 text-sm ${
             status.type === 'success'
               ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
               : status.type === 'error'
@@ -163,22 +160,17 @@ export function JSONUpload({ onUploadSuccess }: { onUploadSuccess?: () => void }
           }`}
         >
           {status.type === 'success' ? (
-            <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
           ) : status.type === 'error' ? (
-            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
           ) : (
-            <div className="w-5 h-5 flex-shrink-0 mt-0.5">
-              <div className="animate-spin rounded-full h-5 w-5 border-2 border-current border-t-transparent" />
+            <div className="w-4 h-4 flex-shrink-0 mt-0.5">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
             </div>
           )}
-          <p className="text-sm font-medium">{status.message}</p>
+          <p className="font-medium">{status.message}</p>
         </div>
       )}
-
-      <p className="text-xs text-gray-500 dark:text-gray-500 mt-4">
-        💡 Tip: Use your Jenkins job to automatically send updated JSON files daily. See AUTOMATION_GUIDE.md for setup
-        instructions.
-      </p>
     </div>
   );
 }
