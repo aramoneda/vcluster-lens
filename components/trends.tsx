@@ -1,6 +1,7 @@
 'use client';
 
-import { getTrendData, getPowerStateDistribution, getVCenters } from '@/lib/search';
+import { useEffect, useState } from 'react';
+import { getTrendData, getPowerStateDistribution, getVCenters, VCenterStats } from '@/lib/search';
 import {
   LineChart,
   Line,
@@ -20,9 +21,31 @@ import {
 const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
 
 export function Trends() {
-  const trendData = getTrendData();
-  const powerStateData = getPowerStateDistribution();
-  const vcenters = getVCenters();
+  const [trendData, setTrendData] = useState<any[]>([]);
+  const [powerStateData, setPowerStateData] = useState<any[]>([]);
+  const [vcenters, setVcenters] = useState<VCenterStats[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const trends = await getTrendData();
+      const powerStates = await getPowerStateDistribution();
+      const vc = await getVCenters();
+      setTrendData(trends);
+      setPowerStateData(powerStates);
+      setVcenters(vc);
+      setLoading(false);
+    };
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent" />
+      </div>
+    );
+  }
 
   // Get vCenter names for line chart
   const vcenterNames = vcenters.map((v) => v.vcenter).slice(0, 5); // Limit to 5 to avoid cluttering

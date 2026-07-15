@@ -10,7 +10,7 @@ export function MultiVMSearch() {
   const [searched, setSearched] = useState(false);
   const [sortBy, setSortBy] = useState<'name' | 'vcenter' | 'power'>('name');
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     const vmNames = searchText
       .split('\n')
@@ -18,7 +18,7 @@ export function MultiVMSearch() {
       .filter((name) => name.length > 0);
 
     if (vmNames.length > 0) {
-      const vms = searchMultipleVMs(vmNames);
+      const vms = await searchMultipleVMs(vmNames);
       setResults(vms);
       setSearched(true);
     }

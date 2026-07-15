@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { saveVMData } from '@/lib/indexed-db';
 
 interface UploadStatus {
   type: 'idle' | 'loading' | 'success' | 'error';
@@ -25,7 +26,7 @@ export function JSONUpload({ onUploadSuccess }: { onUploadSuccess?: () => void }
   const parseAndValidateJSON = async (file: File): Promise<boolean> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const content = e.target?.result as string;
           const data = JSON.parse(content);
@@ -57,9 +58,8 @@ export function JSONUpload({ onUploadSuccess }: { onUploadSuccess?: () => void }
             return;
           }
 
-          // Store in localStorage
-          localStorage.setItem('vm_inventory_data', content);
-          localStorage.setItem('vm_inventory_updated', new Date().toISOString());
+          // Store in IndexedDB (supports larger files than localStorage)
+          await saveVMData(data);
 
           setStatus({
             type: 'success',

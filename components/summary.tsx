@@ -1,11 +1,32 @@
 'use client';
 
-import { getOverallStats, getVCenters } from '@/lib/search';
+import { useEffect, useState } from 'react';
+import { getOverallStats, getVCenters, VCenterStats } from '@/lib/search';
 import { Server, Zap, Power, AlertCircle } from 'lucide-react';
 
 export function Summary() {
-  const stats = getOverallStats();
-  const vcenters = getVCenters();
+  const [stats, setStats] = useState<any | null>(null);
+  const [vcenters, setVcenters] = useState<VCenterStats[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const s = await getOverallStats();
+      const v = await getVCenters();
+      setStats(s);
+      setVcenters(v);
+      setLoading(false);
+    };
+    loadData();
+  }, []);
+
+  if (loading || !stats) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

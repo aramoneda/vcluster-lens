@@ -1,4 +1,5 @@
-import vmData from './vm-inventory.json';
+import vmDataDefault from './vm-inventory.json';
+import { getVMData } from './indexed-db';
 
 export interface VM {
   vm_name: string;
@@ -29,8 +30,30 @@ export interface VCenterStats {
   vms: VM[];
 }
 
+// Cached data
+let cachedVMData: any[] | null = null;
+let cachedVCenters: VCenterStats[] | null = null;
+
+// Load VM data from IndexedDB or use default
+async function getLoadedVMData(): Promise<any[]> {
+  if (cachedVMData) return cachedVMData;
+  
+  try {
+    const indexedDBData = await getVMData();
+    cachedVMData = indexedDBData || vmDataDefault;
+  } catch (error) {
+    console.error('[v0] Error loading VM data:', error);
+    cachedVMData = vmDataDefault;
+  }
+  
+  return cachedVMData;
+}
+
 // Get all unique vCenters
-export function getVCenters(): VCenterStats[] {
+export async function getVCenters(): Promise<VCenterStats[]> {
+  if (cachedVCenters) return cachedVCenters;
+  
+  const vmData = await getLoadedVMData();
   const vcenters = new Map<string, VCenterStats>();
   
   vmData.forEach((vm: any) => {
@@ -57,27 +80,31 @@ export function getVCenters(): VCenterStats[] {
     vcenterData.vms.push(vm as VM);
   });
   
-  return Array.from(vcenters.values()).sort((a, b) => a.vcenter.localeCompare(b.vcenter));
+  cachedVCenters = Array.from(vcenters.values()).sort((a, b) => a.vcenter.localeCompare(b.vcenter));
+  return cachedVCenters;
 }
 
 // Search for single VM
-export function searchVM(vmName: string): VM | null {
+export async function searchVM(vmName: string): Promise<VM | null> {
   const normalizedName = vmName.toLowerCase().trim();
+  const vmData = await getLoadedVMData();
   const vm = vmData.find((v: any) => v.vm_name.toLowerCase() === normalizedName);
   return vm || null;
 }
 
 // Search for VMs by vCenter
-export function searchByVCenter(vcentername: string): VCenterStats | null {
+export async function searchByVCenter(vcentername: string): Promise<VCenterStats | null> {
   const normalized = vcentername.toLowerCase().trim();
-  const vcenter = getVCenters().find(v => v.vcenter.toLowerCase() === normalized);
+  const vcenters = await getVCenters();
+  const vcenter = vcenters.find(v => v.vcenter.toLowerCase() === normalized);
   return vcenter || null;
 }
 
 // Search for multiple VMs
-export function searchMultipleVMs(vmNames: string[]): VM[] {
+export async function searchMultipleVMs(vmNames: string[]): Promise<VM[]> {
   const normalizedNames = vmNames.map(n => n.toLowerCase().trim()).filter(n => n);
   const results: VM[] = [];
+  const vmData = await getLoadedVMData();
   
   normalizedNames.forEach(name => {
     const vm = vmData.find((v: any) => v.vm_name.toLowerCase() === name);
@@ -90,8 +117,9 @@ export function searchMultipleVMs(vmNames: string[]): VM[] {
 }
 
 // Get stats across all vCenters
-export function getOverallStats() {
-  const vcenters = getVCenters();
+export async function getOverallStats() {
+  const vmData = await getLoadedVMData();
+  const vcenters = await getVCenters();
   return {
     total_vcenters: vcenters.length,
     total_vms: vmData.length,
@@ -102,8 +130,8 @@ export function getOverallStats() {
 }
 
 // Get trend data (simulate historical data)
-export function getTrendData() {
-  const vcenters = getVCenters();
+export async function getTrendData() {
+  const vcenters = await getVCenters();
   const now = new Date();
   const data = [];
   
@@ -115,7 +143,7 @@ export function getTrendData() {
     
     const dayData: any = { date: dateStr };
     vcenters.forEach(vc => {
-      dayData[vc.vcenter] = vc.total_vms + Math.floor(Math.random() * 3 - 1); // Simulate slight variations
+      dayData[vc.vcenter] = vc.total_vms + Math.floor(Math.random() * 3 - 1);
     });
     data.push(dayData);
   }
@@ -124,11 +152,17 @@ export function getTrendData() {
 }
 
 // Get power state distribution data
-export function getPowerStateDistribution() {
-  const vcenters = getVCenters();
+export async function getPowerStateDistribution() {
+  const vcenters = await getVCenters();
   return vcenters.map(vc => ({
     name: vc.vcenter,
     PoweredOn: vc.powered_on,
     PoweredOff: vc.powered_off,
   }));
+}
+
+// Clear cached data
+export function clearCache() {
+  cachedVMData = null;
+  cachedVCenters = null;
 }

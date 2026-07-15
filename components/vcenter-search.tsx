@@ -11,10 +11,10 @@ export function VCenterSearch() {
   const [notFound, setNotFound] = useState(false);
   const [expandedVMs, setExpandedVMs] = useState(false);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setSearched(true);
-    const vcenter = searchByVCenter(searchTerm);
+    const vcenter = await searchByVCenter(searchTerm);
     if (vcenter) {
       setResult(vcenter);
       setNotFound(false);

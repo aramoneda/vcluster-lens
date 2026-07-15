@@ -10,10 +10,10 @@ export function SingleVMSearch() {
   const [searched, setSearched] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setSearched(true);
-    const vm = searchVM(searchTerm);
+    const vm = await searchVM(searchTerm);
     if (vm) {
       setResult(vm);
       setNotFound(false);
