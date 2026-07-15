@@ -11,8 +11,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "shadcn/ui Components",
-  description: "Component showcase for shadcn/ui",
+  title: "VM Monitoring Dashboard",
+  description: "Search and monitor virtual machines across multiple vCenter servers",
   generator: "v0.dev",
 }
 
