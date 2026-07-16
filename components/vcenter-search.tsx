@@ -1,20 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { searchByVCenter, getVCenters, VCenterStats } from '@/lib/search';
-import { Search, ChevronDown, ChevronUp, Download } from 'lucide-react';
+import { ChevronDown, ChevronUp, Download } from 'lucide-react';
 
 export function VCenterSearch() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [vcenters, setVcenters] = useState<string[]>([]);
+  const [selectedVCenter, setSelectedVCenter] = useState('');
   const [result, setResult] = useState<VCenterStats | null>(null);
   const [searched, setSearched] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [expandedVMs, setExpandedVMs] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadVCenters = async () => {
+      const vcList = await getVCenters();
+      setVcenters(vcList.map((vc) => vc.vcenter));
+      setLoading(false);
+    };
+    loadVCenters();
+  }, []);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedVCenter) return;
+    
     setSearched(true);
-    const vcenter = await searchByVCenter(searchTerm);
+    const vcenter = await searchByVCenter(selectedVCenter);
     if (vcenter) {
       setResult(vcenter);
       setNotFound(false);
@@ -58,22 +71,32 @@ export function VCenterSearch() {
     <div className="space-y-6">
       <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm">
         <h2 className="text-lg font-semibold mb-4">Search by vCenter</h2>
-        <form onSubmit={handleSearch} className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Enter vCenter name (e.g., clpvvvcsa001)"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
-          >
-            <Search className="w-4 h-4" />
-            Search
-          </button>
-        </form>
+        {loading ? (
+          <div className="flex justify-center p-4">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent" />
+          </div>
+        ) : (
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <select
+              value={selectedVCenter}
+              onChange={(e) => setSelectedVCenter(e.target.value)}
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select a vCenter...</option>
+              {vcenters.map((vc) => (
+                <option key={vc} value={vc}>
+                  {vc}
+                </option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+            >
+              Search
+            </button>
+          </form>
+        )}
       </div>
 
       {searched && (
@@ -134,27 +157,45 @@ export function VCenterSearch() {
               </div>
 
               {expandedVMs && (
-                <div className="mt-4 space-y-2 max-h-96 overflow-y-auto">
-                  {result.vms.map((vm) => (
-                    <div
-                      key={vm.vm_name}
-                      className="bg-gray-50 dark:bg-slate-800 rounded p-3 flex justify-between items-center"
-                    >
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white">{vm.vm_name}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{vm.guest_hostname}</p>
-                      </div>
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          vm.power_state === 'PoweredOn'
-                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                            : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
-                        }`}
-                      >
-                        {vm.power_state}
-                      </span>
-                    </div>
-                  ))}
+                <div className="mt-4 overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-100 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+                      <tr>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">VM Name</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Site</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Power State</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Hostname</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Guest OS</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">IP Address</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">CPU/Memory</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
+                      {result.vms.map((vm) => (
+                        <tr key={vm.vm_name} className="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                          <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">{vm.vm_name}</td>
+                          <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{vm.site}</td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                vm.power_state === 'PoweredOn'
+                                  ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                                  : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                              }`}
+                            >
+                              {vm.power_state}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{vm.guest_hostname}</td>
+                          <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs max-w-xs truncate" title={vm.guest_os}>{vm.guest_os}</td>
+                          <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs max-w-xs truncate font-mono" title={vm.ip_address}>{vm.ip_address}</td>
+                          <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                            {vm.num_cpu} / {vm.memory_gb}GB
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
