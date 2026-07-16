@@ -80,14 +80,20 @@ export function Summary() {
           {vcenters.map((vc) => (
             <div
               key={vc.vcenter}
-              className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/50 rounded-lg p-2 border border-blue-200 dark:border-blue-800 hover:shadow-md transition-shadow"
+              className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/50 rounded-lg p-2 border border-blue-200 dark:border-blue-800 hover:shadow-md transition-shadow h-20 flex flex-col justify-between group cursor-pointer"
+              title={`${vc.vcenter} - Click to copy`}
+              onClick={() => {
+                navigator.clipboard.writeText(vc.vcenter);
+              }}
             >
-              <p className="text-xs font-semibold text-blue-900 dark:text-blue-300 truncate" title={vc.vcenter}>
-                {vc.vcenter}
-              </p>
-              <div className="mt-1 space-y-0.5">
+              <div className="min-h-0">
+                <p className="text-xs font-semibold text-blue-900 dark:text-blue-300 break-words leading-tight group-hover:underline">
+                  {vc.vcenter}
+                </p>
+              </div>
+              <div className="space-y-0.5 pt-1 border-t border-blue-200 dark:border-blue-800/50">
                 <p className="text-xs text-gray-700 dark:text-gray-400">
-                  <span className="font-semibold">{vc.total_vms}</span>
+                  <span className="font-semibold">{vc.total_vms}</span> VMs
                 </p>
                 <div className="flex gap-1 text-xs">
                   <span className="text-green-600 dark:text-green-400 font-semibold">{vc.powered_on}</span>
