@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { searchMultipleVMs, VM } from '@/lib/search';
-import { Search, Trash2 } from 'lucide-react';
+import { Search, Trash2, Download } from 'lucide-react';
 
 export function MultiVMSearch() {
   const [searchText, setSearchText] = useState('');
@@ -28,6 +28,38 @@ export function MultiVMSearch() {
     setSearchText('');
     setResults([]);
     setSearched(false);
+  };
+
+  const handleExportCSV = () => {
+    if (sortedResults.length === 0) return;
+
+    const headers = ['VM Name', 'vCenter', 'Site', 'Power State', 'Hostname', 'Guest OS', 'IP Address', 'CPU', 'Memory (GB)'];
+    const rows = sortedResults.map((vm) => [
+      vm.vm_name,
+      vm.vcenter,
+      vm.site,
+      vm.power_state,
+      vm.guest_hostname,
+      vm.guest_os,
+      vm.ip_address,
+      vm.num_cpu,
+      vm.memory_gb,
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+      ),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `vm-search-results-${new Date().toISOString().split('T')[0]}.csv`);
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   const sortedResults = [...results].sort((a, b) => {
@@ -80,19 +112,28 @@ export function MultiVMSearch() {
             </div>
           ) : (
             <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm space-y-4">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center flex-wrap gap-3">
                 <h3 className="font-semibold text-gray-900 dark:text-white">
                   Found {results.length} VM{results.length !== 1 ? 's' : ''}
                 </h3>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as 'name' | 'vcenter' | 'power')}
-                  className="px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white text-sm"
-                >
-                  <option value="name">Sort by Name</option>
-                  <option value="vcenter">Sort by vCenter</option>
-                  <option value="power">Sort by Power State</option>
-                </select>
+                <div className="flex gap-2">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as 'name' | 'vcenter' | 'power')}
+                    className="px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white text-sm"
+                  >
+                    <option value="name">Sort by Name</option>
+                    <option value="vcenter">Sort by vCenter</option>
+                    <option value="power">Sort by Power State</option>
+                  </select>
+                  <button
+                    onClick={handleExportCSV}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2 transition-colors text-sm"
+                  >
+                    <Download className="w-4 h-4" />
+                    Export CSV
+                  </button>
+                </div>
               </div>
 
               <div className="overflow-x-auto">

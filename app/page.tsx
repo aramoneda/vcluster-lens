@@ -5,8 +5,8 @@ import { MultiVMSearch } from '@/components/multi-vm-search';
 import { JSONUpload } from '@/components/json-upload';
 
 export const metadata = {
-  title: 'VM Monitoring Dashboard',
-  description: 'Search and monitor virtual machines across multiple vCenters',
+  title: 'vCenter Dashboard',
+  description: 'Search virtual machines across your vCenter infrastructure',
 };
 
 export default function Home() {
@@ -15,8 +15,8 @@ export default function Home() {
       {/* Header */}
       <header className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">VM Monitoring Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Search and manage virtual machines across your vCenter infrastructure</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">vCenter Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Search virtual machines across your vCenter infrastructure</p>
         </div>
       </header>
 
@@ -52,7 +52,7 @@ export default function Home() {
       <footer className="bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
-            VM Inventory Dashboard • Last Updated: {new Date().toLocaleString()}
+            vCenter Dashboard • Last Updated: {new Date().toLocaleString()}
           </p>
         </div>
       </footer>

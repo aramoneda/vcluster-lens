@@ -11,8 +11,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "VM Monitoring Dashboard",
-  description: "Search and monitor virtual machines across multiple vCenter servers",
+  title: "vCenter Dashboard",
+  description: "Search virtual machines across your vCenter infrastructure",
   generator: "v0.dev",
 }
 
