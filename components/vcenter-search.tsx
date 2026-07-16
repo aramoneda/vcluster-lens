@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { searchByVCenter, getVCenters, VCenterStats } from '@/lib/search';
-import { Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, Download } from 'lucide-react';
 
 export function VCenterSearch() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +22,36 @@ export function VCenterSearch() {
       setResult(null);
       setNotFound(true);
     }
+  };
+
+  const handleExportCSV = () => {
+    if (!result) return;
+
+    const headers = ['VM Name', 'Hostname', 'Guest OS', 'IP Address', 'Power State', 'CPU', 'Memory (GB)'];
+    const rows = result.vms.map((vm) => [
+      vm.vm_name,
+      vm.guest_hostname,
+      vm.guest_os,
+      vm.ip_address,
+      vm.power_state,
+      vm.num_cpu,
+      vm.memory_gb,
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+      ),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${result.vcenter}-vms-${new Date().toISOString().split('T')[0]}.csv`);
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -86,7 +116,7 @@ export function VCenterSearch() {
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-4 flex items-center justify-between">
                 <button
                   onClick={() => setExpandedVMs(!expandedVMs)}
                   className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
@@ -94,32 +124,39 @@ export function VCenterSearch() {
                   {expandedVMs ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                   {expandedVMs ? 'Hide' : 'Show'} VMs ({result.vms.length})
                 </button>
-
-                {expandedVMs && (
-                  <div className="mt-4 space-y-2 max-h-96 overflow-y-auto">
-                    {result.vms.map((vm) => (
-                      <div
-                        key={vm.vm_name}
-                        className="bg-gray-50 dark:bg-slate-800 rounded p-3 flex justify-between items-center"
-                      >
-                        <div>
-                          <p className="font-medium text-gray-900 dark:text-white">{vm.vm_name}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{vm.guest_hostname}</p>
-                        </div>
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${
-                            vm.power_state === 'PoweredOn'
-                              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                              : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
-                          }`}
-                        >
-                          {vm.power_state}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <button
+                  onClick={handleExportCSV}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2 transition-colors text-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Export CSV
+                </button>
               </div>
+
+              {expandedVMs && (
+                <div className="mt-4 space-y-2 max-h-96 overflow-y-auto">
+                  {result.vms.map((vm) => (
+                    <div
+                      key={vm.vm_name}
+                      className="bg-gray-50 dark:bg-slate-800 rounded p-3 flex justify-between items-center"
+                    >
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white">{vm.vm_name}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{vm.guest_hostname}</p>
+                      </div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          vm.power_state === 'PoweredOn'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                            : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        {vm.power_state}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </>

@@ -118,18 +118,17 @@ export function JSONUpload({ onUploadSuccess }: { onUploadSuccess?: () => void }
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg p-4 shadow-sm">
-      <h2 className="text-sm font-semibold mb-3 text-gray-900 dark:text-white">Manual Update (Optional)</h2>
-
+    <div className="space-y-1">
+      <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Quick Upload</p>
       <div
         onClick={() => fileInputRef.current?.click()}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded p-2 text-center cursor-pointer transition-colors ${
           isDragging
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-            : 'border-gray-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500'
+            : 'border-gray-300 dark:border-slate-600 hover:border-blue-400 dark:hover:border-blue-500'
         }`}
       >
         <input
@@ -140,18 +139,15 @@ export function JSONUpload({ onUploadSuccess }: { onUploadSuccess?: () => void }
           className="hidden"
         />
 
-        <Upload className="w-6 h-6 mx-auto mb-2 text-gray-400" />
-        <p className="text-sm font-medium text-gray-900 dark:text-white">
-          Drop JSON or click to browse
-        </p>
-        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-          Max 50MB • For emergency updates or testing
+        <Upload className="w-4 h-4 mx-auto text-gray-400" />
+        <p className="text-xs font-medium text-gray-900 dark:text-white mt-0.5">
+          Drop JSON
         </p>
       </div>
 
       {status.type !== 'idle' && (
         <div
-          className={`mt-3 p-3 rounded-lg flex items-start gap-2 text-sm ${
+          className={`p-1 rounded text-xs flex items-center gap-1 ${
             status.type === 'success'
               ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
               : status.type === 'error'
@@ -160,15 +156,15 @@ export function JSONUpload({ onUploadSuccess }: { onUploadSuccess?: () => void }
           }`}
         >
           {status.type === 'success' ? (
-            <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <CheckCircle className="w-3 h-3 flex-shrink-0" />
           ) : status.type === 'error' ? (
-            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-3 h-3 flex-shrink-0" />
           ) : (
-            <div className="w-4 h-4 flex-shrink-0 mt-0.5">
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
+            <div className="w-3 h-3 flex-shrink-0">
+              <div className="animate-spin rounded-full h-3 w-3 border border-current border-t-transparent" />
             </div>
           )}
-          <p className="font-medium">{status.message}</p>
+          <span className="truncate text-xs">{status.message}</span>
         </div>
       )}
     </div>

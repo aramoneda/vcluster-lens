@@ -12,22 +12,25 @@ export const metadata = {
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-slate-950">
-      {/* Header */}
+      {/* Header with Upload on Right */}
       <header className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">vCenter Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Search virtual machines across your vCenter infrastructure</p>
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">vCenter Dashboard</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">Search virtual machines across your vCenter infrastructure</p>
+            </div>
+            <div className="w-64 flex-shrink-0">
+              <JSONUpload />
+            </div>
+          </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Upload Section */}
-        <section className="mb-12">
-          <JSONUpload />
-        </section>
 
         {/* Summary Section */}
-        <section className="mb-12 pt-8 border-t border-gray-200 dark:border-slate-800">
+        <section className="mb-8">
           <Summary />
         </section>
 

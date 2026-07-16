@@ -30,75 +30,73 @@ export function Summary() {
 
   return (
     <div className="space-y-4">
-      {/* Summary Stats - More Compact */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 shadow-sm">
-          <div className="flex items-center justify-between">
+      {/* Summary Stats - Compact */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-3 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
             <div>
               <p className="text-xs text-gray-600 dark:text-gray-400">Total VMs</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.total_vms}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total_vms}</p>
             </div>
-            <Server className="w-8 h-8 text-blue-500 opacity-20" />
+            <Server className="w-6 h-6 text-blue-500 opacity-20 flex-shrink-0" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 shadow-sm">
-          <div className="flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-3 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
             <div>
               <p className="text-xs text-gray-600 dark:text-gray-400">vCenters</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.total_vcenters}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total_vcenters}</p>
             </div>
-            <AlertCircle className="w-8 h-8 text-purple-500 opacity-20" />
+            <AlertCircle className="w-6 h-6 text-purple-500 opacity-20 flex-shrink-0" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 shadow-sm">
-          <div className="flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-3 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
             <div>
               <p className="text-xs text-gray-600 dark:text-gray-400">Powered On</p>
-              <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.powered_on}</p>
+              <p className="text-xl font-bold text-green-600 dark:text-green-400">{stats.powered_on}</p>
             </div>
-            <Power className="w-8 h-8 text-green-500 opacity-20" />
+            <Power className="w-6 h-6 text-green-500 opacity-20 flex-shrink-0" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 shadow-sm">
-          <div className="flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 rounded-lg p-3 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
             <div>
               <p className="text-xs text-gray-600 dark:text-gray-400">Powered Off</p>
-              <p className="text-2xl font-bold text-gray-600 dark:text-gray-400 mt-1">{stats.powered_off}</p>
+              <p className="text-xl font-bold text-gray-600 dark:text-gray-400">{stats.powered_off}</p>
             </div>
-            <Zap className="w-8 h-8 text-gray-400 opacity-20" />
+            <Zap className="w-6 h-6 text-gray-400 opacity-20 flex-shrink-0" />
           </div>
         </div>
       </div>
 
-      {/* vCenter Summary - Compact Table */}
-      <div className="bg-white dark:bg-slate-900 rounded-lg p-4 shadow-sm">
-        <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-white">vCenter Summary ({vcenters.length})</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead className="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
-              <tr>
-                <th className="text-left px-3 py-2 font-semibold text-gray-900 dark:text-white">vCenter</th>
-                <th className="text-left px-3 py-2 font-semibold text-gray-900 dark:text-white">Site</th>
-                <th className="text-center px-3 py-2 font-semibold text-gray-900 dark:text-white">Total</th>
-                <th className="text-center px-3 py-2 font-semibold text-green-600 dark:text-green-400">On</th>
-                <th className="text-center px-3 py-2 font-semibold text-gray-600 dark:text-gray-400">Off</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vcenters.map((vc) => (
-                <tr key={vc.vcenter} className="border-b border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800">
-                  <td className="px-3 py-2 text-blue-600 dark:text-blue-400 font-medium">{vc.vcenter}</td>
-                  <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{vc.site}</td>
-                  <td className="px-3 py-2 text-center font-semibold text-gray-900 dark:text-white">{vc.total_vms}</td>
-                  <td className="px-3 py-2 text-center font-semibold text-green-600 dark:text-green-400">{vc.powered_on}</td>
-                  <td className="px-3 py-2 text-center font-semibold text-gray-600 dark:text-gray-400">{vc.powered_off}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* vCenter Summary - Compact Grid (10 per row) */}
+      <div className="bg-white dark:bg-slate-900 rounded-lg p-3 shadow-sm">
+        <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-white">vCenters ({vcenters.length})</h3>
+        <div className="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-10 gap-2">
+          {vcenters.map((vc) => (
+            <div
+              key={vc.vcenter}
+              className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/50 rounded-lg p-2 border border-blue-200 dark:border-blue-800 hover:shadow-md transition-shadow"
+            >
+              <p className="text-xs font-semibold text-blue-900 dark:text-blue-300 truncate" title={vc.vcenter}>
+                {vc.vcenter}
+              </p>
+              <div className="mt-1 space-y-0.5">
+                <p className="text-xs text-gray-700 dark:text-gray-400">
+                  <span className="font-semibold">{vc.total_vms}</span>
+                </p>
+                <div className="flex gap-1 text-xs">
+                  <span className="text-green-600 dark:text-green-400 font-semibold">{vc.powered_on}</span>
+                  <span className="text-gray-500 dark:text-gray-500">/</span>
+                  <span className="text-gray-600 dark:text-gray-400">{vc.powered_off}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
