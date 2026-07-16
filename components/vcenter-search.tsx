@@ -40,7 +40,7 @@ export function VCenterSearch() {
   const handleExportCSV = () => {
     if (!result) return;
 
-    const headers = ['VM Name', 'Hostname', 'Guest OS', 'IP Address', 'Power State', 'CPU', 'Memory (GB)', 'Compatibility'];
+    const headers = ['VM Name', 'Hostname', 'Guest OS', 'IP Address', 'Power State', 'CPU', 'Memory (GB)', 'Provisioned Storage (GB)', 'Used Storage (GB)', 'Compatibility'];
     const rows = result.vms.map((vm) => [
       vm.vm_name,
       vm.guest_hostname,
@@ -49,6 +49,8 @@ export function VCenterSearch() {
       vm.power_state,
       vm.num_cpu,
       vm.memory_gb,
+      vm.provisioned_gb.toFixed(2),
+      vm.used_gb.toFixed(2),
       vm.vm_compatibility,
     ]);
 
@@ -173,6 +175,7 @@ export function VCenterSearch() {
                         <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Guest OS</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">IP Address</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">CPU/Memory</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Storage</th>
                         <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Compatibility</th>
                       </tr>
                     </thead>
@@ -197,6 +200,12 @@ export function VCenterSearch() {
                           <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs max-w-xs truncate font-mono" title={vm.ip_address}>{vm.ip_address}</td>
                           <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                             {vm.num_cpu} / {vm.memory_gb}GB
+                          </td>
+                          <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                            <div className="text-xs">
+                              <p className="text-gray-600 dark:text-gray-400">P: {vm.provisioned_gb.toFixed(2)}GB</p>
+                              <p className="text-gray-600 dark:text-gray-400">U: {vm.used_gb.toFixed(2)}GB</p>
+                            </div>
                           </td>
                           <td className="px-4 py-3 text-xs">
                             <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
