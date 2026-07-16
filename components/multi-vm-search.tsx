@@ -6,7 +6,6 @@ import { Search, Trash2, Download } from 'lucide-react';
 
 export function MultiVMSearch() {
   const [searchText, setSearchText] = useState('');
-  const [esxi7Plus, setEsxi7Plus] = useState(false);
   const [results, setResults] = useState<VM[]>([]);
   const [searched, setSearched] = useState(false);
   const [sortBy, setSortBy] = useState<'name' | 'vcenter' | 'power'>('name');
@@ -19,7 +18,7 @@ export function MultiVMSearch() {
       .filter((name) => name.length > 0);
 
     if (vmNames.length > 0) {
-      const vms = await searchMultipleVMs(vmNames, esxi7Plus);
+      const vms = await searchMultipleVMs(vmNames);
       setResults(vms);
       setSearched(true);
     }
@@ -85,40 +84,22 @@ export function MultiVMSearch() {
             onChange={(e) => setSearchText(e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm h-32"
           />
-            <div className="space-y-3">
-              <textarea
-                placeholder="Enter VM names (one per line, e.g., cldvvssp001&#10;cldvvssp002&#10;cldvvssp003)"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                rows={4}
-              />
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={esxi7Plus}
-                  onChange={(e) => setEsxi7Plus(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
-                />
-                <span className="text-gray-700 dark:text-gray-300">ESXi 7.0 and later (VM version 17)</span>
-              </label>
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap"
-                >
-                  <Search className="w-4 h-4" />
-                  Search
-                </button>
-                <button
-                  onClick={handleClear}
-                  className="px-6 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Clear
-                </button>
-              </div>
-            </div>
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap"
+            >
+              <Search className="w-4 h-4" />
+              Search
+            </button>
+            <button
+              onClick={handleClear}
+              className="px-6 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap"
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear
+            </button>
+          </div>
         </form>
       </div>
 
@@ -166,6 +147,7 @@ export function MultiVMSearch() {
                       <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Guest OS</th>
                       <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">IP Address</th>
                       <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">CPU/Memory</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Compatibility</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -197,6 +179,11 @@ export function MultiVMSearch() {
                         </td>
                         <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                           {vm.num_cpu} / {vm.memory_gb}GB
+                        </td>
+                        <td className="px-4 py-3 text-xs">
+                          <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
+                            ESXi 7.0+
+                          </span>
                         </td>
                       </tr>
                     ))}

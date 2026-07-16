@@ -6,7 +6,6 @@ import { Search } from 'lucide-react';
 
 export function SingleVMSearch() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [esxi7Plus, setEsxi7Plus] = useState(false);
   const [result, setResult] = useState<VM | null>(null);
   const [searched, setSearched] = useState(false);
   const [notFound, setNotFound] = useState(false);
@@ -14,7 +13,7 @@ export function SingleVMSearch() {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setSearched(true);
-    const vm = await searchVM(searchTerm, esxi7Plus);
+    const vm = await searchVM(searchTerm);
     if (vm) {
       setResult(vm);
       setNotFound(false);
@@ -28,32 +27,21 @@ export function SingleVMSearch() {
     <div className="space-y-6">
       <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm">
         <h2 className="text-lg font-semibold mb-4">Search Single VM</h2>
-        <form onSubmit={handleSearch} className="space-y-3">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Enter VM name (e.g., cldvvssp002)"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
-            >
-              <Search className="w-4 h-4" />
-              Search
-            </button>
-          </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={esxi7Plus}
-              onChange={(e) => setEsxi7Plus(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="text-gray-700 dark:text-gray-300">ESXi 7.0 and later (VM version 17)</span>
-          </label>
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Enter VM name (e.g., cldvvssp002)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="submit"
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
+          >
+            <Search className="w-4 h-4" />
+            Search
+          </button>
         </form>
       </div>
 
@@ -67,6 +55,11 @@ export function SingleVMSearch() {
 
           {result && (
             <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm space-y-4">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <span className="font-semibold">Compatibility:</span> ESXi 7.0 and later (VM version 17)
+                </p>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">VM Name</p>

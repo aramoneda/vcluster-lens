@@ -33,13 +33,6 @@ export interface VCenterStats {
 let cachedVMData: any[] | null = null;
 let cachedVCenters: VCenterStats[] | null = null;
 
-// Filter for ESXi 7.0+ (vCenter 7.0+)
-function isESXi7Plus(vm: any): boolean {
-  const vcenterVersion = vm.vcenter_version || '';
-  const majorVersion = parseInt(vcenterVersion.split('.')[0], 10);
-  return majorVersion >= 7;
-}
-
 // Load VM data from IndexedDB or public folder
 async function getLoadedVMData(): Promise<any[]> {
   if (cachedVMData) return cachedVMData;
@@ -64,12 +57,11 @@ async function getLoadedVMData(): Promise<any[]> {
 }
 
 // Get all unique vCenters
-export async function getVCenters(esxi7Plus: boolean = false): Promise<VCenterStats[]> {
+export async function getVCenters(): Promise<VCenterStats[]> {
   const data = await getLoadedVMData();
-  const filteredData = esxi7Plus ? data.filter(isESXi7Plus) : data;
   const vcenterMap: Record<string, VCenterStats> = {};
   
-  filteredData.forEach((vm: any) => {
+  data.forEach((vm: any) => {
     if (!vcenterMap[vm.vcenter]) {
       vcenterMap[vm.vcenter] = {
         vcenter: vm.vcenter,
@@ -97,35 +89,19 @@ export async function getVCenters(esxi7Plus: boolean = false): Promise<VCenterSt
 }
 
 // Search for single VM
-export async function searchVM(vmName: string, esxi7Plus: boolean = false): Promise<VM | null> {
+export async function searchVM(vmName: string): Promise<VM | null> {
   const data = await getLoadedVMData();
-  const vm = data.find((v) => 
-    v.vm_name.toLowerCase() === vmName.toLowerCase() &&
-    (!esxi7Plus || isESXi7Plus(v))
-  );
+  const vm = data.find((v) => v.vm_name.toLowerCase() === vmName.toLowerCase());
   return vm || null;
 }
 
 // Search for VMs by vCenter
-export async function searchByVCenter(vcentername: string, esxi7Plus: boolean = false): Promise<VCenterStats | null> {
+export async function searchByVCenter(vcentername: string): Promise<VCenterStats | null> {
   const data = await getLoadedVMData();
   const vcenters = await getVCenters();
   const vc = vcenters.find((v) => v.vcenter.toLowerCase() === vcentername.toLowerCase());
   
   if (vc) {
-    if (esxi7Plus) {
-      // Filter VMs to only ESXi 7.0+
-      const filteredVMs = vc.vms.filter(isESXi7Plus);
-      const powered_on = filteredVMs.filter((v) => v.power_state === 'PoweredOn').length;
-      const powered_off = filteredVMs.filter((v) => v.power_state === 'PoweredOff').length;
-      return {
-        ...vc,
-        vms: filteredVMs,
-        total_vms: filteredVMs.length,
-        powered_on,
-        powered_off,
-      };
-    }
     return vc;
   }
   
@@ -133,23 +109,22 @@ export async function searchByVCenter(vcentername: string, esxi7Plus: boolean = 
 }
 
 // Search for multiple VMs
-export async function searchMultipleVMs(vmNames: string[], esxi7Plus: boolean = false): Promise<VM[]> {
+export async function searchMultipleVMs(vmNames: string[]): Promise<VM[]> {
   const data = await getLoadedVMData();
   return vmNames
     .map((name) => data.find((v) => v.vm_name.toLowerCase() === name.toLowerCase()))
-    .filter((v) => v !== undefined && (!esxi7Plus || isESXi7Plus(v))) as VM[];
+    .filter((v) => v !== undefined) as VM[];
 }
 
 // Get stats across all vCenters
-export async function getOverallStats(esxi7Plus: boolean = false) {
+export async function getOverallStats() {
   const vmData = await getLoadedVMData();
-  const vcenters = await getVCenters(esxi7Plus);
-  const filteredVMs = esxi7Plus ? vmData.filter(isESXi7Plus) : vmData;
+  const vcenters = await getVCenters();
   return {
     total_vcenters: vcenters.length,
-    total_vms: filteredVMs.length,
-    powered_on: filteredVMs.filter((v: any) => v.power_state === 'PoweredOn').length,
-    powered_off: filteredVMs.filter((v: any) => v.power_state === 'PoweredOff').length,
+    total_vms: vmData.length,
+    powered_on: vmData.filter((v: any) => v.power_state === 'PoweredOn').length,
+    powered_off: vmData.filter((v: any) => v.power_state === 'PoweredOff').length,
     vcenters,
   };
 }
