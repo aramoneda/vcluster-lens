@@ -7,6 +7,7 @@ import { ChevronDown, ChevronUp, Download } from 'lucide-react';
 export function VCenterSearch() {
   const [vcenters, setVcenters] = useState<string[]>([]);
   const [selectedVCenter, setSelectedVCenter] = useState('');
+  const [esxi7Plus, setEsxi7Plus] = useState(false);
   const [result, setResult] = useState<VCenterStats | null>(null);
   const [searched, setSearched] = useState(false);
   const [notFound, setNotFound] = useState(false);
@@ -15,7 +16,7 @@ export function VCenterSearch() {
 
   useEffect(() => {
     const loadVCenters = async () => {
-      const vcList = await getVCenters();
+      const vcList = await getVCenters(false);
       setVcenters(vcList.map((vc) => vc.vcenter));
       setLoading(false);
     };
@@ -27,7 +28,7 @@ export function VCenterSearch() {
     if (!selectedVCenter) return;
     
     setSearched(true);
-    const vcenter = await searchByVCenter(selectedVCenter);
+    const vcenter = await searchByVCenter(selectedVCenter, esxi7Plus);
     if (vcenter) {
       setResult(vcenter);
       setNotFound(false);
@@ -76,25 +77,36 @@ export function VCenterSearch() {
             <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent" />
           </div>
         ) : (
-          <form onSubmit={handleSearch} className="flex gap-2">
-            <select
-              value={selectedVCenter}
-              onChange={(e) => setSelectedVCenter(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select a vCenter...</option>
-              {vcenters.map((vc) => (
-                <option key={vc} value={vc}>
-                  {vc}
-                </option>
-              ))}
-            </select>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
-            >
-              Search
-            </button>
+          <form onSubmit={handleSearch} className="space-y-3">
+            <div className="flex gap-2">
+              <select
+                value={selectedVCenter}
+                onChange={(e) => setSelectedVCenter(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select a vCenter...</option>
+                {vcenters.map((vc) => (
+                  <option key={vc} value={vc}>
+                    {vc}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+              >
+                Search
+              </button>
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={esxi7Plus}
+                onChange={(e) => setEsxi7Plus(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="text-gray-700 dark:text-gray-300">ESXi 7.0 and later (VM version 17)</span>
+            </label>
           </form>
         )}
       </div>
