@@ -33,7 +33,7 @@ export function MultiVMSearch() {
   const handleExportCSV = () => {
     if (sortedResults.length === 0) return;
 
-    const headers = ['VM Name', 'vCenter', 'Site', 'Power State', 'Hostname', 'Guest OS', 'IP Address', 'CPU', 'Memory (GB)'];
+    const headers = ['VM Name', 'vCenter', 'Site', 'Power State', 'Hostname', 'Guest OS', 'IP Address', 'CPU', 'Memory (GB)', 'Compatibility'];
     const rows = sortedResults.map((vm) => [
       vm.vm_name,
       vm.vcenter,
@@ -44,6 +44,7 @@ export function MultiVMSearch() {
       vm.ip_address,
       vm.num_cpu,
       vm.memory_gb,
+      vm.vm_compatibility,
     ]);
 
     const csvContent = [
@@ -182,7 +183,7 @@ export function MultiVMSearch() {
                         </td>
                         <td className="px-4 py-3 text-xs">
                           <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
-                            ESXi 7.0+
+                            {vm.vm_compatibility}
                           </span>
                         </td>
                       </tr>

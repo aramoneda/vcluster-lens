@@ -40,7 +40,7 @@ export function VCenterSearch() {
   const handleExportCSV = () => {
     if (!result) return;
 
-    const headers = ['VM Name', 'Hostname', 'Guest OS', 'IP Address', 'Power State', 'CPU', 'Memory (GB)'];
+    const headers = ['VM Name', 'Hostname', 'Guest OS', 'IP Address', 'Power State', 'CPU', 'Memory (GB)', 'Compatibility'];
     const rows = result.vms.map((vm) => [
       vm.vm_name,
       vm.guest_hostname,
@@ -49,6 +49,7 @@ export function VCenterSearch() {
       vm.power_state,
       vm.num_cpu,
       vm.memory_gb,
+      vm.vm_compatibility,
     ]);
 
     const csvContent = [
@@ -76,25 +77,29 @@ export function VCenterSearch() {
             <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent" />
           </div>
         ) : (
-          <form onSubmit={handleSearch} className="flex gap-2">
-            <select
-              value={selectedVCenter}
-              onChange={(e) => setSelectedVCenter(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select a vCenter...</option>
-              {vcenters.map((vc) => (
-                <option key={vc} value={vc}>
-                  {vc}
-                </option>
-              ))}
-            </select>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
-            >
-              Search
-            </button>
+          <form onSubmit={handleSearch} className="space-y-3">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                list="vcenters-list"
+                placeholder="Enter or select a vCenter..."
+                value={selectedVCenter}
+                onChange={(e) => setSelectedVCenter(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <datalist id="vcenters-list">
+                {vcenters.map((vc) => (
+                  <option key={vc} value={vc} />
+                ))}
+              </datalist>
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+              >
+                Search
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">You can type to search or select from the dropdown</p>
           </form>
         )}
       </div>
@@ -195,7 +200,7 @@ export function VCenterSearch() {
                           </td>
                           <td className="px-4 py-3 text-xs">
                             <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
-                              ESXi 7.0+
+                              {vm.vm_compatibility}
                             </span>
                           </td>
                         </tr>

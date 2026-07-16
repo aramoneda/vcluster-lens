@@ -57,7 +57,7 @@ export function SingleVMSearch() {
             <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm space-y-4">
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  <span className="font-semibold">Compatibility:</span> ESXi 7.0 and later (VM version 17)
+                  <span className="font-semibold">Compatibility:</span> {result.vm_compatibility}
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

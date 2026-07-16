@@ -16,6 +16,7 @@ export interface VM {
   used_gb: number;
   tools_status: string;
   collection_time: string;
+  vm_compatibility: string;
 }
 
 export interface VCenterStats {
