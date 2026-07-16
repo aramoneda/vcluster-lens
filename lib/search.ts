@@ -1,4 +1,3 @@
-import vmDataDefault from './vm-inventory.json';
 import { getVMData } from './indexed-db';
 
 export interface VM {
@@ -34,16 +33,24 @@ export interface VCenterStats {
 let cachedVMData: any[] | null = null;
 let cachedVCenters: VCenterStats[] | null = null;
 
-// Load VM data from IndexedDB or use default
+// Load VM data from IndexedDB or public folder
 async function getLoadedVMData(): Promise<any[]> {
   if (cachedVMData) return cachedVMData;
   
   try {
     const indexedDBData = await getVMData();
-    cachedVMData = indexedDBData || vmDataDefault;
+    if (indexedDBData && indexedDBData.length > 0) {
+      cachedVMData = indexedDBData;
+      return cachedVMData;
+    }
+    
+    // Fallback to public JSON file
+    const response = await fetch('/vm-inventory.json');
+    if (!response.ok) throw new Error('Failed to fetch vm-inventory.json');
+    cachedVMData = await response.json();
   } catch (error) {
     console.error('[v0] Error loading VM data:', error);
-    cachedVMData = vmDataDefault;
+    cachedVMData = [];
   }
   
   return cachedVMData;

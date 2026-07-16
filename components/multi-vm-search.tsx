@@ -104,6 +104,8 @@ export function MultiVMSearch() {
                       <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Site</th>
                       <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Power State</th>
                       <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Hostname</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">Guest OS</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">IP Address</th>
                       <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-white">CPU/Memory</th>
                     </tr>
                   </thead>
@@ -128,6 +130,12 @@ export function MultiVMSearch() {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{vm.guest_hostname}</td>
+                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs max-w-xs truncate" title={vm.guest_os}>
+                          {vm.guest_os}
+                        </td>
+                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300 text-xs max-w-xs truncate font-mono" title={vm.ip_address}>
+                          {vm.ip_address}
+                        </td>
                         <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                           {vm.num_cpu} / {vm.memory_gb}GB
                         </td>
