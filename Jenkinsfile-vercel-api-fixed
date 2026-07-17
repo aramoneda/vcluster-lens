@@ -1,0 +1,308 @@
+pipeline {
+    agent { label 'EDDVWJMPA032_ics-globl-manila' }
+
+    options {
+        timestamps()
+        timeout(time: 1, unit: 'HOURS')
+    }
+
+    environment {
+        SCRIPT_DIR   = ********
+        PS_SCRIPT    = ********
+        OUTPUT_JSON  = ********
+        REPO_DIR     = ********
+        TARGET_JSON  = ********
+        GIT_BRANCH   = ********
+        // Vercel Configuration - CORRECT VALUES
+        VERCEL_PROJECT_ID = "prj_bYCYpBAjXW0h0K9ZA1nh3qk7yRmP"
+        VERCEL_TEAM_ID = "team_cupFjjpvUzFKcEQZ0THYxTLm"
+        VERCEL_API_BASE = "https://api.vercel.com"
+    }
+
+    stages {
+        stage('Prepare') {
+            steps {
+                powershell '''
+                    Write-Output "Preparing run..."
+                    Write-Output "Script     : $env:PS_SCRIPT"
+                    Write-Output "Output JSON: $env:OUTPUT_JSON"
+                    Write-Output "Repo Dir   : $env:REPO_DIR"
+                    Write-Output "Target JSON: $env:TARGET_JSON"
+                    Write-Output "Branch     : $env:GIT_BRANCH"
+
+                    if (-not (Test-Path $env:PS_SCRIPT)) {
+                        throw "PowerShell script not found: $env:PS_SCRIPT"
+                    }
+
+                    if (-not (Test-Path $env:REPO_DIR)) {
+                        throw "Repo directory not found: $env:REPO_DIR"
+                    }
+
+                    $outputParent = Split-Path $env:OUTPUT_JSON -Parent
+                    if (-not (Test-Path $outputParent)) {
+                        New-Item -ItemType Directory -Path $outputParent -Force | Out-Null
+                    }
+
+                    $targetParent = Split-Path $env:TARGET_JSON -Parent
+                    if (-not (Test-Path $targetParent)) {
+                        throw "Target directory not found: $targetParent"
+                    }
+                '''
+            }
+        }
+
+        stage('Generate JSON') {
+            steps {
+                powershell '''
+                    Write-Output "Running inventory collector..."
+                    Set-Location $env:SCRIPT_DIR
+
+                    & $env:PS_SCRIPT
+
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Collector failed with exit code: $LASTEXITCODE"
+                    }
+
+                    if (-not (Test-Path $env:OUTPUT_JSON)) {
+                        throw "Expected JSON not found: $env:OUTPUT_JSON"
+                    }
+
+                    Write-Output "Generated JSON successfully."
+                    Write-Output "Size: $((Get-Item $env:OUTPUT_JSON).Length) bytes"
+                '''
+            }
+        }
+
+        stage('Validate JSON') {
+            steps {
+                powershell '''
+                    if (-not (Test-Path $env:OUTPUT_JSON)) {
+                        throw "JSON file not found: $env:OUTPUT_JSON"
+                    }
+
+                    try {
+                        $json = Get-Content $env:OUTPUT_JSON -Raw
+                        $data = $json | ConvertFrom-Json
+
+                        Write-Output "JSON validation successful."
+                        Write-Output "Record count: $($data.Count)"
+
+                        if ($data.Count -eq 0) {
+                            throw "JSON contains zero records."
+                        }
+
+                        $first = $data[0]
+                        $requiredFields = @('vm_name','vcenter','power_state','site')
+
+                        $missing = @()
+                        foreach ($field in $requiredFields) {
+                            if (-not ($field -in $first.PSObject.Properties.Name)) {
+                                $missing += $field
+                            }
+                        }
+
+                        if ($missing.Count -gt 0) {
+                            throw "Missing required fields: $($missing -join ', ')"
+                        }
+
+                        Write-Output "Required fields validated."
+                    }
+                    catch {
+                        throw "JSON validation failed: $($_.Exception.Message)"
+                    }
+                '''
+            }
+        }
+
+        stage('Prepare Git Safe Directory') {
+            steps {
+                powershell '''
+                    Write-Output "Configuring git safe.directory for Jenkins runtime user..."
+                    $currentSafeDirs = git config --global --get-all safe.directory 2>$null
+
+                    if ($currentSafeDirs -notcontains $env:REPO_DIR) {
+                        git config --global --add safe.directory "$env:REPO_DIR"
+                    }
+
+                    Write-Output "Configured safe directories:"
+                    git config --global --get-all safe.directory
+                '''
+            }
+        }
+
+        stage('Git Status') {
+            steps {
+                dir(********) {
+                    bat '''
+git status
+git branch --show-current
+git remote -v
+'''
+                }
+            }
+        }
+
+        stage('Commit and Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github-vcluster-push', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    powershell '''
+                        $remoteUrl = (git -C $env:REPO_DIR remote get-url origin).Trim()
+                        if (-not $remoteUrl) {
+                            throw "Could not get git remote URL."
+                        }
+
+                        if ($remoteUrl -notmatch '^https://') {
+                            throw "Remote URL is not HTTPS. Current URL: $remoteUrl"
+                        }
+
+                        $escapedUser = [System.Uri]::EscapeDataString($env:GIT_USERNAME)
+                        $escapedPass = [System.Uri]::EscapeDataString($env:GIT_PASSWORD)
+                        $authUrl = $remoteUrl -replace '^https://', "https://$escapedUser`:$escapedPass@"
+
+                        Set-Content -Path (Join-Path $env:REPO_DIR ".git\\jenkins_auth_url.txt") -Value $authUrl -Encoding ASCII
+                        Write-Output "Prepared authenticated Git URL."
+                    '''
+
+                    dir(********) {
+                        bat '''
+set /p AUTH_URL=<.git\\jenkins_auth_url.txt
+
+git checkout %GIT_BRANCH%
+if errorlevel 1 exit /b 1
+
+git fetch %AUTH_URL% %GIT_BRANCH%
+if errorlevel 1 exit /b 1
+
+git reset --hard FETCH_HEAD
+if errorlevel 1 exit /b 1
+'''
+                    }
+
+                    powershell '''
+                        Write-Output "Copying JSON into repo target..."
+                        Copy-Item -Path $env:OUTPUT_JSON -Destination $env:TARGET_JSON -Force
+
+                        if (-not (Test-Path $env:TARGET_JSON)) {
+                            throw "Copy failed. Target file not found: $env:TARGET_JSON"
+                        }
+                    '''
+
+                    dir(********) {
+                        bat '''
+git add lib\\vm-inventory.json
+if errorlevel 1 exit /b 1
+
+git status --porcelain > git_status.txt
+if errorlevel 1 exit /b 1
+
+for %%A in (git_status.txt) do if %%~zA==0 (
+    echo No changes detected in lib\\vm-inventory.json. Nothing to commit.
+    del /f /q git_status.txt >nul 2>nul
+    exit /b 0
+)
+
+echo Git status after add:
+type git_status.txt
+
+git config user.name Jenkins
+if errorlevel 1 exit /b 1
+
+git config user.email jenkins@broadridge.com
+if errorlevel 1 exit /b 1
+
+git commit -m "Update vm inventory"
+if errorlevel 1 exit /b 1
+
+set /p AUTH_URL=<.git\\jenkins_auth_url.txt
+git push %AUTH_URL% HEAD:%GIT_BRANCH%
+if errorlevel 1 exit /b 1
+
+del /f /q git_status.txt >nul 2>nul
+'''
+                    }
+                }
+            }
+        }
+
+        stage('Trigger Vercel Redeploy') {
+            when {
+                expression {
+                    return true
+                }
+            }
+            steps {
+                withCredentials([string(credentialsId: 'vercel-api-token', variable: 'VERCEL_TOKEN')]) {
+                    powershell '''
+                        Write-Output "Triggering Vercel redeploy..."
+                        
+                        # CORRECT API ENDPOINT FORMAT
+                        $url = "$env:VERCEL_API_BASE/v13/teams/$env:VERCEL_TEAM_ID/projects/$env:VERCEL_PROJECT_ID/redeploy"
+                        
+                        Write-Output "API URL: $url"
+                        Write-Output "Project ID: $env:VERCEL_PROJECT_ID"
+                        Write-Output "Team ID: $env:VERCEL_TEAM_ID"
+                        
+                        $headers = @{
+                            'Authorization' = "Bearer $env:VERCEL_TOKEN"
+                            'Content-Type' = 'application/json'
+                        }
+                        
+                        $body = @{
+                            skipBuildCache = $false
+                        } | ConvertTo-Json
+                        
+                        try {
+                            Write-Output "Sending POST request..."
+                            $response = Invoke-WebRequest -Uri $url -Method POST -Headers $headers -Body $body -UseBasicParsing
+                            
+                            Write-Output "✓ Vercel redeploy triggered successfully!"
+                            Write-Output "Response Status: $($response.StatusCode)"
+                            Write-Output "Response: $($response.Content)"
+                        }
+                        catch {
+                            Write-Output "✗ Failed to trigger Vercel redeploy"
+                            Write-Output "Error: $($_.Exception.Message)"
+                            
+                            if ($_.Exception.Response) {
+                                Write-Output "Status Code: $($_.Exception.Response.StatusCode)"
+                                Write-Output "Status Description: $($_.Exception.Response.StatusDescription)"
+                                
+                                try {
+                                    $errorContent = $_.Exception.Response.GetResponseStream()
+                                    $reader = New-Object System.IO.StreamReader($errorContent)
+                                    $responseBody = $reader.ReadToEnd()
+                                    Write-Output "Response Body: $responseBody"
+                                }
+                                catch {
+                                    Write-Output "Could not read error response body"
+                                }
+                            }
+                            
+                            throw $_
+                        }
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully - Dashboard will update shortly'
+        }
+
+        failure {
+            echo 'Pipeline failed - Check logs above'
+        }
+
+        always {
+            powershell '''
+                $authFile = Join-Path $env:REPO_DIR ".git\\jenkins_auth_url.txt"
+                if (Test-Path $authFile) {
+                    Remove-Item $authFile -Force -ErrorAction SilentlyContinue
+                }
+            '''
+            echo 'Pipeline cleanup completed'
+        }
+    }
+}
