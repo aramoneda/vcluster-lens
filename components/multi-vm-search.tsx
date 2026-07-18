@@ -33,7 +33,7 @@ export function MultiVMSearch() {
   const handleExportCSV = () => {
     if (sortedResults.length === 0) return;
 
-    const headers = ['VM Name', 'vCenter', 'Site', 'Power State', 'Hostname', 'Guest OS', 'IP Address', 'CPU', 'Memory (GB)', 'Provisioned Storage (GB)', 'Used Storage (GB)', 'Compatibility', 'VMware Tools Status', 'Snapshots'];
+    const headers = ['VM Name', 'vCenter', 'Site', 'Power State', 'Hostname', 'Guest OS', 'IP Address', 'CPU', 'Memory (GB)', 'Provisioned Storage (GB)', 'Used Storage (GB)', 'Compatibility', 'VMware Tools Status', 'Has Snapshots'];
     const rows = sortedResults.map((vm) => [
       vm.vm_name,
       vm.vcenter,
@@ -48,7 +48,7 @@ export function MultiVMSearch() {
       vm.used_gb.toFixed(2),
       vm.vm_compatibility,
       formatToolsStatus(vm),
-      vm.snapshot_count || 0,
+      vm.has_snapshot && vm.has_snapshot !== 'No' ? 'Yes' : 'No',
     ]);
 
     const csvContent = [
@@ -154,7 +154,7 @@ export function MultiVMSearch() {
                       <th className="text-left px-4 py-3 font-semibold text-white">CPU/Memory</th>
                       <th className="text-left px-4 py-3 font-semibold text-white">Storage</th>
                       <th className="text-left px-4 py-3 font-semibold text-white">VMware Tools Status</th>
-                      <th className="text-left px-4 py-3 font-semibold text-white">Snapshots</th>
+                      <th className="text-left px-4 py-3 font-semibold text-white">Has Snapshots?</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-700">
@@ -194,14 +194,11 @@ export function MultiVMSearch() {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-xs text-slate-300">
-                          {vm.tools_status}
-                        </td>
-                        <td className="px-4 py-3 text-xs text-slate-300">
                           {formatToolsStatus(vm)}
                         </td>
                         <td className="px-4 py-3 text-xs">
                           <span className={`px-2 py-1 rounded ${vm.has_snapshot && vm.has_snapshot !== 'No' ? 'bg-yellow-900/40 text-yellow-300' : 'bg-slate-700 text-slate-400'}`}>
-                            {vm.snapshot_count || 0}
+                            {vm.has_snapshot && vm.has_snapshot !== 'No' ? 'Yes' : 'No'}
                           </span>
                         </td>
                       </tr>
