@@ -197,9 +197,21 @@ export function MultiVMSearch() {
                           {formatToolsStatus(vm)}
                         </td>
                         <td className="px-4 py-3 text-xs">
-                          <span className={`px-2 py-1 rounded ${vm.has_snapshot && vm.has_snapshot !== 'No' ? 'bg-yellow-900/40 text-yellow-300' : 'bg-slate-700 text-slate-400'}`}>
-                            {vm.has_snapshot && vm.has_snapshot !== 'No' ? 'Yes' : 'No'}
-                          </span>
+                          {vm.has_snapshot && vm.has_snapshot !== 'No' && vm.snapshot_details && vm.snapshot_details.length > 0 ? (
+                            <div className="space-y-1">
+                              {vm.snapshot_details.map((snap, idx) => (
+                                <div key={idx} className="bg-yellow-900/30 rounded p-1.5">
+                                  <p className="text-yellow-200 font-medium truncate">{snap.name || `Snapshot ${idx + 1}`}</p>
+                                  {snap.created && <p className="text-yellow-300/70 text-xs">{snap.created}</p>}
+                                  {snap.size_gb && <p className="text-yellow-300/70 text-xs">{snap.size_gb.toFixed(2)} GB</p>}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className={`px-2 py-1 rounded inline-block ${vm.has_snapshot && vm.has_snapshot !== 'No' ? 'bg-yellow-900/40 text-yellow-300' : 'bg-slate-700 text-slate-400'}`}>
+                              {vm.has_snapshot && vm.has_snapshot !== 'No' ? 'Yes' : 'No'}
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))}
