@@ -5,7 +5,7 @@ import { MultiVMSearch } from '@/components/multi-vm-search';
 
 export const metadata = {
   title: 'vCenter Dashboard',
-  description: 'Search virtual machines across your vCenter infrastructure',
+  description: 'Search and discover virtual machines across your vCenter infrastructure',
 };
 
 export default function Home() {
@@ -16,7 +16,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div>
             <h1 className="text-4xl font-bold text-white">vCenter Dashboard</h1>
-            <p className="text-blue-200 mt-2">Multi-vCenter Infrastructure Management</p>
+            <p className="text-blue-200 mt-2">Virtual Machine Search & Discovery</p>
           </div>
         </div>
       </header>
