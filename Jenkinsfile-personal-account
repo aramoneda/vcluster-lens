@@ -221,6 +221,78 @@ pipeline {
                 }
             }
         }
+
+        stage('Promote to Production') {
+            steps {
+                withCredentials([string(credentialsId: 'vercel-api-token', variable: 'VERCEL_TOKEN')]) {
+                    powershell '''
+                        Write-Output ""
+                        Write-Output "[Promote] Waiting for Vercel to create deployment..."
+                        Start-Sleep -Seconds 8
+
+                        $projectId = $env:VERCEL_PROJECT_ID
+                        $teamId = $env:VERCEL_TEAM_ID
+                        $token = $env:VERCEL_TOKEN
+
+                        if ([string]::IsNullOrEmpty($token)) {
+                            Write-Output "[Promote] WARNING: Vercel API token not configured in Jenkins."
+                            Write-Output "[Promote] To enable auto-promotion, add 'vercel-api-token' credential:"
+                            Write-Output "[Promote] 1. Jenkins → Manage Credentials → Global → Add Credentials"
+                            Write-Output "[Promote] 2. Kind: Secret text"
+                            Write-Output "[Promote] 3. ID: vercel-api-token"
+                            exit 0
+                        }
+
+                        $headers = @{
+                            "Authorization" = "Bearer $token"
+                            "Content-Type"  = "application/json"
+                        }
+
+                        try {
+                            # Get the latest deployment for the project
+                            Write-Output "[Promote] Fetching latest deployment from Vercel API..."
+                            $url = "https://api.vercel.com/v6/deployments?projectId=$projectId&teamId=$teamId&limit=1"
+                            
+                            $response = Invoke-WebRequest -Uri $url -Method GET -Headers $headers -UseBasicParsing
+                            $deployments = $response.Content | ConvertFrom-Json
+                            
+                            if ($deployments.deployments.Count -eq 0) {
+                                Write-Output "[Promote] WARNING: No deployments found. Skipping promotion."
+                                exit 0
+                            }
+
+                            $latestDeployment = $deployments.deployments[0]
+                            $deploymentId = $latestDeployment.uid
+                            $deploymentState = $latestDeployment.state
+                            $deploymentUrl = $latestDeployment.url
+                            
+                            Write-Output "[Promote] Deployment ID: $deploymentId"
+                            Write-Output "[Promote] Current State: $deploymentState"
+                            Write-Output "[Promote] URL: $deploymentUrl"
+
+                            # Promote to production
+                            if ($deploymentState -eq "READY") {
+                                Write-Output "[Promote] Promoting deployment to Production..."
+                                
+                                $promoteUrl = "https://api.vercel.com/v13/deployments/$deploymentId/promote?teamId=$teamId"
+                                $promoteResponse = Invoke-WebRequest -Uri $promoteUrl -Method POST -Headers $headers -UseBasicParsing
+                                
+                                Write-Output "[Promote] SUCCESS: Deployment promoted to Production!"
+                                Write-Output "[Promote] Status Code: $($promoteResponse.StatusCode)"
+                            } else {
+                                Write-Output "[Promote] Deployment state is $deploymentState. Waiting for READY state before promoting."
+                            }
+                        }
+                        catch {
+                            Write-Output "[Promote] WARNING: Could not promote deployment."
+                            Write-Output "[Promote] Error: $($_.Exception.Message)"
+                            Write-Output "[Promote] Note: Vercel may still deploy automatically via GitHub webhook."
+                            exit 0
+                        }
+                    '''
+                }
+            }
+        }
     }
 
     post {
@@ -242,7 +314,9 @@ pipeline {
         success {
             powershell '''
                 Write-Output "[SUCCESS] Pipeline completed successfully"
-                Write-Output "Dashboard will update automatically via GitHub webhook"
+                Write-Output "JSON generated, committed, and pushed to GitHub"
+                Write-Output "Vercel deployment triggered and promoted to Production"
+                Write-Output "Dashboard will update within 2-3 minutes"
             '''
         }
 
