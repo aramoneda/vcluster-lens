@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-[var(--font-family-brand)]`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange
         >

@@ -29,44 +29,44 @@ export function Summary() {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-      <div className="bg-white dark:bg-slate-900 rounded-lg p-3 shadow-sm">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="bg-gradient-to-br from-blue-900/40 to-blue-800/40 rounded-lg p-4 shadow-md border border-blue-700/50 hover:border-blue-600 transition-colors">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">Total VMs</p>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total_vms}</p>
+            <p className="text-xs text-blue-300">Total VMs</p>
+            <p className="text-2xl font-bold text-blue-100">{stats.total_vms}</p>
           </div>
-          <Server className="w-6 h-6 text-blue-500 opacity-20 flex-shrink-0" />
+          <Server className="w-8 h-8 text-blue-400 opacity-40 flex-shrink-0" />
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-lg p-3 shadow-sm">
+      <div className="bg-gradient-to-br from-indigo-900/40 to-indigo-800/40 rounded-lg p-4 shadow-md border border-indigo-700/50 hover:border-indigo-600 transition-colors">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">vCenters</p>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total_vcenters}</p>
+            <p className="text-xs text-indigo-300">vCenters</p>
+            <p className="text-2xl font-bold text-indigo-100">{stats.total_vcenters}</p>
           </div>
-          <AlertCircle className="w-6 h-6 text-purple-500 opacity-20 flex-shrink-0" />
+          <AlertCircle className="w-8 h-8 text-indigo-400 opacity-40 flex-shrink-0" />
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-lg p-3 shadow-sm">
+      <div className="bg-gradient-to-br from-emerald-900/40 to-emerald-800/40 rounded-lg p-4 shadow-md border border-emerald-700/50 hover:border-emerald-600 transition-colors">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">Powered On</p>
-            <p className="text-xl font-bold text-green-600 dark:text-green-400">{stats.powered_on}</p>
+            <p className="text-xs text-emerald-300">Powered On</p>
+            <p className="text-2xl font-bold text-emerald-100">{stats.powered_on}</p>
           </div>
-          <Power className="w-6 h-6 text-green-500 opacity-20 flex-shrink-0" />
+          <Power className="w-8 h-8 text-emerald-400 opacity-40 flex-shrink-0" />
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-lg p-3 shadow-sm">
+      <div className="bg-gradient-to-br from-slate-700/40 to-slate-600/40 rounded-lg p-4 shadow-md border border-slate-600/50 hover:border-slate-500 transition-colors">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">Powered Off</p>
-            <p className="text-xl font-bold text-gray-600 dark:text-gray-400">{stats.powered_off}</p>
+            <p className="text-xs text-slate-300">Powered Off</p>
+            <p className="text-2xl font-bold text-slate-100">{stats.powered_off}</p>
           </div>
-          <Zap className="w-6 h-6 text-gray-400 opacity-20 flex-shrink-0" />
+          <Zap className="w-8 h-8 text-slate-400 opacity-40 flex-shrink-0" />
         </div>
       </div>
     </div>

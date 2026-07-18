@@ -25,15 +25,15 @@ export function SingleVMSearch() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">Search Single VM</h2>
+      <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 shadow-lg">
+        <h2 className="text-lg font-semibold mb-4 text-white">Search Single VM</h2>
         <form onSubmit={handleSearch} className="flex gap-2">
           <input
             type="text"
             placeholder="Enter VM name (e.g., cldvvssp002)"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-4 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"
@@ -48,82 +48,82 @@ export function SingleVMSearch() {
       {searched && (
         <>
           {notFound && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300">
+            <div className="bg-red-900/30 border border-red-800 rounded-lg p-4 text-red-200">
               VM &quot;{searchTerm}&quot; not found.
             </div>
           )}
 
           {result && (
-            <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-sm space-y-4">
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                <p className="text-sm text-blue-700 dark:text-blue-300">
+            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 shadow-lg space-y-4">
+              <div className="bg-blue-900/30 border border-blue-800 rounded-lg p-3">
+                <p className="text-sm text-blue-200">
                   <span className="font-semibold">Compatibility:</span> {result.vm_compatibility}
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">VM Name</p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{result.vm_name}</p>
+                  <p className="text-sm text-slate-400">VM Name</p>
+                  <p className="text-lg font-semibold text-slate-100">{result.vm_name}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">vCenter</p>
-                  <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">{result.vcenter}</p>
+                  <p className="text-sm text-slate-400">vCenter</p>
+                  <p className="text-lg font-semibold text-blue-300">{result.vcenter}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Power State</p>
+                  <p className="text-sm text-slate-400">Power State</p>
                   <p
                     className={`text-lg font-semibold ${
                       result.power_state === 'PoweredOn'
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-gray-600 dark:text-gray-400'
+                        ? 'text-emerald-300'
+                        : 'text-slate-400'
                     }`}
                   >
                     {result.power_state}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Site</p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{result.site}</p>
+                  <p className="text-sm text-slate-400">Site</p>
+                  <p className="text-lg font-semibold text-slate-100">{result.site}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Guest OS</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{result.guest_os}</p>
+                  <p className="text-sm text-slate-400">Guest OS</p>
+                  <p className="text-sm text-slate-200">{result.guest_os}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Hostname</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{result.guest_hostname}</p>
+                  <p className="text-sm text-slate-400">Hostname</p>
+                  <p className="text-sm text-slate-200">{result.guest_hostname}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">IP Address</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{result.ip_address}</p>
+                  <p className="text-sm text-slate-400">IP Address</p>
+                  <p className="text-sm text-slate-200">{result.ip_address}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">ESXi Host</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{result.esxi_host}</p>
+                  <p className="text-sm text-slate-400">ESXi Host</p>
+                  <p className="text-sm text-slate-200">{result.esxi_host}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Cluster</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{result.cluster}</p>
+                  <p className="text-sm text-slate-400">Cluster</p>
+                  <p className="text-sm text-slate-200">{result.cluster}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">CPU Cores</p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{result.num_cpu}</p>
+                  <p className="text-sm text-slate-400">CPU Cores</p>
+                  <p className="text-lg font-semibold text-slate-100">{result.num_cpu}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Memory</p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{result.memory_gb} GB</p>
+                  <p className="text-sm text-slate-400">Memory</p>
+                  <p className="text-lg font-semibold text-slate-100">{result.memory_gb} GB</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Storage (Provisioned)</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{result.provisioned_gb.toFixed(2)} GB</p>
+                  <p className="text-sm text-slate-400">Storage (Provisioned)</p>
+                  <p className="text-sm text-slate-200">{result.provisioned_gb.toFixed(2)} GB</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Storage (Used)</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{result.used_gb.toFixed(2)} GB</p>
+                  <p className="text-sm text-slate-400">Storage (Used)</p>
+                  <p className="text-sm text-slate-200">{result.used_gb.toFixed(2)} GB</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Tools Status</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{result.tools_status}</p>
+                  <p className="text-sm text-slate-400">Tools Status</p>
+                  <p className="text-sm text-slate-200">{result.tools_status}</p>
                 </div>
               </div>
             </div>
