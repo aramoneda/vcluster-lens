@@ -221,22 +221,17 @@ pipeline {
                 }
             }
         }
+    }
 
-        stage('Promote to Production') {
-            steps {
-                withCredentials([string(credentialsId: 'vercel-api-token', variable: 'VERCEL_TOKEN')]) {
-                    powershell '''
-                        Write-Output ""
-                        Write-Output "[Promote] Waiting for Vercel to create deployment..."
-                        Start-Sleep -Seconds 10
-
-                        $token = $env:VERCEL_TOKEN
-
-                        if ([string]::IsNullOrEmpty($token)) {
-                            Write-Output "[Promote] Token not configured. Skipping API-based promotion."
-                            Write-Output "[Promote] Note: Vercel will auto-promote main branch to production via webhook."
-                            exit 0
-                        }
+    post {
+        success {
+            powershell '''
+                Write-Output "[SUCCESS] Pipeline completed successfully"
+                Write-Output "JSON generated, committed, and pushed to GitHub"
+                Write-Output "Vercel will auto-deploy to production via GitHub webhook"
+                Write-Output "Dashboard will update within 2-3 minutes"
+            '''
+        }
 
                         $headers = @{
                             "Authorization" = "Bearer $token"
