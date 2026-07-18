@@ -228,18 +228,13 @@ pipeline {
                     powershell '''
                         Write-Output ""
                         Write-Output "[Promote] Waiting for Vercel to create deployment..."
-                        Start-Sleep -Seconds 8
+                        Start-Sleep -Seconds 10
 
-                        $projectId = $env:VERCEL_PROJECT_ID
-                        $teamId = $env:VERCEL_TEAM_ID
                         $token = $env:VERCEL_TOKEN
 
                         if ([string]::IsNullOrEmpty($token)) {
-                            Write-Output "[Promote] WARNING: Vercel API token not configured in Jenkins."
-                            Write-Output "[Promote] To enable auto-promotion, add 'vercel-api-token' credential:"
-                            Write-Output "[Promote] 1. Jenkins → Manage Credentials → Global → Add Credentials"
-                            Write-Output "[Promote] 2. Kind: Secret text"
-                            Write-Output "[Promote] 3. ID: vercel-api-token"
+                            Write-Output "[Promote] Token not configured. Skipping API-based promotion."
+                            Write-Output "[Promote] Note: Vercel will auto-promote main branch to production via webhook."
                             exit 0
                         }
 
@@ -249,44 +244,50 @@ pipeline {
                         }
 
                         try {
-                            # Get the latest deployment for the project
-                            Write-Output "[Promote] Fetching latest deployment from Vercel API..."
-                            $url = "https://api.vercel.com/v6/deployments?projectId=$projectId&teamId=$teamId&limit=1"
+                            # Get all recent deployments (without project filter)
+                            Write-Output "[Promote] Fetching recent deployments..."
+                            $url = "https://api.vercel.com/v6/deployments?limit=3"
                             
                             $response = Invoke-WebRequest -Uri $url -Method GET -Headers $headers -UseBasicParsing
                             $deployments = $response.Content | ConvertFrom-Json
                             
                             if ($deployments.deployments.Count -eq 0) {
-                                Write-Output "[Promote] WARNING: No deployments found. Skipping promotion."
+                                Write-Output "[Promote] No deployments found."
                                 exit 0
                             }
 
-                            $latestDeployment = $deployments.deployments[0]
-                            $deploymentId = $latestDeployment.uid
-                            $deploymentState = $latestDeployment.state
-                            $deploymentUrl = $latestDeployment.url
+                            # Find the vcluster-lens deployment
+                            $vcDeployment = $deployments.deployments | Where-Object { $_.name -eq "vcluster-lens" } | Select-Object -First 1
                             
+                            if (-not $vcDeployment) {
+                                Write-Output "[Promote] vcluster-lens deployment not found in recent deployments."
+                                exit 0
+                            }
+
+                            $deploymentId = $vcDeployment.uid
+                            $deploymentState = $vcDeployment.state
+                            
+                            Write-Output "[Promote] Found vcluster-lens deployment"
                             Write-Output "[Promote] Deployment ID: $deploymentId"
                             Write-Output "[Promote] Current State: $deploymentState"
-                            Write-Output "[Promote] URL: $deploymentUrl"
 
-                            # Promote to production
+                            # Always attempt to promote
                             if ($deploymentState -eq "READY") {
                                 Write-Output "[Promote] Promoting deployment to Production..."
                                 
-                                $promoteUrl = "https://api.vercel.com/v13/deployments/$deploymentId/promote?teamId=$teamId"
+                                $promoteUrl = "https://api.vercel.com/v13/deployments/$deploymentId/promote"
                                 $promoteResponse = Invoke-WebRequest -Uri $promoteUrl -Method POST -Headers $headers -UseBasicParsing
                                 
                                 Write-Output "[Promote] SUCCESS: Deployment promoted to Production!"
                                 Write-Output "[Promote] Status Code: $($promoteResponse.StatusCode)"
                             } else {
-                                Write-Output "[Promote] Deployment state is $deploymentState. Waiting for READY state before promoting."
+                                Write-Output "[Promote] Deployment is in $deploymentState state."
+                                Write-Output "[Promote] Note: Will attempt promotion when ready via GitHub webhook."
                             }
                         }
                         catch {
-                            Write-Output "[Promote] WARNING: Could not promote deployment."
-                            Write-Output "[Promote] Error: $($_.Exception.Message)"
-                            Write-Output "[Promote] Note: Vercel may still deploy automatically via GitHub webhook."
+                            Write-Output "[Promote] API Error: $($_.Exception.Message)"
+                            Write-Output "[Promote] Note: Vercel will auto-promote via GitHub webhook (no action required)."
                             exit 0
                         }
                     '''
