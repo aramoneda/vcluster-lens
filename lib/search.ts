@@ -15,6 +15,7 @@ export interface VM {
   provisioned_gb: number;
   used_gb: number;
   tools_status: string;
+  vmtools?: string;
   tools_version?: string;
   tools_version_status?: string;
   tools_running_status?: string;
@@ -45,7 +46,7 @@ export interface VCenterStats {
 let cachedVMData: any[] | null = null;
 let cachedVCenters: VCenterStats[] | null = null;
 
-// Load VM data from IndexedDB or public folder
+// Load VM data from IndexedDB or JSON file
 async function getLoadedVMData(): Promise<any[]> {
   if (cachedVMData) return cachedVMData;
   
@@ -56,8 +57,12 @@ async function getLoadedVMData(): Promise<any[]> {
       return cachedVMData;
     }
     
-    // Fallback to public JSON file
-    const response = await fetch('/vm-inventory.json');
+    // Try to load from lib folder first (contains new fields)
+    let response = await fetch('/lib/vm-inventory.json');
+    if (!response.ok) {
+      // Fallback to public JSON file
+      response = await fetch('/vm-inventory.json');
+    }
     if (!response.ok) throw new Error('Failed to fetch vm-inventory.json');
     cachedVMData = await response.json();
   } catch (error) {
@@ -181,6 +186,11 @@ export function clearCache() {
 
 // Format VMware Tools status from VM data
 export function formatToolsStatus(vm: VM): string {
+  // If we have the pre-formatted vmtools field, use it directly
+  if (vm.vmtools) {
+    return vm.vmtools;
+  }
+  
   // If we have the new format with individual fields
   if (vm.tools_running_status) {
     const parts = [vm.tools_running_status];
