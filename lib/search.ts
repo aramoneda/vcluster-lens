@@ -57,12 +57,8 @@ async function getLoadedVMData(): Promise<any[]> {
       return cachedVMData;
     }
     
-    // Try to load from lib folder first (contains new fields)
-    let response = await fetch('/lib/vm-inventory.json');
-    if (!response.ok) {
-      // Fallback to public JSON file
-      response = await fetch('/vm-inventory.json');
-    }
+    // Load from public JSON file
+    const response = await fetch('/vm-inventory.json');
     if (!response.ok) throw new Error('Failed to fetch vm-inventory.json');
     cachedVMData = await response.json();
   } catch (error) {
