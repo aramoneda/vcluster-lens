@@ -7,35 +7,31 @@ pipeline {
     }
 
     environment {
-        SCRIPT_DIR   = "${SCRIPT_DIR}"
-        PS_SCRIPT    = "${PS_SCRIPT}"
-        OUTPUT_JSON  = "${OUTPUT_JSON}"
-        REPO_DIR     = "${REPO_DIR}"
-        TARGET_JSON  = "${TARGET_JSON}"
-        GIT_BRANCH   = "${GIT_BRANCH}"
-        GIT_EMAIL    = "jenkins@broadridge.com"
-        GIT_USER     = "Jenkins Automation"
+        SCRIPT_DIR          = ********
+        PS_SCRIPT           = ********
+        OUTPUT_JSON         = ********
+        REPO_DIR            = ********
+        TARGET_JSON         = ********
+        GIT_BRANCH          = ********
+        VERCEL_API_URL      = ********
+        VERCEL_TEAM_ID      = ********
+        VERCEL_PROJECT_ID   = ********
+        VERCEL_PROJECT_NAME = ********
     }
 
     stages {
         stage('Prepare') {
             steps {
                 powershell '''
-                    Write-Output "=========================================="
-                    Write-Output "vCluster Lens - Jenkins Automation Pipeline"
-                    Write-Output "=========================================="
-                    Write-Output "Target: Personal Vercel Account (Hobby)"
-                    Write-Output ""
-                    Write-Output "Configuration:"
-                    Write-Output "  Script Dir    : $env:SCRIPT_DIR"
-                    Write-Output "  PS Script     : $env:PS_SCRIPT"
-                    Write-Output "  Output JSON   : $env:OUTPUT_JSON"
-                    Write-Output "  Repo Dir      : $env:REPO_DIR"
-                    Write-Output "  Target JSON   : $env:TARGET_JSON"
-                    Write-Output "  Git Branch    : $env:GIT_BRANCH"
-                    Write-Output "  Git User      : $env:GIT_USER"
-                    Write-Output "  Git Email     : $env:GIT_EMAIL"
-                    Write-Output ""
+                    Write-Output "Preparing run..."
+                    Write-Output "Script             : $env:PS_SCRIPT"
+                    Write-Output "Output JSON        : $env:OUTPUT_JSON"
+                    Write-Output "Repo Dir           : $env:REPO_DIR"
+                    Write-Output "Target JSON        : $env:TARGET_JSON"
+                    Write-Output "Branch             : $env:GIT_BRANCH"
+                    Write-Output "Vercel Project ID  : $env:VERCEL_PROJECT_ID"
+                    Write-Output "Vercel Project Name: $env:VERCEL_PROJECT_NAME"
+                    Write-Output "Vercel Team ID     : $env:VERCEL_TEAM_ID"
 
                     if (-not (Test-Path $env:PS_SCRIPT)) {
                         throw "PowerShell script not found: $env:PS_SCRIPT"
@@ -54,8 +50,6 @@ pipeline {
                     if (-not (Test-Path $targetParent)) {
                         throw "Target directory not found: $targetParent"
                     }
-
-                    Write-Output "[Prepare] All validation checks passed"
                 '''
             }
         }
@@ -63,8 +57,7 @@ pipeline {
         stage('Generate JSON') {
             steps {
                 powershell '''
-                    Write-Output ""
-                    Write-Output "[Generate] Starting VM Inventory Collection..."
+                    Write-Output "Running inventory collector..."
                     Set-Location $env:SCRIPT_DIR
 
                     & $env:PS_SCRIPT
@@ -77,11 +70,8 @@ pipeline {
                         throw "Expected JSON not found: $env:OUTPUT_JSON"
                     }
 
-                    $fileSize = (Get-Item $env:OUTPUT_JSON).Length
-                    $fileSizeMB = [math]::Round($fileSize / 1MB, 2)
-                    
-                    Write-Output "[Generate] SUCCESS - JSON generated"
-                    Write-Output "[Generate] File size: $fileSizeMB MB"
+                    Write-Output "Generated JSON successfully."
+                    Write-Output "Size: $((Get-Item $env:OUTPUT_JSON).Length) bytes"
                 '''
             }
         }
@@ -89,9 +79,6 @@ pipeline {
         stage('Validate JSON') {
             steps {
                 powershell '''
-                    Write-Output ""
-                    Write-Output "[Validate] Validating JSON structure..."
-
                     if (-not (Test-Path $env:OUTPUT_JSON)) {
                         throw "JSON file not found: $env:OUTPUT_JSON"
                     }
@@ -100,17 +87,15 @@ pipeline {
                         $json = Get-Content $env:OUTPUT_JSON -Raw
                         $data = $json | ConvertFrom-Json
 
-                        $recordCount = if ($data -is [array]) { $data.Count } else { 1 }
-                        
-                        Write-Output "[Validate] JSON is valid"
-                        Write-Output "[Validate] Record count: $recordCount"
+                        Write-Output "JSON validation successful."
+                        Write-Output "Record count: $($data.Count)"
 
-                        if ($recordCount -eq 0) {
-                            throw "JSON contains zero records"
+                        if ($data.Count -eq 0) {
+                            throw "JSON contains zero records."
                         }
 
-                        $first = if ($data -is [array]) { $data[0] } else { $data }
-                        $requiredFields = @('vm_name','vcenter','power_state','site','provisioned_gb','used_gb','vm_compatibility')
+                        $first = $data[0]
+                        $requiredFields = @('vm_name','vcenter','power_state','site')
 
                         $missing = @()
                         foreach ($field in $requiredFields) {
@@ -123,167 +108,235 @@ pipeline {
                             throw "Missing required fields: $($missing -join ', ')"
                         }
 
-                        Write-Output "[Validate] All required fields present"
-                        Write-Output "[Validate] SUCCESS - JSON is valid and ready"
+                        Write-Output "Required fields validated."
                     }
                     catch {
-                        Write-Error "JSON validation failed: $_"
-                        throw $_
+                        throw "JSON validation failed: $($_.Exception.Message)"
                     }
                 '''
             }
         }
 
-        stage('Copy to Repository') {
+        stage('Prepare Git Safe Directory') {
             steps {
                 powershell '''
-                    Write-Output ""
-                    Write-Output "[Copy] Copying JSON to repository..."
+                    Write-Output "Configuring git safe.directory for Jenkins runtime user..."
+                    $currentSafeDirs = git config --global --get-all safe.directory 2>$null
 
-                    if (-not (Test-Path $env:OUTPUT_JSON)) {
-                        throw "Source JSON not found: $env:OUTPUT_JSON"
+                    if ($currentSafeDirs -notcontains $env:REPO_DIR) {
+                        git config --global --add safe.directory "$env:REPO_DIR"
                     }
 
-                    $targetDir = Split-Path $env:TARGET_JSON -Parent
-                    if (-not (Test-Path $targetDir)) {
-                        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
-                    }
-
-                    Copy-Item -Path $env:OUTPUT_JSON -Destination $env:TARGET_JSON -Force
-                    
-                    if (-not (Test-Path $env:TARGET_JSON)) {
-                        throw "Failed to copy JSON to: $env:TARGET_JSON"
-                    }
-
-                    Write-Output "[Copy] SUCCESS - JSON copied to repository"
+                    Write-Output "Configured safe directories:"
+                    git config --global --get-all safe.directory
                 '''
             }
         }
 
-        stage('Git Configuration') {
+        stage('Git Status') {
             steps {
-                dir("${REPO_DIR}") {
-                    powershell '''
-                        Write-Output ""
-                        Write-Output "[Git] Configuring Git..."
-                        
-                        git config user.email $env:GIT_EMAIL
-                        git config user.name $env:GIT_USER
-                        
-                        $currentUser = git config user.name
-                        $currentEmail = git config user.email
-                        
-                        Write-Output "[Git] User configured: $currentUser ($currentEmail)"
-                    '''
+                dir(********) {
+                    bat '''
+git status
+git branch --show-current
+git remote -v
+'''
                 }
             }
         }
 
         stage('Commit and Push') {
             steps {
-                dir("${REPO_DIR}") {
+                withCredentials([usernamePassword(credentialsId: 'github-vcluster-push', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     powershell '''
-                        Write-Output ""
-                        Write-Output "[Git] Checking for changes..."
-                        
-                        $status = git status --porcelain
-                        
-                        if ([string]::IsNullOrEmpty($status)) {
-                            Write-Output "[Git] No changes detected - skipping commit"
-                            return
+                        $remoteUrl = (git -C $env:REPO_DIR remote get-url origin).Trim()
+                        if (-not $remoteUrl) {
+                            throw "Could not get git remote URL."
                         }
 
-                        Write-Output "[Git] Changes detected:"
-                        Write-Output $status
-                        
-                        Write-Output ""
-                        Write-Output "[Git] Staging changes..."
-                        git add -A
-                        
-                        Write-Output "[Git] Committing changes..."
-                        $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-                        git commit -m "Update VM inventory - $timestamp"
-                        
-                        if ($LASTEXITCODE -ne 0) {
-                            throw "Git commit failed with exit code: $LASTEXITCODE"
+                        if ($remoteUrl -notmatch '^https://') {
+                            throw "Remote URL is not HTTPS. Current URL: $remoteUrl"
                         }
 
-                        Write-Output "[Git] Pushing to remote..."
-                        git push origin $env:GIT_BRANCH
-                        
-                        if ($LASTEXITCODE -ne 0) {
-                            throw "Git push failed with exit code: $LASTEXITCODE"
-                        }
+                        $escapedUser = [System.Uri]::EscapeDataString($env:GIT_USERNAME)
+                        $escapedPass = [System.Uri]::EscapeDataString($env:GIT_PASSWORD)
+                        $authUrl = $remoteUrl -replace '^https://', "https://$escapedUser`:$escapedPass@"
 
-                        Write-Output "[Git] SUCCESS - Changes pushed to GitHub"
-                        Write-Output "[Git] Vercel will auto-deploy in 1-2 minutes"
+                        Set-Content -Path (Join-Path $env:REPO_DIR ".git\\jenkins_auth_url.txt") -Value $authUrl -Encoding ASCII
+                        Write-Output "Prepared authenticated Git URL."
                     '''
+
+                    dir(********) {
+                        bat '''
+set /p AUTH_URL=<.git\\jenkins_auth_url.txt
+
+git checkout %GIT_BRANCH%
+if errorlevel 1 exit /b 1
+
+git fetch %AUTH_URL% %GIT_BRANCH%
+if errorlevel 1 exit /b 1
+
+git reset --hard FETCH_HEAD
+if errorlevel 1 exit /b 1
+'''
+                    }
+
+                    powershell '''
+                        Write-Output "Copying JSON into repo target..."
+                        Copy-Item -Path $env:OUTPUT_JSON -Destination $env:TARGET_JSON -Force
+
+                        if (-not (Test-Path $env:TARGET_JSON)) {
+                            throw "Copy failed. Target file not found: $env:TARGET_JSON"
+                        }
+                    '''
+
+                    dir(********) {
+                        bat '''
+git add lib\\vm-inventory.json
+if errorlevel 1 exit /b 1
+
+git status --porcelain > git_status.txt
+if errorlevel 1 exit /b 1
+
+for %%A in (git_status.txt) do if %%~zA==0 (
+    echo No changes detected in lib\\vm-inventory.json. Nothing to commit.
+    del /f /q git_status.txt >nul 2>nul
+    exit /b 0
+)
+
+echo Git status after add:
+type git_status.txt
+
+git config user.name Jenkins
+if errorlevel 1 exit /b 1
+
+git config user.email aeramoneda@gmail.com
+if errorlevel 1 exit /b 1
+
+git commit -m "Update vm inventory"
+if errorlevel 1 exit /b 1
+
+set /p AUTH_URL=<.git\\jenkins_auth_url.txt
+git push %AUTH_URL% HEAD:%GIT_BRANCH%
+if errorlevel 1 exit /b 1
+
+del /f /q git_status.txt >nul 2>nul
+echo Changes committed and pushed successfully.
+'''
+                    }
                 }
             }
         }
-    }
 
-    post {
-        success {
-            powershell '''
-                Write-Output "[SUCCESS] Pipeline completed successfully"
-                Write-Output "JSON generated, committed, and pushed to GitHub"
-                Write-Output "Vercel will auto-deploy to production via GitHub webhook"
-                Write-Output "Dashboard will update within 2-3 minutes"
-            '''
-        }
+        stage('Create Production Redeploy in Vercel') {
+            steps {
+                withCredentials([string(credentialsId: 'vercel-api-token', variable: 'VERCEL_TOKEN')]) {
+                    powershell '''
+                        $ErrorActionPreference = "Stop"
+
+                        Write-Output ""
+                        Write-Output "[Vercel] Waiting briefly before checking deployments..."
+                        Start-Sleep -Seconds 5
+
+                        if ([string]::IsNullOrWhiteSpace($env:VERCEL_TOKEN)) {
+                            throw "VERCEL_TOKEN is empty or not injected from Jenkins credentials."
+                        }
 
                         $headers = @{
-                            "Authorization" = "Bearer $token"
+                            "Authorization" = "Bearer $env:VERCEL_TOKEN"
                             "Content-Type"  = "application/json"
                         }
 
+                        $apiUrl      = $env:VERCEL_API_URL.TrimEnd('/')
+                        $teamId      = $env:VERCEL_TEAM_ID
+                        $projectName = $env:VERCEL_PROJECT_NAME
+                        $projectId   = $env:VERCEL_PROJECT_ID
+
                         try {
-                            # Get all recent deployments (without project filter)
-                            Write-Output "[Promote] Fetching recent deployments..."
-                            $url = "https://api.vercel.com/v6/deployments?limit=3"
-                            
-                            $response = Invoke-WebRequest -Uri $url -Method GET -Headers $headers -UseBasicParsing
-                            $deployments = $response.Content | ConvertFrom-Json
-                            
-                            if ($deployments.deployments.Count -eq 0) {
-                                Write-Output "[Promote] No deployments found."
-                                exit 0
+                            $lookupUrl = $apiUrl + "/v6/deployments?limit=10"
+                            Write-Output "[Vercel] Looking up recent deployments..."
+                            Write-Output "[Vercel] Lookup URL: $lookupUrl"
+
+                            $lookupResponse = Invoke-WebRequest -Uri $lookupUrl -Method GET -Headers $headers -UseBasicParsing
+                            $deployments = $lookupResponse.Content | ConvertFrom-Json
+
+                            if (-not $deployments.deployments -or $deployments.deployments.Count -eq 0) {
+                                throw "No deployments returned by Vercel."
                             }
 
-                            # Find the vcluster-lens deployment
-                            $vcDeployment = $deployments.deployments | Where-Object { $_.name -eq "vcluster-lens" } | Select-Object -First 1
-                            
+                            $vcDeployment = $deployments.deployments |
+                                Where-Object { $_.name -eq $projectName } |
+                                Select-Object -First 1
+
                             if (-not $vcDeployment) {
-                                Write-Output "[Promote] vcluster-lens deployment not found in recent deployments."
-                                exit 0
+                                throw "Could not find deployment for project name [$projectName] in recent deployments."
                             }
 
                             $deploymentId = $vcDeployment.uid
                             $deploymentState = $vcDeployment.state
-                            
-                            Write-Output "[Promote] Found vcluster-lens deployment"
-                            Write-Output "[Promote] Deployment ID: $deploymentId"
-                            Write-Output "[Promote] Current State: $deploymentState"
 
-                            # Always attempt to promote
-                            if ($deploymentState -eq "READY") {
-                                Write-Output "[Promote] Promoting deployment to Production..."
-                                
-                                $promoteUrl = "https://api.vercel.com/v13/deployments/$deploymentId/promote"
-                                $promoteResponse = Invoke-WebRequest -Uri $promoteUrl -Method POST -Headers $headers -UseBasicParsing
-                                
-                                Write-Output "[Promote] SUCCESS: Deployment promoted to Production!"
-                                Write-Output "[Promote] Status Code: $($promoteResponse.StatusCode)"
-                            } else {
-                                Write-Output "[Promote] Deployment is in $deploymentState state."
-                                Write-Output "[Promote] Note: Will attempt promotion when ready via GitHub webhook."
+                            Write-Output "[Vercel] Found deployment:"
+                            Write-Output "[Vercel] Deployment ID   : $deploymentId"
+                            Write-Output "[Vercel] Deployment Name : $($vcDeployment.name)"
+                            Write-Output "[Vercel] Deployment State: $deploymentState"
+                            Write-Output "[Vercel] Deployment URL  : $($vcDeployment.url)"
+
+                            $redeployUrl = $apiUrl + "/v13/deployments?teamId=" + $teamId
+
+                            $bodyObject = @{
+                                name             = $projectName
+                                project          = $projectId
+                                target           = "production"
+                                deploymentId     = $deploymentId
+                                withLatestCommit = $true
                             }
+
+                            $bodyJson = $bodyObject | ConvertTo-Json -Depth 10
+
+                            Write-Output ""
+                            Write-Output "[Vercel] Creating production redeploy..."
+                            Write-Output "[Vercel] Redeploy URL: $redeployUrl"
+                            Write-Output "[Vercel] Request Body:"
+                            Write-Output $bodyJson
+
+                            $redeployResponse = Invoke-WebRequest `
+                                -Uri $redeployUrl `
+                                -Method POST `
+                                -Headers $headers `
+                                -Body $bodyJson `
+                                -UseBasicParsing
+
+                            $redeployData = $redeployResponse.Content | ConvertFrom-Json
+
+                            Write-Output ""
+                            Write-Output "[Vercel] SUCCESS: Production redeploy created"
+                            Write-Output "[Vercel] Status Code       : $($redeployResponse.StatusCode)"
+                            Write-Output "[Vercel] New Deployment ID : $($redeployData.id)"
+                            Write-Output "[Vercel] New Deployment URL: $($redeployData.url)"
+                            Write-Output "[Vercel] Ready State       : $($redeployData.readyState)"
+                            Write-Output "[Vercel] Target            : $($redeployData.target)"
                         }
                         catch {
-                            Write-Output "[Promote] API Error: $($_.Exception.Message)"
-                            Write-Output "[Promote] Note: Vercel will auto-promote via GitHub webhook (no action required)."
-                            exit 0
+                            Write-Output ""
+                            Write-Output "[Vercel] FAILED"
+                            Write-Output "[Vercel] Error: $($_.Exception.Message)"
+
+                            if ($_.Exception.Response) {
+                                Write-Output "[Vercel] Response Status: $($_.Exception.Response.StatusCode)"
+                                try {
+                                    $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+                                    $reader.BaseStream.Position = 0
+                                    $reader.DiscardBufferedData()
+                                    $responseBody = $reader.ReadToEnd()
+                                    Write-Output "[Vercel] Response Body:"
+                                    Write-Output $responseBody
+                                }
+                                catch {
+                                    Write-Output "[Vercel] Could not read response body."
+                                }
+                            }
+
+                            throw
                         }
                     '''
                 }
@@ -294,15 +347,15 @@ pipeline {
     post {
         always {
             powershell '''
+                $authFile = Join-Path $env:REPO_DIR ".git\\jenkins_auth_url.txt"
+                if (Test-Path $authFile) {
+                    Remove-Item $authFile -Force -ErrorAction SilentlyContinue
+                }
+
                 Write-Output ""
                 Write-Output "=========================================="
                 Write-Output "Pipeline Execution Completed"
                 Write-Output "=========================================="
-                Write-Output ""
-                Write-Output "Next Steps:"
-                Write-Output "1. Monitor GitHub for new commit"
-                Write-Output "2. Check Vercel dashboard for deployment"
-                Write-Output "3. Verify dashboard updates in ~2-3 minutes"
                 Write-Output ""
             '''
         }
@@ -310,9 +363,10 @@ pipeline {
         success {
             powershell '''
                 Write-Output "[SUCCESS] Pipeline completed successfully"
-                Write-Output "JSON generated, committed, and pushed to GitHub"
-                Write-Output "Vercel deployment triggered and promoted to Production"
-                Write-Output "Dashboard will update within 2-3 minutes"
+                Write-Output "JSON generated and validated"
+                Write-Output "JSON pushed to GitHub"
+                Write-Output "Production redeploy created in Vercel"
+                Write-Output "Check Vercel dashboard for deployment progress"
             '''
         }
 
@@ -320,9 +374,10 @@ pipeline {
             powershell '''
                 Write-Output "[FAILURE] Pipeline failed - check logs above"
                 Write-Output "Common issues:"
-                Write-Output "- JSON validation failed (check data format)"
-                Write-Output "- Git configuration missing (check credentials)"
-                Write-Output "- Network connectivity issues"
+                Write-Output "- JSON validation failed"
+                Write-Output "- Git credentials/configuration issue"
+                Write-Output "- Vercel token/team/project issue"
+                Write-Output "- Vercel redeploy API request issue"
             '''
         }
     }
