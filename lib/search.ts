@@ -16,14 +16,18 @@ export interface VM {
   used_gb: number;
   tools_status: string;
   tools_version?: string;
+  tools_version_status?: string;
+  tools_running_status?: string;
   collection_time: string;
   vm_compatibility: string;
-  has_snapshot?: boolean;
-  snapshot_info?: {
+  has_snapshot?: boolean | string;
+  snapshot_count?: number;
+  snapshot_details?: Array<{
     name?: string;
     created?: string;
     size_gb?: number;
-  };
+    description?: string;
+  }>;
 }
 
 export interface VCenterStats {

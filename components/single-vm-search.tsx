@@ -131,35 +131,57 @@ export function SingleVMSearch() {
                     <p className="text-sm text-slate-200">{result.tools_version}</p>
                   </div>
                 )}
+                {result.tools_version_status && (
+                  <div>
+                    <p className="text-sm text-slate-400">Tools Version Status</p>
+                    <p className="text-sm text-slate-200">{result.tools_version_status}</p>
+                  </div>
+                )}
+                {result.tools_running_status && (
+                  <div>
+                    <p className="text-sm text-slate-400">Tools Running Status</p>
+                    <p className="text-sm text-slate-200">{result.tools_running_status}</p>
+                  </div>
+                )}
                 <div>
                   <p className="text-sm text-slate-400">Has Snapshot</p>
-                  <p className={`text-sm font-semibold ${result.has_snapshot ? 'text-yellow-300' : 'text-emerald-300'}`}>
-                    {result.has_snapshot ? 'Yes' : 'No'}
+                  <p className={`text-sm font-semibold ${result.has_snapshot && result.has_snapshot !== 'No' ? 'text-yellow-300' : 'text-emerald-300'}`}>
+                    {result.has_snapshot && result.has_snapshot !== 'No' ? `Yes (${result.snapshot_count || 0})` : 'No'}
                   </p>
                 </div>
               </div>
 
-              {result.has_snapshot && result.snapshot_info && (
-                <div className="mt-4 bg-yellow-900/20 border border-yellow-800/50 rounded-lg p-4 space-y-2">
-                  <p className="text-sm font-semibold text-yellow-200">Snapshot Details</p>
-                  {result.snapshot_info.name && (
-                    <div>
-                      <p className="text-xs text-yellow-300/70">Name</p>
-                      <p className="text-sm text-yellow-100">{result.snapshot_info.name}</p>
+              {result.has_snapshot && result.has_snapshot !== 'No' && result.snapshot_details && result.snapshot_details.length > 0 && (
+                <div className="mt-4 bg-yellow-900/20 border border-yellow-800/50 rounded-lg p-4 space-y-3">
+                  <p className="text-sm font-semibold text-yellow-200">Snapshot Details ({result.snapshot_details.length})</p>
+                  {result.snapshot_details.map((snapshot, idx) => (
+                    <div key={idx} className="bg-yellow-900/10 rounded p-3 space-y-1">
+                      {snapshot.name && (
+                        <div>
+                          <p className="text-xs text-yellow-300/70">Name</p>
+                          <p className="text-sm text-yellow-100">{snapshot.name}</p>
+                        </div>
+                      )}
+                      {snapshot.created && (
+                        <div>
+                          <p className="text-xs text-yellow-300/70">Created</p>
+                          <p className="text-sm text-yellow-100">{snapshot.created}</p>
+                        </div>
+                      )}
+                      {snapshot.size_gb && (
+                        <div>
+                          <p className="text-xs text-yellow-300/70">Size</p>
+                          <p className="text-sm text-yellow-100">{snapshot.size_gb.toFixed(2)} GB</p>
+                        </div>
+                      )}
+                      {snapshot.description && (
+                        <div>
+                          <p className="text-xs text-yellow-300/70">Description</p>
+                          <p className="text-sm text-yellow-100">{snapshot.description}</p>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {result.snapshot_info.created && (
-                    <div>
-                      <p className="text-xs text-yellow-300/70">Created</p>
-                      <p className="text-sm text-yellow-100">{result.snapshot_info.created}</p>
-                    </div>
-                  )}
-                  {result.snapshot_info.size_gb && (
-                    <div>
-                      <p className="text-xs text-yellow-300/70">Size</p>
-                      <p className="text-sm text-yellow-100">{result.snapshot_info.size_gb.toFixed(2)} GB</p>
-                    </div>
-                  )}
+                  ))}
                 </div>
               )}
             </div>

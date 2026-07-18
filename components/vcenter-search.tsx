@@ -219,8 +219,8 @@ export function VCenterSearch() {
                             {vm.tools_version || 'N/A'}
                           </td>
                           <td className="px-4 py-3 text-xs">
-                            <span className={`px-2 py-1 rounded ${vm.has_snapshot ? 'bg-yellow-900/40 text-yellow-300' : 'bg-slate-700 text-slate-400'}`}>
-                              {vm.has_snapshot ? 'Yes' : 'No'}
+                            <span className={`px-2 py-1 rounded ${vm.has_snapshot && vm.has_snapshot !== 'No' ? 'bg-yellow-900/40 text-yellow-300' : 'bg-slate-700 text-slate-400'}`}>
+                              {vm.has_snapshot && vm.has_snapshot !== 'No' ? `${vm.snapshot_count || 0}` : '0'}
                             </span>
                           </td>
                         </tr>
