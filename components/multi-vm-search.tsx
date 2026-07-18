@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { searchMultipleVMs, VM } from '@/lib/search';
+import { searchMultipleVMs, VM, formatToolsStatus } from '@/lib/search';
 import { Search, Trash2, Download } from 'lucide-react';
 
 export function MultiVMSearch() {
@@ -33,7 +33,7 @@ export function MultiVMSearch() {
   const handleExportCSV = () => {
     if (sortedResults.length === 0) return;
 
-    const headers = ['VM Name', 'vCenter', 'Site', 'Power State', 'Hostname', 'Guest OS', 'IP Address', 'CPU', 'Memory (GB)', 'Provisioned Storage (GB)', 'Used Storage (GB)', 'Compatibility', 'Tools Status', 'Tools Version', 'Has Snapshot'];
+    const headers = ['VM Name', 'vCenter', 'Site', 'Power State', 'Hostname', 'Guest OS', 'IP Address', 'CPU', 'Memory (GB)', 'Provisioned Storage (GB)', 'Used Storage (GB)', 'Compatibility', 'VMware Tools Status', 'Snapshots'];
     const rows = sortedResults.map((vm) => [
       vm.vm_name,
       vm.vcenter,
@@ -47,9 +47,8 @@ export function MultiVMSearch() {
       vm.provisioned_gb.toFixed(2),
       vm.used_gb.toFixed(2),
       vm.vm_compatibility,
-      vm.tools_status,
-      vm.tools_version || 'N/A',
-      vm.has_snapshot ? 'Yes' : 'No',
+      formatToolsStatus(vm),
+      vm.snapshot_count || 0,
     ]);
 
     const csvContent = [
@@ -154,9 +153,8 @@ export function MultiVMSearch() {
                       <th className="text-left px-4 py-3 font-semibold text-white">IP Address</th>
                       <th className="text-left px-4 py-3 font-semibold text-white">CPU/Memory</th>
                       <th className="text-left px-4 py-3 font-semibold text-white">Storage</th>
-                      <th className="text-left px-4 py-3 font-semibold text-white">Tools Status</th>
-                      <th className="text-left px-4 py-3 font-semibold text-white">Tools Version</th>
-                      <th className="text-left px-4 py-3 font-semibold text-white">Snapshot</th>
+                      <th className="text-left px-4 py-3 font-semibold text-white">VMware Tools Status</th>
+                      <th className="text-left px-4 py-3 font-semibold text-white">Snapshots</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-700">
@@ -199,11 +197,11 @@ export function MultiVMSearch() {
                           {vm.tools_status}
                         </td>
                         <td className="px-4 py-3 text-xs text-slate-300">
-                          {vm.tools_version || 'N/A'}
+                          {formatToolsStatus(vm)}
                         </td>
                         <td className="px-4 py-3 text-xs">
                           <span className={`px-2 py-1 rounded ${vm.has_snapshot && vm.has_snapshot !== 'No' ? 'bg-yellow-900/40 text-yellow-300' : 'bg-slate-700 text-slate-400'}`}>
-                            {vm.has_snapshot && vm.has_snapshot !== 'No' ? `${vm.snapshot_count || 0}` : '0'}
+                            {vm.snapshot_count || 0}
                           </span>
                         </td>
                       </tr>

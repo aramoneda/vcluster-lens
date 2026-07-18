@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { searchVM, VM } from '@/lib/search';
+import { searchVM, VM, formatToolsStatus } from '@/lib/search';
 import { Search } from 'lucide-react';
 
 export function SingleVMSearch() {
@@ -123,26 +123,8 @@ export function SingleVMSearch() {
                 </div>
                 <div>
                   <p className="text-sm text-slate-400">VMware Tools Status</p>
-                  <p className="text-sm text-slate-200">{result.tools_status}</p>
+                  <p className="text-sm text-slate-200">{formatToolsStatus(result)}</p>
                 </div>
-                {result.tools_version && (
-                  <div>
-                    <p className="text-sm text-slate-400">VMware Tools Version</p>
-                    <p className="text-sm text-slate-200">{result.tools_version}</p>
-                  </div>
-                )}
-                {result.tools_version_status && (
-                  <div>
-                    <p className="text-sm text-slate-400">Tools Version Status</p>
-                    <p className="text-sm text-slate-200">{result.tools_version_status}</p>
-                  </div>
-                )}
-                {result.tools_running_status && (
-                  <div>
-                    <p className="text-sm text-slate-400">Tools Running Status</p>
-                    <p className="text-sm text-slate-200">{result.tools_running_status}</p>
-                  </div>
-                )}
                 <div>
                   <p className="text-sm text-slate-400">Has Snapshot</p>
                   <p className={`text-sm font-semibold ${result.has_snapshot && result.has_snapshot !== 'No' ? 'text-yellow-300' : 'text-emerald-300'}`}>

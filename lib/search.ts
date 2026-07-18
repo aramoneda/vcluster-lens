@@ -178,3 +178,29 @@ export function clearCache() {
   cachedVMData = null;
   cachedVCenters = null;
 }
+
+// Format VMware Tools status from VM data
+export function formatToolsStatus(vm: VM): string {
+  // If we have the new format with individual fields
+  if (vm.tools_running_status) {
+    const parts = [vm.tools_running_status];
+    if (vm.tools_version) {
+      parts.push(`version:${vm.tools_version}`);
+    }
+    if (vm.tools_version_status) {
+      parts.push(`(${vm.tools_version_status})`);
+    }
+    return parts.join(', ');
+  }
+  
+  // Fallback to legacy format
+  const statusMap: Record<string, string> = {
+    toolsOk: 'Running',
+    toolsRunning: 'Running',
+    toolsNotRunning: 'Not Running',
+    toolsNotInstalled: 'Not Installed',
+    toolsOld: 'Outdated',
+  };
+  
+  return statusMap[vm.tools_status] || vm.tools_status || 'Unknown';
+}
