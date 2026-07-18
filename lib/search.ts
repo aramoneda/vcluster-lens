@@ -15,8 +15,15 @@ export interface VM {
   provisioned_gb: number;
   used_gb: number;
   tools_status: string;
+  tools_version?: string;
   collection_time: string;
   vm_compatibility: string;
+  has_snapshot?: boolean;
+  snapshot_info?: {
+    name?: string;
+    created?: string;
+    size_gb?: number;
+  };
 }
 
 export interface VCenterStats {
