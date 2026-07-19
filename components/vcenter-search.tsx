@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { searchByVCenter, getVCenters, VCenterStats, formatToolsStatus } from '@/lib/search';
-import { ChevronDown, ChevronUp, Download, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Download, X, Power, AlertCircle, CheckCircle, XCircle, AlertTriangle, Server, Zap } from 'lucide-react';
 
 export function VCenterSearch() {
   const [vcenters, setVcenters] = useState<VCenterStats[]>([]);
@@ -20,6 +20,7 @@ export function VCenterSearch() {
   const [cpuCountOptions, setCpuCountOptions] = useState<number[]>([]);
   const [vcenterError, setVcenterError] = useState<string | null>(null);
   const [guestOSDropdownOpen, setGuestOSDropdownOpen] = useState(false);
+  const [guestOSSearch, setGuestOSSearch] = useState('');
   const [memoryDropdownOpen, setMemoryDropdownOpen] = useState(false);
   const [cpuDropdownOpen, setCpuDropdownOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -29,6 +30,20 @@ export function VCenterSearch() {
     memory: [] as number[],
     cpuCount: [] as number[],
   });
+
+  const getIconForPowerState = (state: string) => {
+    if (state === 'PoweredOn') return <Power className="w-4 h-4 text-green-400" />;
+    if (state === 'PoweredOff') return <Power className="w-4 h-4 text-slate-500" />;
+    return null;
+  };
+
+  const getIconForToolsStatus = (status: string) => {
+    if (status === 'toolsOk') return <CheckCircle className="w-4 h-4 text-green-400" />;
+    if (status === 'toolsNotInstalled') return <AlertCircle className="w-4 h-4 text-slate-500" />;
+    if (status === 'toolsNotRunning') return <XCircle className="w-4 h-4 text-red-400" />;
+    if (status === 'toolsOld') return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+    return null;
+  };
 
   const getOSCategory = (osName: string): string => {
     const osLower = osName.toLowerCase();
@@ -311,157 +326,143 @@ export function VCenterSearch() {
                   </div>
                 ) : (
                   <>
-                    <h3 className="text-sm font-semibold text-slate-200 mb-4">Advanced Filtering (Optional)</h3>
-                <div className="space-y-6">
-                  {/* Top Row: Power State, Guest OS, Memory */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left Column */}
-                    <div className="space-y-5">
-                    <div>
-                      <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Power State</label>
-                      <div className="space-y-2.5">
-                        {powerStateOptions.length > 0 ? (
-                          powerStateOptions.map(state => (
-                            <label key={state} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                              <input
-                                type="checkbox"
-                                checked={filters.powerState.includes(state)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setFilters(prev => ({ ...prev, powerState: [...prev.powerState, state] }));
-                                  } else {
-                                    setFilters(prev => ({ ...prev, powerState: prev.powerState.filter(s => s !== state) }));
-                                  }
-                                }}
-                                className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
-                              />
-                              <span className="text-sm text-slate-300">{state}</span>
-                            </label>
-                          ))
-                        ) : (
-                          <span className="text-xs text-slate-400">No options available</span>
-                        )}
-                      </div>
+                    <h3 className="text-sm font-semibold text-slate-200 mb-6">Advanced Filtering (Optional)</h3>
+                <div className="space-y-8">
+                  {/* VM State Group */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-700">
+                      <Zap className="w-4 h-4 text-slate-400" />
+                      <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide">VM State</h4>
                     </div>
-
-                    <div>
-                      <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Tools Status</label>
-                      <div className="space-y-2.5">
-                        {toolsStatusOptions.length > 0 ? (
-                          toolsStatusOptions.map(status => (
-                            <label key={status} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                              <input
-                                type="checkbox"
-                                checked={filters.toolsStatus.includes(status)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setFilters(prev => ({ ...prev, toolsStatus: [...prev.toolsStatus, status] }));
-                                  } else {
-                                    setFilters(prev => ({ ...prev, toolsStatus: prev.toolsStatus.filter(s => s !== status) }));
-                                  }
-                                }}
-                                className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
-                              />
-                              <span className="text-sm text-slate-300">{formatToolsStatus(status)}</span>
-                            </label>
-                          ))
-                        ) : (
-                          <span className="text-xs text-slate-400">No options available</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">CPU Count</label>
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() => setCpuDropdownOpen(!cpuDropdownOpen)}
-                          className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-left text-sm text-slate-300 hover:bg-slate-600 transition-colors flex items-center justify-between"
-                        >
-                          <span>{filters.cpuCount.length > 0 ? `${filters.cpuCount.length} selected` : 'Select CPU count...'}</span>
-                          <ChevronDown className={`w-4 h-4 transition-transform ${cpuDropdownOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        
-                        {cpuDropdownOpen && cpuCountOptions.length > 0 && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-48 overflow-y-auto">
-                            {cpuCountOptions.map(cpu => (
-                              <label key={cpu} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs border-b border-slate-700 last:border-b-0">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Power State */}
+                      <div>
+                        <label className="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-wide">Power State</label>
+                        <div className="space-y-2.5">
+                          {powerStateOptions.length > 0 ? (
+                            powerStateOptions.map(state => (
+                              <label key={state} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
                                 <input
                                   type="checkbox"
-                                  checked={filters.cpuCount.includes(cpu)}
+                                  checked={filters.powerState.includes(state)}
                                   onChange={(e) => {
                                     if (e.target.checked) {
-                                      setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
+                                      setFilters(prev => ({ ...prev, powerState: [...prev.powerState, state] }));
                                     } else {
-                                      setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
+                                      setFilters(prev => ({ ...prev, powerState: prev.powerState.filter(s => s !== state) }));
                                     }
                                   }}
-                                  className="rounded border-slate-600 bg-slate-700 cursor-pointer"
+                                  className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
                                 />
-                                <span className="text-slate-300">{cpu} CPU{cpu !== 1 ? 's' : ''}</span>
+                                <div className="flex items-center gap-2">
+                                  {getIconForPowerState(state)}
+                                  <span className="text-sm text-slate-300">{state}</span>
+                                </div>
                               </label>
-                            ))}
-                          </div>
-                        )}
-                        
-                        {cpuCountOptions.length === 0 && (
-                          <div className="text-xs text-slate-400 px-3 py-2">No options available</div>
-                        )}
+                            ))
+                          ) : (
+                            <span className="text-xs text-slate-400">No options available</span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Tools Status */}
+                      <div>
+                        <label className="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-wide">Tools Status</label>
+                        <div className="space-y-2.5">
+                          {toolsStatusOptions.length > 0 ? (
+                            toolsStatusOptions.map(status => (
+                              <label key={status} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.toolsStatus.includes(status)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFilters(prev => ({ ...prev, toolsStatus: [...prev.toolsStatus, status] }));
+                                    } else {
+                                      setFilters(prev => ({ ...prev, toolsStatus: prev.toolsStatus.filter(s => s !== status) }));
+                                    }
+                                  }}
+                                  className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
+                                />
+                                <div className="flex items-center gap-2">
+                                  {getIconForToolsStatus(status)}
+                                  <span className="text-sm text-slate-300">{formatToolsStatus(status)}</span>
+                                </div>
+                              </label>
+                            ))
+                          ) : (
+                            <span className="text-xs text-slate-400">No options available</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Middle Column */}
-                  <div className="relative">
-                    <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Guest OS</label>
-                    <div className="relative z-20">
-                      <button
-                        type="button"
-                        onClick={() => setGuestOSDropdownOpen(!guestOSDropdownOpen)}
-                        className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-left text-sm text-slate-300 hover:bg-slate-600 transition-colors flex items-center justify-between"
-                      >
-                        <span>{filters.guestOS.length > 0 ? `${filters.guestOS.length} selected` : 'Select OS types...'}</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${guestOSDropdownOpen ? 'rotate-180' : ''}`} />
-                      </button>
-                      
-                      {guestOSDropdownOpen && (
-                        <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-64 overflow-y-auto">
-                          {Object.entries(guestOSOptions).length > 0 ? (
-                            Object.entries(guestOSOptions).map(([category, osVersions]) => (
-                              <div key={category}>
-                                <div className="sticky top-0 px-3 py-1.5 bg-slate-700 text-xs font-semibold text-slate-400 border-b border-slate-600">{category}</div>
-                                {osVersions.map(os => (
-                                  <label key={os} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs">
-                                    <input
-                                      type="checkbox"
-                                      checked={filters.guestOS.includes(os)}
-                                      onChange={(e) => {
-                                        if (e.target.checked) {
-                                          setFilters(prev => ({ ...prev, guestOS: [...prev.guestOS, os] }));
-                                        } else {
-                                          setFilters(prev => ({ ...prev, guestOS: prev.guestOS.filter(s => s !== os) }));
-                                        }
-                                      }}
-                                      className="rounded border-slate-600 bg-slate-700 cursor-pointer"
-                                    />
-                                    <span className="text-slate-300">{os.replace(/\(64-bit\)|\(32-bit\)/g, '').trim()}</span>
-                                  </label>
-                                ))}
-                              </div>
-                            ))
-                          ) : (
-                            <div className="px-3 py-2 text-xs text-slate-400">No OS options available</div>
+                  {/* Resources Group */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-700">
+                      <Server className="w-4 h-4 text-slate-400" />
+                      <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide">Resources</h4>
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      {/* Guest OS with Type-Ahead */}
+                      <div>
+                        <label className="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-wide">Guest OS</label>
+                        <div className="relative z-20">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              placeholder="Search OS..."
+                              value={guestOSSearch}
+                              onChange={(e) => setGuestOSSearch(e.target.value)}
+                              onClick={() => setGuestOSDropdownOpen(true)}
+                              className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-slate-500"
+                            />
+                            <ChevronDown className={`absolute right-3 top-3 w-4 h-4 text-slate-500 transition-transform pointer-events-none ${guestOSDropdownOpen ? 'rotate-180' : ''}`} />
+                          </div>
+                          
+                          {guestOSDropdownOpen && (
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-64 overflow-y-auto">
+                              {Object.entries(guestOSOptions).length > 0 ? (
+                                Object.entries(guestOSOptions)
+                                  .filter(([_, osVersions]) => osVersions.some(os => os.toLowerCase().includes(guestOSSearch.toLowerCase())))
+                                  .map(([category, osVersions]) => {
+                                    const filtered = osVersions.filter(os => os.toLowerCase().includes(guestOSSearch.toLowerCase()));
+                                    return filtered.length > 0 ? (
+                                      <div key={category}>
+                                        <div className="sticky top-0 px-3 py-1.5 bg-slate-700 text-xs font-semibold text-slate-400 border-b border-slate-600">{category}</div>
+                                        {filtered.map(os => (
+                                          <label key={os} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs border-b border-slate-700 last:border-b-0">
+                                            <input
+                                              type="checkbox"
+                                              checked={filters.guestOS.includes(os)}
+                                              onChange={(e) => {
+                                                if (e.target.checked) {
+                                                  setFilters(prev => ({ ...prev, guestOS: [...prev.guestOS, os] }));
+                                                } else {
+                                                  setFilters(prev => ({ ...prev, guestOS: prev.guestOS.filter(s => s !== os) }));
+                                                }
+                                              }}
+                                              className="rounded border-slate-600 bg-slate-700 cursor-pointer"
+                                            />
+                                            <span className="text-slate-300">{os.replace(/\(64-bit\)|\(32-bit\)/g, '').trim()}</span>
+                                          </label>
+                                        ))}
+                                      </div>
+                                    ) : null;
+                                  })
+                              ) : (
+                                <div className="px-3 py-2 text-xs text-slate-400">No OS options available</div>
+                              )}
+                            </div>
                           )}
                         </div>
-                      )}
-                    </div>
-                  </div>
+                      </div>
 
-                  {/* Right Column */}
-                  <div className="space-y-5">
-                    <div className="relative">
-                      <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Memory (GB)</label>
+                      {/* Memory (GB) */}
+                      <div className="relative z-10">
+                        <label className="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-wide">Memory (GB)</label>
                       <div className="relative z-20">
                         <button
                           type="button"
@@ -499,14 +500,55 @@ export function VCenterSearch() {
                         )}
                       </div>
                     </div>
+
+                      {/* CPU Count */}
+                      <div className="relative z-10">
+                        <label className="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-wide">CPU Count</label>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setCpuDropdownOpen(!cpuDropdownOpen)}
+                            className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-left text-sm text-slate-300 hover:bg-slate-600 transition-colors flex items-center justify-between"
+                          >
+                            <span>{filters.cpuCount.length > 0 ? `${filters.cpuCount.length} selected` : 'Select CPU...'}</span>
+                            <ChevronDown className={`w-4 h-4 transition-transform ${cpuDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+                          
+                          {cpuDropdownOpen && cpuCountOptions.length > 0 && (
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-48 overflow-y-auto">
+                              {cpuCountOptions.map(cpu => (
+                                <label key={cpu} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs border-b border-slate-700 last:border-b-0">
+                                  <input
+                                    type="checkbox"
+                                    checked={filters.cpuCount.includes(cpu)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
+                                      } else {
+                                        setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
+                                      }
+                                    }}
+                                    className="rounded border-slate-600 bg-slate-700 cursor-pointer"
+                                  />
+                                  <span className="text-slate-300">{cpu} CPU{cpu !== 1 ? 's' : ''}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {cpuCountOptions.length === 0 && (
+                            <div className="text-xs text-slate-400 px-3 py-2">No options available</div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-4 flex gap-2">
+                <div className="mt-6 flex gap-3">
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold shadow-sm shadow-blue-500/50"
                   >
                     Search with Filters
                   </button>
@@ -520,8 +562,9 @@ export function VCenterSearch() {
                         memory: [],
                         cpuCount: [],
                       });
+                      setGuestOSSearch('');
                     }}
-                    className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg transition-colors font-medium"
+                    className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-300 rounded-lg transition-colors font-medium border border-slate-700"
                   >
                     Clear Filters
                   </button>
