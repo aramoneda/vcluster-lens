@@ -74,7 +74,10 @@ export async function getVCenters(): Promise<VCenterStats[]> {
   const data = await getLoadedVMData();
   const vcenterMap: Record<string, VCenterStats> = {};
   
-  data.forEach((vm: any) => {
+  // Filter out invalid VM records (empty vm_name indicates metadata/header record)
+  const validVMs = data.filter((vm: any) => vm.vm_name && vm.vm_name.trim() !== '');
+  
+  validVMs.forEach((vm: any) => {
     if (!vcenterMap[vm.vcenter]) {
       vcenterMap[vm.vcenter] = {
         vcenter: vm.vcenter,
@@ -110,11 +113,10 @@ export async function searchVM(vmName: string): Promise<VM | null> {
 
 // Search for VMs by vCenter
 export async function searchByVCenter(vcentername: string): Promise<VCenterStats | null> {
-  const data = await getLoadedVMData();
   const vcenters = await getVCenters();
   const vc = vcenters.find((v) => v.vcenter.toLowerCase() === vcentername.toLowerCase());
   
-  if (vc) {
+  if (vc && vc.total_vms > 0) {
     return vc;
   }
   
