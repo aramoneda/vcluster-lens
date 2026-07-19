@@ -17,7 +17,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div>
             <h1 className="text-4xl font-bold text-white">vCenter Dashboard</h1>
-            <p className="text-blue-200 mt-2">Virtual Machine Search & Discovery</p>
+            <p className="text-blue-200 mt-2">Infrastructure Monitoring & Resource Optimization</p>
           </div>
         </div>
       </header>

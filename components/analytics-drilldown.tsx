@@ -139,19 +139,19 @@ export function AnalyticsDrilldown() {
                 const status = getStatusColor(utilization);
                 const wasted = data.provisioned - data.used;
 
-                return (
-                  <div key={data.vcenter} className={`${status.bg} rounded-lg p-4 border ${status.border}`}>
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <p className="text-white font-semibold truncate">{data.vcenter}</p>
-                        <p className="text-sm mt-1 text-slate-300">{utilization.toFixed(0)}% Utilized</p>
-                      </div>
-                      <p className="text-slate-300 text-right">
-                        <span className="font-mono">{data.used.toFixed(1)}</span>
-                        <span className="text-slate-400"> / </span>
-                        <span className="font-mono">{data.provisioned.toFixed(1)} TB</span>
-                      </p>
-                    </div>
+            return (
+              <div key={data.vcenter} className={`${status.bg} rounded-lg p-4 border ${status.border}`}>
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <p className="text-white font-semibold truncate">{data.vcenter}</p>
+                    <p className="text-sm mt-1 text-slate-300">{utilization.toFixed(0)}% Utilized</p>
+                  </div>
+                </div>
+                <p className="text-white font-mono text-right text-lg mb-3">
+                  <span>{data.used.toFixed(1)}</span>
+                  <span className="text-slate-400"> / </span>
+                  <span>{data.provisioned.toFixed(1)} TB</span>
+                </p>
 
                     <div className="flex gap-2 h-6 rounded overflow-hidden mb-2">
                       <div
@@ -308,8 +308,9 @@ export function AnalyticsDrilldown() {
                   }
 
                   let bgColor = 'bg-green-900';
-                  if (data.storage > 100) bgColor = 'bg-red-900';
-                  else if (data.storage > 50) bgColor = 'bg-orange-900';
+                  if (data.count > 100) bgColor = 'bg-red-900';
+                  else if (data.count >= 70 && data.count <= 90) bgColor = 'bg-orange-900';
+                  else if (data.count >= 50 && data.count <= 60) bgColor = 'bg-yellow-900';
 
                   return (
                     <div key={data.vcenter} className={`${bgColor} rounded-lg p-4 border border-slate-600`}>
