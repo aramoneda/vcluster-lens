@@ -487,7 +487,6 @@ export function VCenterSearch() {
                       )}
                     </div>
                   </div>
-                </div>
 
                 <div className="mt-4 flex gap-2">
                   <button
