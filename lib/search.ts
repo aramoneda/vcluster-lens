@@ -190,9 +190,47 @@ export async function searchByVCenter(vcentername: string): Promise<VCenterStats
 // Search for multiple VMs
 export async function searchMultipleVMs(vmNames: string[]): Promise<VM[]> {
   const data = await getLoadedVMData();
-  return vmNames
-    .map((name) => data.find((v) => v.vm_name.toLowerCase() === name.toLowerCase()))
-    .filter((v) => v !== undefined) as VM[];
+  const results: VM[] = [];
+  const seen = new Set<string>();
+
+  for (const name of vmNames) {
+    if (!name.trim()) continue;
+
+    if (hasWildcards(name)) {
+      // Wildcard pattern matching
+      const regex = wildcardToRegex(name);
+      data.forEach((vm) => {
+        if (regex.test(vm.vm_name) && !seen.has(vm.vm_name)) {
+          results.push(vm);
+          seen.add(vm.vm_name);
+        }
+      });
+    } else {
+      // Exact match
+      const vm = data.find((v) => v.vm_name.toLowerCase() === name.toLowerCase());
+      if (vm && !seen.has(vm.vm_name)) {
+        results.push(vm);
+        seen.add(vm.vm_name);
+      }
+    }
+  }
+
+  return results;
+}
+
+// Convert wildcard pattern to regex (supports * and ?)
+function wildcardToRegex(pattern: string): RegExp {
+  // Escape special regex characters except * and ?
+  const escaped = pattern
+    .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+    .replace(/\*/g, '.*')    // * matches zero or more characters
+    .replace(/\?/g, '.');    // ? matches exactly one character
+  return new RegExp(`^${escaped}$`, 'i'); // case-insensitive
+}
+
+// Check if pattern contains wildcards
+function hasWildcards(pattern: string): boolean {
+  return pattern.includes('*') || pattern.includes('?');
 }
 
 // Get stats across all vCenters

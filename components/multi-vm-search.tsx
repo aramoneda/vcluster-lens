@@ -9,6 +9,7 @@ export function MultiVMSearch() {
   const [results, setResults] = useState<VM[]>([]);
   const [searched, setSearched] = useState(false);
   const [sortBy, setSortBy] = useState<'name' | 'vcenter' | 'power'>('name');
+  const [patternMatches, setPatternMatches] = useState<Record<string, number>>({});
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +22,25 @@ export function MultiVMSearch() {
       const vms = await searchMultipleVMs(vmNames);
       setResults(vms);
       setSearched(true);
+
+      // Track how many VMs matched each pattern
+      const matches: Record<string, number> = {};
+      vmNames.forEach((pattern) => {
+        const patternMatches = vms.filter((vm) => {
+          // Check if it's a wildcard pattern
+          if (pattern.includes('*') || pattern.includes('?')) {
+            const regex = new RegExp(
+              `^${pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.')}$`,
+              'i'
+            );
+            return regex.test(vm.vm_name);
+          }
+          // Exact match
+          return vm.vm_name.toLowerCase() === pattern.toLowerCase();
+        });
+        matches[pattern] = patternMatches.length;
+      });
+      setPatternMatches(matches);
     }
   };
 
@@ -28,6 +48,7 @@ export function MultiVMSearch() {
     setSearchText('');
     setResults([]);
     setSearched(false);
+    setPatternMatches({});
   };
 
   const handleExportCSV = () => {
@@ -81,7 +102,15 @@ export function MultiVMSearch() {
     <div className="space-y-6">
       <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 shadow-lg">
         <h2 className="text-lg font-semibold mb-4 text-white">Search Multiple VMs</h2>
-        <p className="text-sm text-slate-400 mb-4">Enter VM names (one per line)</p>
+        <div className="space-y-2 mb-4">
+          <p className="text-sm text-slate-400">Enter VM names (one per line). Supports wildcard patterns:</p>
+          <ul className="text-xs text-slate-400 space-y-1 ml-4">
+            <li><span className="text-slate-300 font-mono">edppvltas*</span> - matches all VMs starting with "edppvltas"</li>
+            <li><span className="text-slate-300 font-mono">*prod*</span> - matches VMs containing "prod"</li>
+            <li><span className="text-slate-300 font-mono">vm?01</span> - matches vm001, vm101, vmz01, etc.</li>
+            <li><span className="text-slate-300 font-mono">exact-name</span> - exact match (no wildcards)</li>
+          </ul>
+        </div>
         <form onSubmit={handleSearch} className="space-y-4">
           <textarea
             placeholder={`cldvvssp002\nclpvvssp001\nyour-vm-name`}
@@ -116,10 +145,28 @@ export function MultiVMSearch() {
             </div>
           ) : (
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 shadow-lg space-y-4">
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between items-center flex-wrap gap-3">
+                  <h3 className="font-semibold text-slate-100">
+                    Found {results.length} VM{results.length !== 1 ? 's' : ''}
+                  </h3>
+                </div>
+                {Object.keys(patternMatches).length > 0 && (
+                  <div className="bg-slate-700/50 rounded p-3 space-y-1">
+                    <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Pattern Matches:</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {Object.entries(patternMatches).map(([pattern, count]) => (
+                        <div key={pattern} className="text-xs bg-slate-700 rounded px-2 py-1.5">
+                          <p className="font-mono text-slate-300 truncate" title={pattern}>{pattern}</p>
+                          <p className="text-slate-400">{count} VM{count !== 1 ? 's' : ''}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="flex justify-between items-center flex-wrap gap-3">
-                <h3 className="font-semibold text-slate-100">
-                  Found {results.length} VM{results.length !== 1 ? 's' : ''}
-                </h3>
                 <div className="flex gap-2">
                   <select
                     value={sortBy}
