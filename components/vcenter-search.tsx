@@ -408,6 +408,7 @@ export function VCenterSearch() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       {/* Guest OS with Type-Ahead */}
                       <div className="relative z-20">
+                        <label className="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-wide">Guest OS</label>
                         <button
                           type="button"
                           onClick={() => setGuestOSDropdownOpen(!guestOSDropdownOpen)}
