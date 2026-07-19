@@ -157,35 +157,62 @@ export function VCenterSearch() {
             {selectedVCenter && !searched && (
               <div className="mt-6 pt-6 border-t border-slate-700">
                 <h3 className="text-sm font-semibold text-slate-200 mb-4">Advanced Filtering (Optional)</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-slate-400 block mb-2">Power State</label>
-                    <div className="space-y-2">
-                      {['PoweredOn', 'PoweredOff', 'Suspended'].map(state => (
-                        <label key={state} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.powerState.includes(state)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setFilters(prev => ({ ...prev, powerState: [...prev.powerState, state] }));
-                              } else {
-                                setFilters(prev => ({ ...prev, powerState: prev.powerState.filter(s => s !== state) }));
-                              }
-                            }}
-                            className="rounded border-slate-600 bg-slate-700"
-                          />
-                          <span className="text-xs text-slate-300">{state}</span>
-                        </label>
-                      ))}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Left Column */}
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Power State</label>
+                      <div className="space-y-2.5">
+                        {['PoweredOn', 'PoweredOff', 'Suspended'].map(state => (
+                          <label key={state} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+                            <input
+                              type="checkbox"
+                              checked={filters.powerState.includes(state)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setFilters(prev => ({ ...prev, powerState: [...prev.powerState, state] }));
+                                } else {
+                                  setFilters(prev => ({ ...prev, powerState: prev.powerState.filter(s => s !== state) }));
+                                }
+                              }}
+                              className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
+                            />
+                            <span className="text-sm text-slate-300">{state}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Tools Status</label>
+                      <div className="space-y-2.5">
+                        {['running', 'outdated', 'unmanaged'].map(status => (
+                          <label key={status} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+                            <input
+                              type="checkbox"
+                              checked={filters.toolsStatus.includes(status)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setFilters(prev => ({ ...prev, toolsStatus: [...prev.toolsStatus, status] }));
+                                } else {
+                                  setFilters(prev => ({ ...prev, toolsStatus: prev.toolsStatus.filter(s => s !== status) }));
+                                }
+                              }}
+                              className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
+                            />
+                            <span className="text-sm text-slate-300 capitalize">{status}</span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
+                  {/* Middle Column */}
                   <div>
-                    <label className="text-xs text-slate-400 block mb-2">Guest OS</label>
-                    <div className="space-y-2">
+                    <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Guest OS</label>
+                    <div className="space-y-2.5">
                       {['Windows', 'Linux', 'Ubuntu', 'CentOS', 'Red Hat'].map(os => (
-                        <label key={os} className="flex items-center gap-2 cursor-pointer">
+                        <label key={os} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
                           <input
                             type="checkbox"
                             checked={filters.guestOS.includes(os)}
@@ -196,80 +223,64 @@ export function VCenterSearch() {
                                 setFilters(prev => ({ ...prev, guestOS: prev.guestOS.filter(s => s !== os) }));
                               }
                             }}
-                            className="rounded border-slate-600 bg-slate-700"
+                            className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
                           />
-                          <span className="text-xs text-slate-300">{os}</span>
+                          <span className="text-sm text-slate-300">{os}</span>
                         </label>
                       ))}
                     </div>
                   </div>
 
-                  <div>
-                    <label className="text-xs text-slate-400 block mb-2">Tools Status</label>
-                    <div className="space-y-2">
-                      {['running', 'outdated', 'unmanaged'].map(status => (
-                        <label key={status} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.toolsStatus.includes(status)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setFilters(prev => ({ ...prev, toolsStatus: [...prev.toolsStatus, status] }));
-                              } else {
-                                setFilters(prev => ({ ...prev, toolsStatus: prev.toolsStatus.filter(s => s !== status) }));
-                              }
-                            }}
-                            className="rounded border-slate-600 bg-slate-700"
-                          />
-                          <span className="text-xs text-slate-300 capitalize">{status}</span>
-                        </label>
-                      ))}
+                  {/* Right Column */}
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Memory (GB)</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[4, 8, 16, 32, 64, 128, 256, 512].map(size => (
+                          <label key={size} className="flex items-center justify-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={filters.memory.includes(size)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setFilters(prev => ({ ...prev, memory: [...prev.memory, size].sort((a, b) => a - b) }));
+                                } else {
+                                  setFilters(prev => ({ ...prev, memory: prev.memory.filter(m => m !== size) }));
+                                }
+                              }}
+                              className="sr-only peer"
+                            />
+                            <span className="text-xs text-slate-300 px-2.5 py-1.5 bg-slate-700 border border-slate-600 rounded hover:bg-slate-600 peer-checked:bg-blue-600 peer-checked:border-blue-500 peer-checked:text-white transition-colors cursor-pointer">
+                              {size}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="text-xs text-slate-400 block mb-2">Memory (GB)</label>
-                    <div className="space-y-2 grid grid-cols-4 gap-2">
-                      {[4, 8, 16, 32, 64, 128, 256, 512].map(size => (
-                        <label key={size} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.memory.includes(size)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setFilters(prev => ({ ...prev, memory: [...prev.memory, size].sort((a, b) => a - b) }));
-                              } else {
-                                setFilters(prev => ({ ...prev, memory: prev.memory.filter(m => m !== size) }));
-                              }
-                            }}
-                            className="rounded border-slate-600 bg-slate-700"
-                          />
-                          <span className="text-xs text-slate-300">{size}GB</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-slate-400 block mb-2">CPU Count</label>
-                    <div className="space-y-2 grid grid-cols-4 gap-2">
-                      {[1, 2, 4, 8, 16, 32, 64, 128].map(cpu => (
-                        <label key={cpu} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.cpuCount.includes(cpu)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
-                              } else {
-                                setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
-                              }
-                            }}
-                            className="rounded border-slate-600 bg-slate-700"
-                          />
-                          <span className="text-xs text-slate-300">{cpu}</span>
-                        </label>
-                      ))}
+                    <div>
+                      <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">CPU Count</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[1, 2, 4, 8, 16, 32, 64, 128].map(cpu => (
+                          <label key={cpu} className="flex items-center justify-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={filters.cpuCount.includes(cpu)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
+                                } else {
+                                  setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
+                                }
+                              }}
+                              className="sr-only peer"
+                            />
+                            <span className="text-xs text-slate-300 px-2.5 py-1.5 bg-slate-700 border border-slate-600 rounded hover:bg-slate-600 peer-checked:bg-blue-600 peer-checked:border-blue-500 peer-checked:text-white transition-colors cursor-pointer">
+                              {cpu}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
