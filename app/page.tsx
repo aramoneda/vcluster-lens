@@ -1,5 +1,4 @@
 import { Summary } from '@/components/summary';
-import { TrendingMetrics } from '@/components/trending-metrics';
 import { SingleVMSearch } from '@/components/single-vm-search';
 import { VCenterSearch } from '@/components/vcenter-search';
 import { MultiVMSearch } from '@/components/multi-vm-search';
