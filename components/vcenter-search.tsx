@@ -13,6 +13,7 @@ export function VCenterSearch() {
   const [expandedVMs, setExpandedVMs] = useState(false);
   const [loading, setLoading] = useState(true);
   const [filteredVMs, setFilteredVMs] = useState<any[]>([]);
+  const [guestOSOptions, setGuestOSOptions] = useState<{ [key: string]: string[] }>({});
   const [filters, setFilters] = useState({
     powerState: [] as string[],
     guestOS: [] as string[],
@@ -21,10 +22,49 @@ export function VCenterSearch() {
     cpuCount: [] as number[],
   });
 
+  const extractGuestOSOptions = (vcenters: VCenterStats[]) => {
+    const osMap: { [key: string]: Set<string> } = {};
+    
+    vcenters.forEach((vc) => {
+      vc.vms?.forEach((vm: any) => {
+        if (vm.guest_os && vm.guest_os.trim()) {
+          let category = 'Other';
+          const osLower = vm.guest_os.toLowerCase();
+          
+          if (osLower.includes('windows')) category = 'Windows';
+          else if (osLower.includes('ubuntu')) category = 'Ubuntu';
+          else if (osLower.includes('centos')) category = 'CentOS';
+          else if (osLower.includes('debian')) category = 'Debian';
+          else if (osLower.includes('red hat') || osLower.includes('rhel')) category = 'Red Hat';
+          else if (osLower.includes('oracle')) category = 'Oracle Linux';
+          else if (osLower.includes('rocky')) category = 'Rocky Linux';
+          else if (osLower.includes('alma')) category = 'AlmaLinux';
+          else if (osLower.includes('suse')) category = 'SUSE';
+          else if (osLower.includes('fedora')) category = 'Fedora';
+          else if (osLower.includes('amazon')) category = 'Amazon Linux';
+          else if (osLower.includes('photon')) category = 'VMware Photon';
+          else if (osLower.includes('freebsd')) category = 'FreeBSD';
+          else if (osLower.includes('linux')) category = 'Linux';
+          
+          if (!osMap[category]) osMap[category] = new Set();
+          osMap[category].add(vm.guest_os);
+        }
+      });
+    });
+    
+    const grouped: { [key: string]: string[] } = {};
+    Object.keys(osMap).sort().forEach(category => {
+      grouped[category] = Array.from(osMap[category]).sort();
+    });
+    
+    setGuestOSOptions(grouped);
+  };
+
   useEffect(() => {
     const loadVCenters = async () => {
       const vcList = await getVCenters();
       setVcenters(vcList.map((vc) => vc.vcenter));
+      extractGuestOSOptions(vcList);
       setLoading(false);
     };
     loadVCenters();
@@ -210,24 +250,37 @@ export function VCenterSearch() {
                   {/* Middle Column */}
                   <div>
                     <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Guest OS</label>
-                    <div className="space-y-2.5">
-                      {['Windows', 'Linux', 'Ubuntu', 'CentOS', 'Red Hat'].map(os => (
-                        <label key={os} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                          <input
-                            type="checkbox"
-                            checked={filters.guestOS.includes(os)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setFilters(prev => ({ ...prev, guestOS: [...prev.guestOS, os] }));
-                              } else {
-                                setFilters(prev => ({ ...prev, guestOS: prev.guestOS.filter(s => s !== os) }));
-                              }
-                            }}
-                            className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
-                          />
-                          <span className="text-sm text-slate-300">{os}</span>
-                        </label>
+                    <div className="space-y-3">
+                      {Object.entries(guestOSOptions).map(([category, osVersions]) => (
+                        <div key={category}>
+                          <div className="text-xs font-semibold text-slate-400 mb-1.5 pl-1">{category}</div>
+                          <div className="space-y-1.5 pl-2 border-l border-slate-600">
+                            {osVersions.slice(0, 3).map(os => (
+                              <label key={os} className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity text-xs">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.guestOS.includes(os)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFilters(prev => ({ ...prev, guestOS: [...prev.guestOS, os] }));
+                                    } else {
+                                      setFilters(prev => ({ ...prev, guestOS: prev.guestOS.filter(s => s !== os) }));
+                                    }
+                                  }}
+                                  className="rounded border-slate-600 bg-slate-700 cursor-pointer w-3 h-3"
+                                />
+                                <span className="text-slate-300 truncate" title={os}>{os.replace(/\(64-bit\)|\(32-bit\)/g, '').trim()}</span>
+                              </label>
+                            ))}
+                            {osVersions.length > 3 && (
+                              <span className="text-xs text-slate-500 italic">+{osVersions.length - 3} more</span>
+                            )}
+                          </div>
+                        </div>
                       ))}
+                      {Object.keys(guestOSOptions).length === 0 && (
+                        <span className="text-xs text-slate-400">Loading OS options...</span>
+                      )}
                     </div>
                   </div>
 
