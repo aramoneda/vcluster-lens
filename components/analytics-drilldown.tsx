@@ -335,9 +335,9 @@ export function AnalyticsDrilldown() {
                         <p className="text-sm mt-1 text-slate-300">{utilization.toFixed(0)}% Allocated to Running VMs</p>
                       </div>
                       <p className="text-slate-300 text-right">
-                        <span className="font-mono">{data.used.toFixed(0)}</span>
+                        <span className="font-mono">{data.allocated.toFixed(0)}</span>
                         <span className="text-slate-400"> / </span>
-                        <span className="font-mono">{data.allocated.toFixed(0)} GB</span>
+                        <span className="font-mono">{data.used.toFixed(0)} GB</span>
                       </p>
                     </div>
 
