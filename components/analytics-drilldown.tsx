@@ -60,6 +60,89 @@ export function AnalyticsDrilldown() {
   const memoryMetrics = calculateMemoryMetrics();
   const poweredOffMetrics = calculatePoweredOffMetrics();
 
+  const exportModalToHTML = (type: string, metrics: Record<string, any>) => {
+    let html = '';
+    let title = '';
+    let subtitle = '';
+
+    if (type === 'storage') {
+      title = 'Storage Utilization Report';
+      subtitle = 'Provisioned vs Used Storage Analysis for All vCenters';
+      html = `
+        <h2>${title}</h2>
+        <p>${subtitle}</p>
+        <table border="1" cellpadding="10">
+          <tr><th>vCenter</th><th>Utilization %</th><th>Provisioned (TB)</th><th>Used (TB)</th><th>Unused (TB)</th></tr>
+          ${Object.entries(metrics).map(([_, data]: [string, any]) => {
+            if (data.provisioned === 0) return '';
+            const util = ((data.used / data.provisioned) * 100).toFixed(0);
+            const wasted = (data.provisioned - data.used).toFixed(1);
+            return `<tr><td>${data.vcenter}</td><td>${util}%</td><td>${data.provisioned.toFixed(1)}</td><td>${data.used.toFixed(1)}</td><td>${wasted}</td></tr>`;
+          }).join('')}
+        </table>
+      `;
+    } else if (type === 'memory') {
+      title = 'Memory Allocation Report';
+      subtitle = 'Allocated vs Used Memory Analysis for All vCenters';
+      html = `
+        <h2>${title}</h2>
+        <p>${subtitle}</p>
+        <table border="1" cellpadding="10">
+          <tr><th>vCenter</th><th>Utilization %</th><th>Allocated (GB)</th><th>Used (GB)</th><th>Unused (GB)</th></tr>
+          ${Object.entries(metrics).map(([_, data]: [string, any]) => {
+            if (data.allocated === 0) return '';
+            const util = ((data.used / data.allocated) * 100).toFixed(0);
+            const unused = (data.allocated - data.used).toFixed(0);
+            return `<tr><td>${data.vcenter}</td><td>${util}%</td><td>${data.allocated.toFixed(0)}</td><td>${data.used.toFixed(0)}</td><td>${unused}</td></tr>`;
+          }).join('')}
+        </table>
+      `;
+    } else if (type === 'powered-off') {
+      title = 'Powered-Off VMs Report';
+      subtitle = 'Storage & Cleanup Opportunities for All vCenters';
+      html = `
+        <h2>${title}</h2>
+        <p>${subtitle}</p>
+        <table border="1" cellpadding="10">
+          <tr><th>vCenter</th><th>Powered-Off Count</th><th>Storage Consumed (TB)</th></tr>
+          ${Object.entries(metrics).sort((a, b) => b[1].count - a[1].count).map(([_, data]: [string, any]) => {
+            if (!data.count) return '';
+            return `<tr><td>${data.vcenter}</td><td>${data.count}</td><td>${data.storage.toFixed(1)}</td></tr>`;
+          }).join('')}
+        </table>
+      `;
+    }
+
+    const fullHTML = `<!DOCTYPE html>
+<html>
+<head>
+  <title>${title}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h2 { color: #333; }
+    p { color: #666; margin-bottom: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  ${html}
+  <p style="margin-top: 30px; font-size: 12px; color: #999;">Generated on ${new Date().toLocaleString()}</p>
+</body>
+</html>`;
+
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${type}-report-${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       {/* 3 Interactive Drill-Down Cards */}
@@ -113,12 +196,20 @@ export function AnalyticsDrilldown() {
                 <h2 className="text-white text-xl font-bold">Storage Utilization Report</h2>
                 <p className="text-slate-400 text-sm mt-1">Provisioned vs Used Storage Analysis for All vCenters</p>
               </div>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="text-slate-400 hover:text-white"
-              >
-                <X className="w-6 h-6" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => exportModalToHTML('storage', storageMetrics)}
+                  className="px-3 py-1 text-sm bg-blue-700 hover:bg-blue-600 text-white rounded transition-colors"
+                >
+                  Export
+                </button>
+                <button
+                  onClick={() => setActiveModal(null)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
             </div>
             <div className="overflow-y-auto flex-1 p-6 space-y-4">
               {Object.entries(storageMetrics).map(([_, data]: [string, any]) => {
@@ -199,12 +290,20 @@ export function AnalyticsDrilldown() {
                 <h2 className="text-white text-xl font-bold">Memory Allocation Report</h2>
                 <p className="text-slate-400 text-sm mt-1">Allocated vs Used Memory Analysis for All vCenters</p>
               </div>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="text-slate-400 hover:text-white"
-              >
-                <X className="w-6 h-6" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => exportModalToHTML('memory', memoryMetrics)}
+                  className="px-3 py-1 text-sm bg-blue-700 hover:bg-blue-600 text-white rounded transition-colors"
+                >
+                  Export
+                </button>
+                <button
+                  onClick={() => setActiveModal(null)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
             </div>
             <div className="overflow-y-auto flex-1 p-6 space-y-4">
               {Object.entries(memoryMetrics).map(([_, data]: [string, any]) => {
@@ -285,12 +384,20 @@ export function AnalyticsDrilldown() {
                 <h2 className="text-white text-xl font-bold">Powered-Off VMs Report</h2>
                 <p className="text-slate-400 text-sm mt-1">Storage & Cleanup Opportunities for All vCenters</p>
               </div>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="text-slate-400 hover:text-white"
-              >
-                <X className="w-6 h-6" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => exportModalToHTML('powered-off', poweredOffMetrics)}
+                  className="px-3 py-1 text-sm bg-blue-700 hover:bg-blue-600 text-white rounded transition-colors"
+                >
+                  Export
+                </button>
+                <button
+                  onClick={() => setActiveModal(null)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
             </div>
             <div className="overflow-y-auto flex-1 p-6 space-y-4">
               {Object.entries(poweredOffMetrics)
@@ -311,8 +418,8 @@ export function AnalyticsDrilldown() {
 
                   let bgColor = 'bg-green-900';
                   if (data.count > 100) bgColor = 'bg-red-900';
-                  else if (data.count >= 70 && data.count <= 90) bgColor = 'bg-orange-900';
-                  else if (data.count >= 50 && data.count <= 60) bgColor = 'bg-yellow-900';
+                  else if (data.count >= 70 && data.count <= 99) bgColor = 'bg-orange-900';
+                  else if (data.count >= 50 && data.count <= 69) bgColor = 'bg-yellow-900';
 
                   return (
                     <div key={data.vcenter} className={`${bgColor} rounded-lg p-4 border border-slate-600`}>

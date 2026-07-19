@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { searchVM, VM, formatToolsStatus } from '@/lib/search';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 export function SingleVMSearch() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -23,18 +23,36 @@ export function SingleVMSearch() {
     }
   };
 
+  const handleClear = () => {
+    setSearchTerm('');
+    setResult(null);
+    setSearched(false);
+    setNotFound(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 shadow-lg">
         <h2 className="text-lg font-semibold mb-4 text-white">Search Single VM</h2>
         <form onSubmit={handleSearch} className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Enter VM name (e.g., cldvvssp002)"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 px-4 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              placeholder="Enter VM name (e.g., cldvvssp002)"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 pr-10 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
           <button
             type="submit"
             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
