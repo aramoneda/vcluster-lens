@@ -138,7 +138,18 @@ export async function searchVM(vmName: string): Promise<VM | null> {
 // Search for VMs by vCenter
 export async function searchByVCenter(vcentername: string): Promise<VCenterStats | null> {
   const vcenters = await getVCenters();
-  const vc = vcenters.find((v) => v.vcenter.toLowerCase() === vcentername.toLowerCase());
+  const searchLower = vcentername.toLowerCase();
+  
+  // Try exact match first
+  let vc = vcenters.find((v) => v.vcenter.toLowerCase() === searchLower);
+  
+  // If no exact match, try matching by short name (first part before dot)
+  if (!vc) {
+    vc = vcenters.find((v) => {
+      const shortName = v.vcenter.split('.')[0].toLowerCase();
+      return shortName === searchLower;
+    });
+  }
   
   // Return the vCenter even if it has no accessible VMs - let the UI display a "no VMs" message
   if (vc) {
