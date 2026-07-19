@@ -197,7 +197,7 @@ export default function AnalyticsPreview() {
 
     if (filters.vCenter.length > 0) {
       filtered = filtered.filter(vm =>
-        filters.vCenter.some(vc => vm.vcenter.toLowerCase().includes(vc.toLowerCase()))
+        filters.vCenter.some(vc => vm.vcenter.toLowerCase() === vc.toLowerCase())
       );
     }
 
