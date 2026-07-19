@@ -97,7 +97,9 @@ export function VCenterSearch() {
   const extractMemoryOptionsForVCenter = (vcenter: VCenterStats): number[] => {
     const memories = new Set<number>();
     vcenter.vms?.forEach((vm: any) => {
-      if (vm.memory_gb) memories.add(vm.memory_gb);
+      if (vm.memory_gb && typeof vm.memory_gb === 'number' && vm.memory_gb > 0) {
+        memories.add(vm.memory_gb);
+      }
     });
     return Array.from(memories).sort((a, b) => a - b);
   };
@@ -368,6 +370,46 @@ export function VCenterSearch() {
                         )}
                       </div>
                     </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">CPU Count</label>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setCpuDropdownOpen(!cpuDropdownOpen)}
+                          className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-left text-sm text-slate-300 hover:bg-slate-600 transition-colors flex items-center justify-between"
+                        >
+                          <span>{filters.cpuCount.length > 0 ? `${filters.cpuCount.length} selected` : 'Select CPU count...'}</span>
+                          <ChevronDown className={`w-4 h-4 transition-transform ${cpuDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        {cpuDropdownOpen && cpuCountOptions.length > 0 && (
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-48 overflow-y-auto">
+                            {cpuCountOptions.map(cpu => (
+                              <label key={cpu} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs border-b border-slate-700 last:border-b-0">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.cpuCount.includes(cpu)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
+                                    } else {
+                                      setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
+                                    }
+                                  }}
+                                  className="rounded border-slate-600 bg-slate-700 cursor-pointer"
+                                />
+                                <span className="text-slate-300">{cpu} CPU{cpu !== 1 ? 's' : ''}</span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                        
+                        {cpuCountOptions.length === 0 && (
+                          <div className="text-xs text-slate-400 px-3 py-2">No options available</div>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Middle Column */}
@@ -457,49 +499,6 @@ export function VCenterSearch() {
                         )}
                       </div>
                     </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom Row: CPU Count */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:max-w-md lg:mx-auto">
-                    <div>
-                      <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">CPU Count</label>
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() => setCpuDropdownOpen(!cpuDropdownOpen)}
-                          className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-left text-sm text-slate-300 hover:bg-slate-600 transition-colors flex items-center justify-between"
-                        >
-                          <span>{filters.cpuCount.length > 0 ? `${filters.cpuCount.length} selected` : 'Select CPU count...'}</span>
-                          <ChevronDown className={`w-4 h-4 transition-transform ${cpuDropdownOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        
-                        {cpuDropdownOpen && cpuCountOptions.length > 0 && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-48 overflow-y-auto">
-                            {cpuCountOptions.map(cpu => (
-                              <label key={cpu} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs border-b border-slate-700 last:border-b-0">
-                                <input
-                                  type="checkbox"
-                                  checked={filters.cpuCount.includes(cpu)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
-                                    } else {
-                                      setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
-                                    }
-                                  }}
-                                  className="rounded border-slate-600 bg-slate-700 cursor-pointer"
-                                />
-                                <span className="text-slate-300">{cpu} CPU{cpu !== 1 ? 's' : ''}</span>
-                              </label>
-                            ))}
-                          </div>
-                        )}
-                        
-                        {cpuCountOptions.length === 0 && (
-                          <div className="text-xs text-slate-400 px-3 py-2">No options available</div>
-                        )}
-                      </div>
                     </div>
                   </div>
                 </div>
