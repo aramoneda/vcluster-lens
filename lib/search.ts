@@ -240,12 +240,6 @@ export async function getPowerStateDistribution() {
   }));
 }
 
-// Clear cached data
-export function clearCache() {
-  cachedVMData = null;
-  cachedVCenters = null;
-}
-
 // Format VMware Tools status from VM data
 export function formatToolsStatus(vm: VM): string {
   // If we have the pre-formatted vmtools field, use it directly
