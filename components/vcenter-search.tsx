@@ -545,6 +545,9 @@ export function VCenterSearch() {
                   </div>
                 </div>
 
+                {/* Extra padding to prevent dropdown overlap with button */}
+                <div className="h-8" />
+
                 <div className="mt-6 flex gap-3">
                   <button
                     type="submit"
