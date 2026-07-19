@@ -5,9 +5,13 @@ import { getVCenters, VCenterStats } from '@/lib/search';
 import { X } from 'lucide-react';
 
 const getStatusColor = (utilization: number) => {
-  if (utilization >= 80) return { bg: 'bg-green-900', text: 'text-green-300', label: 'GOOD' };
-  if (utilization >= 50) return { bg: 'bg-yellow-900', text: 'text-yellow-300', label: 'MODERATE' };
-  return { bg: 'bg-red-900', text: 'text-red-300', label: 'HIGH WASTE' };
+  if (utilization >= 80) return { bg: 'bg-green-900', border: 'border-green-700' };
+  if (utilization >= 50) return { bg: 'bg-orange-900', border: 'border-orange-700' };
+  return { bg: 'bg-red-900', border: 'border-red-700' };
+};
+
+const getNoDataColor = () => {
+  return { bg: 'bg-slate-700', border: 'border-slate-600' };
 };
 
 export default function AnalyticsPreview() {
@@ -191,16 +195,32 @@ function StorageModal({ onClose, metrics }: { onClose: () => void; metrics: Reco
 
         <div className="p-6 space-y-4">
           {Object.entries(metrics).map(([_, data]: [string, any]) => {
+            // Check if vCenter has data
+            const hasData = data.provisioned > 0;
+            
+            if (!hasData) {
+              return (
+                <div key={data.vcenter} className="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-white font-semibold truncate">{data.vcenter}</p>
+                      <p className="text-sm mt-1 text-slate-400">No data available</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
             const utilization = (data.used / data.provisioned) * 100;
             const status = getStatusColor(utilization);
             const wasted = data.provisioned - data.used;
 
             return (
-              <div key={data.vcenter} className={`${status.bg} rounded-lg p-4 border border-slate-600`}>
+              <div key={data.vcenter} className={`${status.bg} rounded-lg p-4 border ${status.border}`}>
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <p className="text-white font-semibold truncate">{data.vcenter}</p>
-                    <p className={`text-sm mt-1 ${status.text}`}>{utilization.toFixed(0)}% Utilized - {status.label}</p>
+                    <p className="text-sm mt-1 text-slate-300">{utilization.toFixed(0)}% Utilized</p>
                   </div>
                   <p className="text-slate-300 text-right">
                     <span className="font-mono">{data.used.toFixed(1)}</span>
@@ -218,7 +238,7 @@ function StorageModal({ onClose, metrics }: { onClose: () => void; metrics: Reco
                   <div
                     className="bg-slate-600"
                     style={{ width: `${100 - utilization}%` }}
-                    title={`Wasted: ${wasted.toFixed(1)} TB`}
+                    title={`Unused: ${wasted.toFixed(1)} TB`}
                   ></div>
                 </div>
 
@@ -232,8 +252,8 @@ function StorageModal({ onClose, metrics }: { onClose: () => void; metrics: Reco
                     <p className="text-white font-semibold">{data.provisioned.toFixed(1)} TB</p>
                   </div>
                   <div>
-                    <p className="text-slate-400">Wasted</p>
-                    <p className="text-red-400 font-semibold">{wasted.toFixed(1)} TB</p>
+                    <p className="text-slate-400">Unused</p>
+                    <p className="text-slate-300 font-semibold">{wasted.toFixed(1)} TB</p>
                   </div>
                 </div>
               </div>
@@ -261,16 +281,32 @@ function MemoryModal({ onClose, metrics }: { onClose: () => void; metrics: Recor
 
         <div className="p-6 space-y-4">
           {Object.entries(metrics).map(([_, data]: [string, any]) => {
+            // Check if vCenter has data
+            const hasData = data.allocated > 0;
+            
+            if (!hasData) {
+              return (
+                <div key={data.vcenter} className="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-white font-semibold truncate">{data.vcenter}</p>
+                      <p className="text-sm mt-1 text-slate-400">No data available</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
             const utilization = (data.used / data.allocated) * 100;
             const status = getStatusColor(utilization);
             const unused = data.allocated - data.used;
 
             return (
-              <div key={data.vcenter} className={`${status.bg} rounded-lg p-4 border border-slate-600`}>
+              <div key={data.vcenter} className={`${status.bg} rounded-lg p-4 border ${status.border}`}>
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <p className="text-white font-semibold truncate">{data.vcenter}</p>
-                    <p className={`text-sm mt-1 ${status.text}`}>{utilization.toFixed(0)}% Allocated to Running VMs - {status.label}</p>
+                    <p className="text-sm mt-1 text-slate-300">{utilization.toFixed(0)}% Allocated to Running VMs</p>
                   </div>
                   <p className="text-slate-300 text-right">
                     <span className="font-mono">{data.used.toFixed(0)}</span>
@@ -303,7 +339,7 @@ function MemoryModal({ onClose, metrics }: { onClose: () => void; metrics: Recor
                   </div>
                   <div>
                     <p className="text-slate-400">Unused</p>
-                    <p className="text-yellow-400 font-semibold">{unused.toFixed(0)} GB</p>
+                    <p className="text-slate-300 font-semibold">{unused.toFixed(0)} GB</p>
                   </div>
                 </div>
               </div>
@@ -333,30 +369,46 @@ function PoweredOffModal({ onClose, metrics }: { onClose: () => void; metrics: R
           {Object.entries(metrics)
             .sort((a, b) => b[1].count - a[1].count)
             .map(([_, data]: [string, any]) => {
-              const wasteLevel = data.storage > 100 ? 'HIGH' : data.storage > 50 ? 'MODERATE' : 'LOW';
-              const wasteColor = wasteLevel === 'HIGH' ? 'bg-red-900 text-red-300' : wasteLevel === 'MODERATE' ? 'bg-yellow-900 text-yellow-300' : 'bg-green-900 text-green-300';
+              // Check if vCenter has data
+              if (!data.count) {
+                return (
+                  <div key={data.vcenter} className="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-white font-semibold truncate">{data.vcenter}</p>
+                        <p className="text-sm mt-1 text-slate-400">No data available</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              // Determine color based on storage consumption
+              let bgColor = 'bg-green-900';
+              if (data.storage > 100) bgColor = 'bg-red-900';
+              else if (data.storage > 50) bgColor = 'bg-orange-900';
 
               return (
-                <div key={data.vcenter} className="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                <div key={data.vcenter} className={`${bgColor} rounded-lg p-4 border border-slate-600`}>
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <p className="text-white font-semibold truncate">{data.vcenter}</p>
-                      <p className={`text-sm mt-1 px-2 py-1 rounded w-fit ${wasteColor}`}>{wasteLevel} Waste</p>
+                      <p className="text-sm mt-1 text-slate-300">{data.count} Powered-Off VMs</p>
                     </div>
                     <p className="text-slate-300 text-right">
-                      <span className="text-2xl font-bold text-orange-400">{data.count}</span>
-                      <span className="text-slate-400 block text-sm">Powered-Off VMs</span>
+                      <span className="text-2xl font-bold text-slate-100">{data.storage.toFixed(1)}</span>
+                      <span className="text-slate-400 block text-sm">TB Storage</span>
                     </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-slate-400">Powered-Off VMs</p>
+                      <p className="text-slate-400">Count</p>
                       <p className="text-white font-semibold text-lg">{data.count}</p>
                     </div>
                     <div>
                       <p className="text-slate-400">Storage Consumed</p>
-                      <p className="text-red-400 font-semibold text-lg">{data.storage.toFixed(1)} TB</p>
+                      <p className="text-white font-semibold text-lg">{data.storage.toFixed(1)} TB</p>
                     </div>
                   </div>
 
