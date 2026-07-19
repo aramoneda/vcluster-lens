@@ -407,57 +407,61 @@ export function VCenterSearch() {
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       {/* Guest OS with Type-Ahead */}
-                      <div>
-                        <label className="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-wide">Guest OS</label>
-                        <div className="relative z-20">
-                          <div className="relative">
-                            <input
-                              type="text"
-                              placeholder="Search OS..."
-                              value={guestOSSearch}
-                              onChange={(e) => setGuestOSSearch(e.target.value)}
-                              onClick={() => setGuestOSDropdownOpen(true)}
-                              className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-slate-500"
-                            />
-                            <ChevronDown className={`absolute right-3 top-3 w-4 h-4 text-slate-500 transition-transform pointer-events-none ${guestOSDropdownOpen ? 'rotate-180' : ''}`} />
-                          </div>
-                          
-                          {guestOSDropdownOpen && (
-                            <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-64 overflow-y-auto">
-                              {Object.entries(guestOSOptions).length > 0 ? (
-                                Object.entries(guestOSOptions)
-                                  .filter(([_, osVersions]) => osVersions.some(os => os.toLowerCase().includes(guestOSSearch.toLowerCase())))
-                                  .map(([category, osVersions]) => {
-                                    const filtered = osVersions.filter(os => os.toLowerCase().includes(guestOSSearch.toLowerCase()));
-                                    return filtered.length > 0 ? (
-                                      <div key={category}>
-                                        <div className="sticky top-0 px-3 py-1.5 bg-slate-700 text-xs font-semibold text-slate-400 border-b border-slate-600">{category}</div>
-                                        {filtered.map(os => (
-                                          <label key={os} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs border-b border-slate-700 last:border-b-0">
-                                            <input
-                                              type="checkbox"
-                                              checked={filters.guestOS.includes(os)}
-                                              onChange={(e) => {
-                                                if (e.target.checked) {
-                                                  setFilters(prev => ({ ...prev, guestOS: [...prev.guestOS, os] }));
-                                                } else {
-                                                  setFilters(prev => ({ ...prev, guestOS: prev.guestOS.filter(s => s !== os) }));
-                                                }
-                                              }}
-                                              className="rounded border-slate-600 bg-slate-700 cursor-pointer"
-                                            />
-                                            <span className="text-slate-300">{os.replace(/\(64-bit\)|\(32-bit\)/g, '').trim()}</span>
-                                          </label>
-                                        ))}
-                                      </div>
-                                    ) : null;
-                                  })
-                              ) : (
-                                <div className="px-3 py-2 text-xs text-slate-400">No OS options available</div>
-                              )}
+                      <div className="relative z-20">
+                        <button
+                          type="button"
+                          onClick={() => setGuestOSDropdownOpen(!guestOSDropdownOpen)}
+                          className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-left text-sm text-slate-300 hover:bg-slate-600 transition-colors flex items-center justify-between"
+                        >
+                          <span>{filters.guestOS.length > 0 ? `${filters.guestOS.length} selected` : 'Select OS...'}</span>
+                          <ChevronDown className={`w-4 h-4 transition-transform ${guestOSDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        {guestOSDropdownOpen && (
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-64 overflow-y-auto">
+                            <div className="sticky top-0 px-3 py-2 bg-slate-800 border-b border-slate-700">
+                              <input
+                                type="text"
+                                placeholder="Search OS..."
+                                value={guestOSSearch}
+                                onChange={(e) => setGuestOSSearch(e.target.value)}
+                                autoFocus
+                                className="w-full px-2 py-1.5 bg-slate-700 border border-slate-600 rounded text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-slate-500"
+                              />
                             </div>
-                          )}
-                        </div>
+                            {Object.entries(guestOSOptions).length > 0 ? (
+                              Object.entries(guestOSOptions)
+                                .filter(([_, osVersions]) => osVersions.some(os => os.toLowerCase().includes(guestOSSearch.toLowerCase())))
+                                .map(([category, osVersions]) => {
+                                  const filtered = osVersions.filter(os => os.toLowerCase().includes(guestOSSearch.toLowerCase()));
+                                  return filtered.length > 0 ? (
+                                    <div key={category}>
+                                      <div className="sticky top-12 px-3 py-1.5 bg-slate-700 text-xs font-semibold text-slate-400 border-b border-slate-600">{category}</div>
+                                      {filtered.map(os => (
+                                        <label key={os} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs border-b border-slate-700 last:border-b-0">
+                                          <input
+                                            type="checkbox"
+                                            checked={filters.guestOS.includes(os)}
+                                            onChange={(e) => {
+                                              if (e.target.checked) {
+                                                setFilters(prev => ({ ...prev, guestOS: [...prev.guestOS, os] }));
+                                              } else {
+                                                setFilters(prev => ({ ...prev, guestOS: prev.guestOS.filter(s => s !== os) }));
+                                              }
+                                            }}
+                                            className="rounded border-slate-600 bg-slate-700 cursor-pointer"
+                                          />
+                                          <span className="text-slate-300">{os.replace(/\(64-bit\)|\(32-bit\)/g, '').trim()}</span>
+                                        </label>
+                                      ))}
+                                    </div>
+                                  ) : null;
+                                })
+                            ) : (
+                              <div className="px-3 py-2 text-xs text-slate-400">No OS options available</div>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* Memory (GB) */}
