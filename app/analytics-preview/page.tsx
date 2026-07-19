@@ -244,12 +244,12 @@ function StorageModal({ onClose, metrics }: { onClose: () => void; metrics: Reco
 
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div>
-                    <p className="text-slate-400">Used</p>
-                    <p className="text-white font-semibold">{data.used.toFixed(1)} TB</p>
-                  </div>
-                  <div>
                     <p className="text-slate-400">Provisioned</p>
                     <p className="text-white font-semibold">{data.provisioned.toFixed(1)} TB</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Used</p>
+                    <p className="text-white font-semibold">{data.used.toFixed(1)} TB</p>
                   </div>
                   <div>
                     <p className="text-slate-400">Unused</p>
@@ -330,12 +330,12 @@ function MemoryModal({ onClose, metrics }: { onClose: () => void; metrics: Recor
 
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div>
-                    <p className="text-slate-400">Used (Running)</p>
-                    <p className="text-white font-semibold">{data.used.toFixed(0)} GB</p>
-                  </div>
-                  <div>
                     <p className="text-slate-400">Allocated</p>
                     <p className="text-white font-semibold">{data.allocated.toFixed(0)} GB</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Used (Running)</p>
+                    <p className="text-white font-semibold">{data.used.toFixed(0)} GB</p>
                   </div>
                   <div>
                     <p className="text-slate-400">Unused</p>
