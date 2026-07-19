@@ -17,8 +17,8 @@ export function VCenterSearch() {
     powerState: [] as string[],
     guestOS: [] as string[],
     toolsStatus: [] as string[],
-    memoryMin: 0,
-    memoryMax: 10000,
+    memory: [] as number[],
+    cpuCount: [] as number[],
   });
 
   useEffect(() => {
@@ -42,7 +42,10 @@ export function VCenterSearch() {
         const toolsStatus = vm.tools_status?.toLowerCase() || 'unmanaged';
         if (!filters.toolsStatus.includes(toolsStatus)) return false;
       }
-      if (vm.memory_gb < filters.memoryMin || vm.memory_gb > filters.memoryMax) {
+      if (filters.memory.length > 0 && !filters.memory.includes(vm.memory_gb)) {
+        return false;
+      }
+      if (filters.cpuCount.length > 0 && !filters.cpuCount.includes(vm.num_cpu)) {
         return false;
       }
       return true;
@@ -226,26 +229,47 @@ export function VCenterSearch() {
 
                   <div>
                     <label className="text-xs text-slate-400 block mb-2">Memory (GB)</label>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          min="0"
-                          placeholder="Min"
-                          value={filters.memoryMin}
-                          onChange={(e) => setFilters(prev => ({ ...prev, memoryMin: parseInt(e.target.value) || 0 }))}
-                          className="w-1/2 px-2 py-1 text-xs bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
-                        />
-                        <span className="text-slate-500">to</span>
-                        <input
-                          type="number"
-                          min="0"
-                          placeholder="Max"
-                          value={filters.memoryMax}
-                          onChange={(e) => setFilters(prev => ({ ...prev, memoryMax: parseInt(e.target.value) || 10000 }))}
-                          className="w-1/2 px-2 py-1 text-xs bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
-                        />
-                      </div>
+                    <div className="space-y-2 grid grid-cols-4 gap-2">
+                      {[4, 8, 16, 32, 64, 128, 256, 512].map(size => (
+                        <label key={size} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={filters.memory.includes(size)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFilters(prev => ({ ...prev, memory: [...prev.memory, size].sort((a, b) => a - b) }));
+                              } else {
+                                setFilters(prev => ({ ...prev, memory: prev.memory.filter(m => m !== size) }));
+                              }
+                            }}
+                            className="rounded border-slate-600 bg-slate-700"
+                          />
+                          <span className="text-xs text-slate-300">{size}GB</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-2">CPU Count</label>
+                    <div className="space-y-2 grid grid-cols-4 gap-2">
+                      {[1, 2, 4, 8, 16, 32, 64, 128].map(cpu => (
+                        <label key={cpu} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={filters.cpuCount.includes(cpu)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
+                              } else {
+                                setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
+                              }
+                            }}
+                            className="rounded border-slate-600 bg-slate-700"
+                          />
+                          <span className="text-xs text-slate-300">{cpu}</span>
+                        </label>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -264,8 +288,8 @@ export function VCenterSearch() {
                         powerState: [],
                         guestOS: [],
                         toolsStatus: [],
-                        memoryMin: 0,
-                        memoryMax: 10000,
+                        memory: [],
+                        cpuCount: [],
                       });
                     }}
                     className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg transition-colors font-medium"
