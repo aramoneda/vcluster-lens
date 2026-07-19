@@ -1,5 +1,5 @@
 import { Summary } from '@/components/summary';
-import { TrendingMetrics } from '@/components/trending-metrics';
+import { AnalyticsDrilldown } from '@/components/analytics-drilldown';
 import { SingleVMSearch } from '@/components/single-vm-search';
 import { VCenterSearch } from '@/components/vcenter-search';
 import { MultiVMSearch } from '@/components/multi-vm-search';
@@ -28,9 +28,9 @@ export default function Home() {
           <Summary />
         </section>
 
-        {/* Trending Metrics */}
+        {/* Analytics Drill-Down */}
         <section className="mb-8">
-          <TrendingMetrics />
+          <AnalyticsDrilldown />
         </section>
 
         {/* Search Sections */}
