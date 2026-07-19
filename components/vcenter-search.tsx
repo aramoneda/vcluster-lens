@@ -14,6 +14,10 @@ export function VCenterSearch() {
   const [loading, setLoading] = useState(true);
   const [filteredVMs, setFilteredVMs] = useState<any[]>([]);
   const [guestOSOptions, setGuestOSOptions] = useState<{ [key: string]: string[] }>({});
+  const [powerStateOptions, setPowerStateOptions] = useState<string[]>([]);
+  const [toolsStatusOptions, setToolsStatusOptions] = useState<string[]>([]);
+  const [memoryOptions, setMemoryOptions] = useState<number[]>([]);
+  const [cpuCountOptions, setCpuCountOptions] = useState<number[]>([]);
   const [vcenterError, setVcenterError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     powerState: [] as string[],
@@ -61,6 +65,39 @@ export function VCenterSearch() {
     return grouped;
   };
 
+  const extractPowerStatesForVCenter = (vcenter: VCenterStats): string[] => {
+    const states = new Set<string>();
+    vcenter.vms?.forEach((vm: any) => {
+      if (vm.power_state) states.add(vm.power_state);
+    });
+    return Array.from(states).sort();
+  };
+
+  const extractToolsStatusForVCenter = (vcenter: VCenterStats): string[] => {
+    const statuses = new Set<string>();
+    vcenter.vms?.forEach((vm: any) => {
+      const status = vm.tools_status?.toLowerCase() || 'unmanaged';
+      statuses.add(status);
+    });
+    return Array.from(statuses).sort();
+  };
+
+  const extractMemoryOptionsForVCenter = (vcenter: VCenterStats): number[] => {
+    const memories = new Set<number>();
+    vcenter.vms?.forEach((vm: any) => {
+      if (vm.memory_gb) memories.add(vm.memory_gb);
+    });
+    return Array.from(memories).sort((a, b) => a - b);
+  };
+
+  const extractCpuCountForVCenter = (vcenter: VCenterStats): number[] => {
+    const cpus = new Set<number>();
+    vcenter.vms?.forEach((vm: any) => {
+      if (vm.num_cpu) cpus.add(vm.num_cpu);
+    });
+    return Array.from(cpus).sort((a, b) => a - b);
+  };
+
   const checkVCenterAccessibility = (vcenter: VCenterStats): string | null => {
     if (!vcenter.vms || vcenter.vms.length === 0) {
       return 'No VM data available for this vCenter.';
@@ -97,14 +134,31 @@ export function VCenterSearch() {
         
         if (!error) {
           const osOptions = extractGuestOSForVCenter(vcenterData);
+          const powerStates = extractPowerStatesForVCenter(vcenterData);
+          const toolsStatuses = extractToolsStatusForVCenter(vcenterData);
+          const memories = extractMemoryOptionsForVCenter(vcenterData);
+          const cpus = extractCpuCountForVCenter(vcenterData);
+          
           setGuestOSOptions(osOptions);
+          setPowerStateOptions(powerStates);
+          setToolsStatusOptions(toolsStatuses);
+          setMemoryOptions(memories);
+          setCpuCountOptions(cpus);
         } else {
           setGuestOSOptions({});
+          setPowerStateOptions([]);
+          setToolsStatusOptions([]);
+          setMemoryOptions([]);
+          setCpuCountOptions([]);
         }
       }
     } else {
       setVcenterError(null);
       setGuestOSOptions({});
+      setPowerStateOptions([]);
+      setToolsStatusOptions([]);
+      setMemoryOptions([]);
+      setCpuCountOptions([]);
     }
   }, [selectedVCenter, vcenters]);
 
@@ -249,46 +303,54 @@ export function VCenterSearch() {
                     <div>
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Power State</label>
                       <div className="space-y-2.5">
-                        {['PoweredOn', 'PoweredOff', 'Suspended'].map(state => (
-                          <label key={state} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                            <input
-                              type="checkbox"
-                              checked={filters.powerState.includes(state)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setFilters(prev => ({ ...prev, powerState: [...prev.powerState, state] }));
-                                } else {
-                                  setFilters(prev => ({ ...prev, powerState: prev.powerState.filter(s => s !== state) }));
-                                }
-                              }}
-                              className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
-                            />
-                            <span className="text-sm text-slate-300">{state}</span>
-                          </label>
-                        ))}
+                        {powerStateOptions.length > 0 ? (
+                          powerStateOptions.map(state => (
+                            <label key={state} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+                              <input
+                                type="checkbox"
+                                checked={filters.powerState.includes(state)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setFilters(prev => ({ ...prev, powerState: [...prev.powerState, state] }));
+                                  } else {
+                                    setFilters(prev => ({ ...prev, powerState: prev.powerState.filter(s => s !== state) }));
+                                  }
+                                }}
+                                className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
+                              />
+                              <span className="text-sm text-slate-300">{state}</span>
+                            </label>
+                          ))
+                        ) : (
+                          <span className="text-xs text-slate-400">No options available</span>
+                        )}
                       </div>
                     </div>
 
                     <div>
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Tools Status</label>
                       <div className="space-y-2.5">
-                        {['running', 'outdated', 'unmanaged'].map(status => (
-                          <label key={status} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                            <input
-                              type="checkbox"
-                              checked={filters.toolsStatus.includes(status)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setFilters(prev => ({ ...prev, toolsStatus: [...prev.toolsStatus, status] }));
-                                } else {
-                                  setFilters(prev => ({ ...prev, toolsStatus: prev.toolsStatus.filter(s => s !== status) }));
-                                }
-                              }}
-                              className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
-                            />
-                            <span className="text-sm text-slate-300 capitalize">{status}</span>
-                          </label>
-                        ))}
+                        {toolsStatusOptions.length > 0 ? (
+                          toolsStatusOptions.map(status => (
+                            <label key={status} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+                              <input
+                                type="checkbox"
+                                checked={filters.toolsStatus.includes(status)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setFilters(prev => ({ ...prev, toolsStatus: [...prev.toolsStatus, status] }));
+                                  } else {
+                                    setFilters(prev => ({ ...prev, toolsStatus: prev.toolsStatus.filter(s => s !== status) }));
+                                  }
+                                }}
+                                className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
+                              />
+                              <span className="text-sm text-slate-300 capitalize">{status}</span>
+                            </label>
+                          ))
+                        ) : (
+                          <span className="text-xs text-slate-400">No options available</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -335,50 +397,58 @@ export function VCenterSearch() {
                     <div>
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Memory (GB)</label>
                       <div className="grid grid-cols-4 gap-2">
-                        {[4, 8, 16, 32, 64, 128, 256, 512].map(size => (
-                          <label key={size} className="flex items-center justify-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={filters.memory.includes(size)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setFilters(prev => ({ ...prev, memory: [...prev.memory, size].sort((a, b) => a - b) }));
-                                } else {
-                                  setFilters(prev => ({ ...prev, memory: prev.memory.filter(m => m !== size) }));
-                                }
-                              }}
-                              className="sr-only peer"
-                            />
-                            <span className="text-xs text-slate-300 px-2.5 py-1.5 bg-slate-700 border border-slate-600 rounded hover:bg-slate-600 peer-checked:bg-blue-600 peer-checked:border-blue-500 peer-checked:text-white transition-colors cursor-pointer">
-                              {size}
-                            </span>
-                          </label>
-                        ))}
+                        {memoryOptions.length > 0 ? (
+                          memoryOptions.map(size => (
+                            <label key={size} className="flex items-center justify-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={filters.memory.includes(size)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setFilters(prev => ({ ...prev, memory: [...prev.memory, size].sort((a, b) => a - b) }));
+                                  } else {
+                                    setFilters(prev => ({ ...prev, memory: prev.memory.filter(m => m !== size) }));
+                                  }
+                                }}
+                                className="sr-only peer"
+                              />
+                              <span className="text-xs text-slate-300 px-2.5 py-1.5 bg-slate-700 border border-slate-600 rounded hover:bg-slate-600 peer-checked:bg-blue-600 peer-checked:border-blue-500 peer-checked:text-white transition-colors cursor-pointer">
+                                {size}
+                              </span>
+                            </label>
+                          ))
+                        ) : (
+                          <span className="text-xs text-slate-400 col-span-4 text-center">No options available</span>
+                        )}
                       </div>
                     </div>
 
                     <div>
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">CPU Count</label>
                       <div className="grid grid-cols-4 gap-2">
-                        {[1, 2, 4, 8, 16, 32, 64, 128].map(cpu => (
-                          <label key={cpu} className="flex items-center justify-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={filters.cpuCount.includes(cpu)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
-                                } else {
-                                  setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
-                                }
-                              }}
-                              className="sr-only peer"
-                            />
-                            <span className="text-xs text-slate-300 px-2.5 py-1.5 bg-slate-700 border border-slate-600 rounded hover:bg-slate-600 peer-checked:bg-blue-600 peer-checked:border-blue-500 peer-checked:text-white transition-colors cursor-pointer">
-                              {cpu}
-                            </span>
-                          </label>
-                        ))}
+                        {cpuCountOptions.length > 0 ? (
+                          cpuCountOptions.map(cpu => (
+                            <label key={cpu} className="flex items-center justify-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={filters.cpuCount.includes(cpu)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
+                                  } else {
+                                    setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
+                                  }
+                                }}
+                                className="sr-only peer"
+                              />
+                              <span className="text-xs text-slate-300 px-2.5 py-1.5 bg-slate-700 border border-slate-600 rounded hover:bg-slate-600 peer-checked:bg-blue-600 peer-checked:border-blue-500 peer-checked:text-white transition-colors cursor-pointer">
+                                {cpu}
+                              </span>
+                            </label>
+                          ))
+                        ) : (
+                          <span className="text-xs text-slate-400 col-span-4 text-center">No options available</span>
+                        )}
                       </div>
                     </div>
                   </div>
