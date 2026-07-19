@@ -153,6 +153,7 @@ export function MultiVMSearch() {
                       <th className="text-left px-4 py-3 font-semibold text-white">IP Address</th>
                       <th className="text-left px-4 py-3 font-semibold text-white">CPU/Memory</th>
                       <th className="text-left px-4 py-3 font-semibold text-white">Storage</th>
+                      <th className="text-left px-4 py-3 font-semibold text-white">Compatibility</th>
                       <th className="text-left px-4 py-3 font-semibold text-white">VMware Tools Status</th>
                       <th className="text-left px-4 py-3 font-semibold text-white">Has Snapshots?</th>
                     </tr>
@@ -193,6 +194,7 @@ export function MultiVMSearch() {
                             <p>U: {vm.used_gb.toFixed(2)}GB</p>
                           </div>
                         </td>
+                        <td className="px-4 py-3 text-xs text-slate-300">{vm.vm_compatibility || '-'}</td>
                         <td className="px-4 py-3 text-xs text-slate-300">
                           {formatToolsStatus(vm)}
                         </td>
