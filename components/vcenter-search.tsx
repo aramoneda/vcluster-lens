@@ -407,9 +407,9 @@ export function VCenterSearch() {
                     Clear Filters
                   </button>
                 </div>
-              </div>
                   </>
                 )}
+              </div>
             )}
           </form>
         )}
