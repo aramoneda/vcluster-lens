@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { searchByVCenter, getVCenters, VCenterStats, formatToolsStatus } from '@/lib/search';
-import { ChevronDown, ChevronUp, Download } from 'lucide-react';
+import { ChevronDown, ChevronUp, Download, X } from 'lucide-react';
 
 export function VCenterSearch() {
   const [vcenters, setVcenters] = useState<string[]>([]);
@@ -83,14 +83,31 @@ export function VCenterSearch() {
         ) : (
           <form onSubmit={handleSearch} className="space-y-3">
             <div className="flex gap-2">
-              <input
-                type="text"
-                list="vcenters-list"
-                placeholder="Enter or select a vCenter..."
-                value={selectedVCenter}
-                onChange={(e) => setSelectedVCenter(e.target.value)}
-                className="flex-1 px-4 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  list="vcenters-list"
+                  placeholder="Enter or select a vCenter..."
+                  value={selectedVCenter}
+                  onChange={(e) => setSelectedVCenter(e.target.value)}
+                  className="w-full px-4 py-2 border border-slate-600 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                />
+                {selectedVCenter && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedVCenter('');
+                      setResult(null);
+                      setSearched(false);
+                      setNotFound(false);
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-600 rounded transition-colors"
+                    title="Clear selection"
+                  >
+                    <X className="h-4 w-4 text-slate-400 hover:text-slate-200" />
+                  </button>
+                )}
+              </div>
               <datalist id="vcenters-list">
                 {vcenters.map((vc) => (
                   <option key={vc} value={vc} />
@@ -103,7 +120,7 @@ export function VCenterSearch() {
                 Search
               </button>
             </div>
-            <p className="text-xs text-slate-400">You can type to search or select from the dropdown</p>
+            <p className="text-xs text-slate-400">You can type to search, select from the dropdown, or click the X to clear the selection</p>
           </form>
         )}
       </div>
