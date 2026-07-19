@@ -5,7 +5,7 @@ import { searchByVCenter, getVCenters, VCenterStats, formatToolsStatus } from '@
 import { ChevronDown, ChevronUp, Download, X } from 'lucide-react';
 
 export function VCenterSearch() {
-  const [vcenters, setVcenters] = useState<string[]>([]);
+  const [vcenters, setVcenters] = useState<VCenterStats[]>([]);
   const [selectedVCenter, setSelectedVCenter] = useState('');
   const [result, setResult] = useState<VCenterStats | null>(null);
   const [searched, setSearched] = useState(false);
@@ -14,6 +14,7 @@ export function VCenterSearch() {
   const [loading, setLoading] = useState(true);
   const [filteredVMs, setFilteredVMs] = useState<any[]>([]);
   const [guestOSOptions, setGuestOSOptions] = useState<{ [key: string]: string[] }>({});
+  const [vcenterError, setVcenterError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     powerState: [] as string[],
     guestOS: [] as string[],
@@ -22,34 +23,34 @@ export function VCenterSearch() {
     cpuCount: [] as number[],
   });
 
-  const extractGuestOSOptions = (vcenters: VCenterStats[]) => {
+  const getOSCategory = (osName: string): string => {
+    const osLower = osName.toLowerCase();
+    if (osLower.includes('windows')) return 'Windows';
+    if (osLower.includes('ubuntu')) return 'Ubuntu';
+    if (osLower.includes('centos')) return 'CentOS';
+    if (osLower.includes('debian')) return 'Debian';
+    if (osLower.includes('red hat') || osLower.includes('rhel')) return 'Red Hat';
+    if (osLower.includes('oracle')) return 'Oracle Linux';
+    if (osLower.includes('rocky')) return 'Rocky Linux';
+    if (osLower.includes('alma')) return 'AlmaLinux';
+    if (osLower.includes('suse')) return 'SUSE';
+    if (osLower.includes('fedora')) return 'Fedora';
+    if (osLower.includes('amazon')) return 'Amazon Linux';
+    if (osLower.includes('photon')) return 'VMware Photon';
+    if (osLower.includes('freebsd')) return 'FreeBSD';
+    if (osLower.includes('linux')) return 'Linux';
+    return 'Other';
+  };
+
+  const extractGuestOSForVCenter = (vcenter: VCenterStats) => {
     const osMap: { [key: string]: Set<string> } = {};
     
-    vcenters.forEach((vc) => {
-      vc.vms?.forEach((vm: any) => {
-        if (vm.guest_os && vm.guest_os.trim()) {
-          let category = 'Other';
-          const osLower = vm.guest_os.toLowerCase();
-          
-          if (osLower.includes('windows')) category = 'Windows';
-          else if (osLower.includes('ubuntu')) category = 'Ubuntu';
-          else if (osLower.includes('centos')) category = 'CentOS';
-          else if (osLower.includes('debian')) category = 'Debian';
-          else if (osLower.includes('red hat') || osLower.includes('rhel')) category = 'Red Hat';
-          else if (osLower.includes('oracle')) category = 'Oracle Linux';
-          else if (osLower.includes('rocky')) category = 'Rocky Linux';
-          else if (osLower.includes('alma')) category = 'AlmaLinux';
-          else if (osLower.includes('suse')) category = 'SUSE';
-          else if (osLower.includes('fedora')) category = 'Fedora';
-          else if (osLower.includes('amazon')) category = 'Amazon Linux';
-          else if (osLower.includes('photon')) category = 'VMware Photon';
-          else if (osLower.includes('freebsd')) category = 'FreeBSD';
-          else if (osLower.includes('linux')) category = 'Linux';
-          
-          if (!osMap[category]) osMap[category] = new Set();
-          osMap[category].add(vm.guest_os);
-        }
-      });
+    vcenter.vms?.forEach((vm: any) => {
+      if (vm.guest_os && vm.guest_os.trim()) {
+        const category = getOSCategory(vm.guest_os);
+        if (!osMap[category]) osMap[category] = new Set();
+        osMap[category].add(vm.guest_os);
+      }
     });
     
     const grouped: { [key: string]: string[] } = {};
@@ -57,18 +58,55 @@ export function VCenterSearch() {
       grouped[category] = Array.from(osMap[category]).sort();
     });
     
-    setGuestOSOptions(grouped);
+    return grouped;
+  };
+
+  const checkVCenterAccessibility = (vcenter: VCenterStats): string | null => {
+    if (!vcenter.vms || vcenter.vms.length === 0) {
+      return 'No VM data available for this vCenter.';
+    }
+    
+    const hasError = vcenter.vms.some((vm: any) => vm.notes && vm.notes.includes('Could not resolve') || vm.notes?.includes('Cannot complete login') || vm.notes?.includes('Permission'));
+    
+    if (hasError) {
+      const errorNotes = vcenter.vms.find((vm: any) => vm.notes && (vm.notes.includes('Could not resolve') || vm.notes.includes('Cannot complete login') || vm.notes.includes('Permission')))?.notes;
+      if (errorNotes) {
+        const lines = errorNotes.split('\n');
+        return lines[lines.length - 2] || 'Unable to access this vCenter. Please check connectivity and credentials.';
+      }
+    }
+    
+    return null;
   };
 
   useEffect(() => {
     const loadVCenters = async () => {
       const vcList = await getVCenters();
-      setVcenters(vcList.map((vc) => vc.vcenter));
-      extractGuestOSOptions(vcList);
+      setVcenters(vcList);
       setLoading(false);
     };
     loadVCenters();
   }, []);
+
+  useEffect(() => {
+    if (selectedVCenter && vcenters.length > 0) {
+      const vcenterData = vcenters.find(vc => vc.vcenter === selectedVCenter);
+      if (vcenterData) {
+        const error = checkVCenterAccessibility(vcenterData);
+        setVcenterError(error);
+        
+        if (!error) {
+          const osOptions = extractGuestOSForVCenter(vcenterData);
+          setGuestOSOptions(osOptions);
+        } else {
+          setGuestOSOptions({});
+        }
+      }
+    } else {
+      setVcenterError(null);
+      setGuestOSOptions({});
+    }
+  }, [selectedVCenter, vcenters]);
 
   const applyFilters = (vms: any[]) => {
     return vms.filter(vm => {
@@ -182,7 +220,7 @@ export function VCenterSearch() {
               </div>
               <datalist id="vcenters-list">
                 {vcenters.map((vc) => (
-                  <option key={vc} value={vc} />
+                  <option key={vc.vcenter} value={vc.vcenter} />
                 ))}
               </datalist>
               <button
@@ -196,7 +234,15 @@ export function VCenterSearch() {
 
             {selectedVCenter && !searched && (
               <div className="mt-6 pt-6 border-t border-slate-700">
-                <h3 className="text-sm font-semibold text-slate-200 mb-4">Advanced Filtering (Optional)</h3>
+                {vcenterError ? (
+                  <div className="bg-red-900/20 border border-red-700 rounded-lg p-4 mb-4">
+                    <h3 className="text-sm font-semibold text-red-300 mb-2">vCenter Accessibility Issue</h3>
+                    <p className="text-xs text-red-200">{vcenterError}</p>
+                    <p className="text-xs text-red-300 mt-2">Advanced filtering is unavailable for this vCenter until connectivity and access issues are resolved.</p>
+                  </div>
+                ) : (
+                  <>
+                    <h3 className="text-sm font-semibold text-slate-200 mb-4">Advanced Filtering (Optional)</h3>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Left Column */}
                   <div className="space-y-5">
@@ -362,6 +408,8 @@ export function VCenterSearch() {
                   </button>
                 </div>
               </div>
+                  </>
+                )}
             )}
           </form>
         )}
