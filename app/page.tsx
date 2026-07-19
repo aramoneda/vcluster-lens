@@ -1,4 +1,5 @@
 import { Summary } from '@/components/summary';
+import { TrendingMetrics } from '@/components/trending-metrics';
 import { SingleVMSearch } from '@/components/single-vm-search';
 import { VCenterSearch } from '@/components/vcenter-search';
 import { MultiVMSearch } from '@/components/multi-vm-search';
@@ -25,6 +26,12 @@ export default function Home() {
         {/* Quick Stats */}
         <section className="mb-8">
           <Summary />
+        </section>
+
+        {/* Trending Metrics */}
+        <section className="mb-8">
+          <h2 className="text-lg font-semibold text-white mb-4">Infrastructure Insights</h2>
+          <TrendingMetrics />
         </section>
 
         {/* Search Sections */}

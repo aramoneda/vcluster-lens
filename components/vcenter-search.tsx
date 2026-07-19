@@ -12,6 +12,14 @@ export function VCenterSearch() {
   const [notFound, setNotFound] = useState(false);
   const [expandedVMs, setExpandedVMs] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [filteredVMs, setFilteredVMs] = useState<any[]>([]);
+  const [filters, setFilters] = useState({
+    powerState: [] as string[],
+    guestOS: [] as string[],
+    toolsStatus: [] as string[],
+    memoryMin: 0,
+    memoryMax: 10000,
+  });
 
   useEffect(() => {
     const loadVCenters = async () => {
@@ -22,6 +30,25 @@ export function VCenterSearch() {
     loadVCenters();
   }, []);
 
+  const applyFilters = (vms: any[]) => {
+    return vms.filter(vm => {
+      if (filters.powerState.length > 0 && !filters.powerState.includes(vm.power_state)) {
+        return false;
+      }
+      if (filters.guestOS.length > 0 && !filters.guestOS.some(os => vm.guest_os?.toLowerCase().includes(os.toLowerCase()))) {
+        return false;
+      }
+      if (filters.toolsStatus.length > 0) {
+        const toolsStatus = vm.tools_status?.toLowerCase() || 'unmanaged';
+        if (!filters.toolsStatus.includes(toolsStatus)) return false;
+      }
+      if (vm.memory_gb < filters.memoryMin || vm.memory_gb > filters.memoryMax) {
+        return false;
+      }
+      return true;
+    });
+  };
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedVCenter) return;
@@ -29,7 +56,9 @@ export function VCenterSearch() {
     setSearched(true);
     const vcenter = await searchByVCenter(selectedVCenter);
     if (vcenter) {
+      const filtered = applyFilters(vcenter.vms);
       setResult(vcenter);
+      setFilteredVMs(filtered);
       setNotFound(false);
     } else {
       setResult(null);
@@ -41,7 +70,7 @@ export function VCenterSearch() {
     if (!result) return;
 
     const headers = ['VM Name', 'Hostname', 'Guest OS', 'IP Address', 'Power State', 'CPU', 'Memory (GB)', 'Provisioned Storage (GB)', 'Used Storage (GB)', 'Compatibility', 'VMware Tools Status', 'Has Snapshots'];
-    const rows = result.vms.map((vm) => [
+    const rows = filteredVMs.map((vm) => [
       vm.vm_name,
       vm.guest_hostname,
       vm.guest_os,
@@ -121,6 +150,131 @@ export function VCenterSearch() {
               </button>
             </div>
             <p className="text-xs text-slate-400">You can type to search, select from the dropdown, or click the X to clear the selection</p>
+
+            {selectedVCenter && !searched && (
+              <div className="mt-6 pt-6 border-t border-slate-700">
+                <h3 className="text-sm font-semibold text-slate-200 mb-4">Advanced Filtering (Optional)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-2">Power State</label>
+                    <div className="space-y-2">
+                      {['PoweredOn', 'PoweredOff', 'Suspended'].map(state => (
+                        <label key={state} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={filters.powerState.includes(state)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFilters(prev => ({ ...prev, powerState: [...prev.powerState, state] }));
+                              } else {
+                                setFilters(prev => ({ ...prev, powerState: prev.powerState.filter(s => s !== state) }));
+                              }
+                            }}
+                            className="rounded border-slate-600 bg-slate-700"
+                          />
+                          <span className="text-xs text-slate-300">{state}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-2">Guest OS</label>
+                    <div className="space-y-2">
+                      {['Windows', 'Linux', 'Ubuntu', 'CentOS', 'Red Hat'].map(os => (
+                        <label key={os} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={filters.guestOS.includes(os)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFilters(prev => ({ ...prev, guestOS: [...prev.guestOS, os] }));
+                              } else {
+                                setFilters(prev => ({ ...prev, guestOS: prev.guestOS.filter(s => s !== os) }));
+                              }
+                            }}
+                            className="rounded border-slate-600 bg-slate-700"
+                          />
+                          <span className="text-xs text-slate-300">{os}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-2">Tools Status</label>
+                    <div className="space-y-2">
+                      {['running', 'outdated', 'unmanaged'].map(status => (
+                        <label key={status} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={filters.toolsStatus.includes(status)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFilters(prev => ({ ...prev, toolsStatus: [...prev.toolsStatus, status] }));
+                              } else {
+                                setFilters(prev => ({ ...prev, toolsStatus: prev.toolsStatus.filter(s => s !== status) }));
+                              }
+                            }}
+                            className="rounded border-slate-600 bg-slate-700"
+                          />
+                          <span className="text-xs text-slate-300 capitalize">{status}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-2">Memory (GB)</label>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="Min"
+                          value={filters.memoryMin}
+                          onChange={(e) => setFilters(prev => ({ ...prev, memoryMin: parseInt(e.target.value) || 0 }))}
+                          className="w-1/2 px-2 py-1 text-xs bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
+                        />
+                        <span className="text-slate-500">to</span>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="Max"
+                          value={filters.memoryMax}
+                          onChange={(e) => setFilters(prev => ({ ...prev, memoryMax: parseInt(e.target.value) || 10000 }))}
+                          className="w-1/2 px-2 py-1 text-xs bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex gap-2">
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                  >
+                    Search with Filters
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFilters({
+                        powerState: [],
+                        guestOS: [],
+                        toolsStatus: [],
+                        memoryMin: 0,
+                        memoryMax: 10000,
+                      });
+                    }}
+                    className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg transition-colors font-medium"
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+              </div>
+            )}
           </form>
         )}
       </div>
@@ -185,7 +339,7 @@ export function VCenterSearch() {
                       className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
                     >
                       {expandedVMs ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                      {expandedVMs ? 'Hide' : 'Show'} VMs ({result.vms.length})
+                      {expandedVMs ? 'Hide' : 'Show'} VMs ({filteredVMs.length}/{result.vms.length})
                     </button>
                     <button
                       onClick={handleExportCSV}
@@ -214,7 +368,7 @@ export function VCenterSearch() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-700">
-                      {result.vms.map((vm) => (
+                      {filteredVMs.map((vm) => (
                         <tr key={vm.vm_name} className="hover:bg-slate-700/50">
                           <td className="px-4 py-3 text-slate-100 font-medium">{vm.vm_name}</td>
                           <td className="px-4 py-3 text-slate-300">{vm.site}</td>
