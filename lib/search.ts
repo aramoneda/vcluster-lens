@@ -240,8 +240,23 @@ export async function getPowerStateDistribution() {
   }));
 }
 
-// Format VMware Tools status from VM data
-export function formatToolsStatus(vm: VM): string {
+// Format VMware Tools status from VM data or status string
+export function formatToolsStatus(input: VM | string): string {
+  // Handle string input (tools_status directly)
+  if (typeof input === 'string') {
+    const statusMap: Record<string, string> = {
+      toolsOk: 'Running',
+      toolsRunning: 'Running',
+      toolsNotRunning: 'Not Running',
+      toolsNotInstalled: 'Not Installed',
+      toolsOld: 'Outdated',
+    };
+    return statusMap[input] || input || 'Unknown';
+  }
+  
+  // Handle VM object input
+  const vm = input as VM;
+  
   // If we have the pre-formatted vmtools field, use it directly
   if (vm.vmtools) {
     return vm.vmtools;
