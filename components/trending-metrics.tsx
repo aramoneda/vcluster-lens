@@ -1,21 +1,42 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getVCenters, VCenterStats } from '@/lib/search';
-import { TrendingUp, HardDrive, Power } from 'lucide-react';
+import { getVCenters, VCenterStats, getCacheTimestamp, clearCache } from '@/lib/search';
+import { TrendingUp, HardDrive, Power, RefreshCw } from 'lucide-react';
 
 export function TrendingMetrics() {
   const [vcenters, setVcenters] = useState<VCenterStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const loadData = async () => {
+    const data = await getVCenters();
+    setVcenters(data);
+    const timestamp = getCacheTimestamp();
+    if (timestamp) {
+      setLastUpdated(new Date(timestamp));
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      const data = await getVCenters();
-      setVcenters(data);
-      setLoading(false);
-    };
     loadData();
+    // Auto-refresh every 8 hours (28,800,000 ms)
+    const interval = setInterval(async () => {
+      clearCache();
+      await loadData();
+    }, 8 * 60 * 60 * 1000);
+    
+    return () => clearInterval(interval);
   }, []);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    clearCache();
+    await loadData();
+    setRefreshing(false);
+  };
 
   if (loading) {
     return (
@@ -60,7 +81,24 @@ export function TrendingMetrics() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+    <>
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-xs text-slate-400">
+          {lastUpdated && (
+            <span>Last updated: {lastUpdated.toLocaleString()}</span>
+          )}
+        </div>
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 text-slate-200 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
+          title="Refresh data (normally updates every 8 hours)"
+        >
+          <RefreshCw className={`w-3 h-3 ${refreshing ? 'animate-spin' : ''}`} />
+          {refreshing ? 'Refreshing...' : 'Refresh'}
+        </button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
       {/* Most Memory Used */}
       <div className="bg-gradient-to-br from-purple-900/40 to-purple-800/40 rounded-lg p-4 shadow-md border border-purple-700/50">
         <div className="flex items-center gap-2 mb-4">
@@ -139,5 +177,6 @@ export function TrendingMetrics() {
         </div>
       </div>
     </div>
+    </>
   );
 }

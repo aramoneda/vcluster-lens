@@ -63,18 +63,45 @@ function extractErrorMessage(notes: string): string {
   return notes.split('\n')[0]; // Fallback to first line
 }
 
-// Cached data
+// Cached data with 8-hour TTL (28,800,000 ms)
+const CACHE_TTL = 8 * 60 * 60 * 1000;
 let cachedVMData: any[] | null = null;
 let cachedVCenters: VCenterStats[] | null = null;
+let cacheTimestamp: number | null = null;
+
+// Check if cache is still valid
+function isCacheValid(): boolean {
+  if (!cacheTimestamp) return false;
+  return Date.now() - cacheTimestamp < CACHE_TTL;
+}
+
+// Clear cache
+export function clearCache(): void {
+  cachedVMData = null;
+  cachedVCenters = null;
+  cacheTimestamp = null;
+}
+
+// Get cache timestamp
+export function getCacheTimestamp(): number | null {
+  return cacheTimestamp;
+}
 
 // Load VM data from IndexedDB or JSON file
 async function getLoadedVMData(): Promise<any[]> {
-  if (cachedVMData) return cachedVMData;
+  // Check if cache exists and is still valid (within 8-hour TTL)
+  if (cachedVMData && isCacheValid()) return cachedVMData;
+  
+  // If cache expired, clear it
+  if (cachedVMData && !isCacheValid()) {
+    clearCache();
+  }
   
   try {
     const indexedDBData = await getVMData();
     if (indexedDBData && indexedDBData.length > 0) {
       cachedVMData = indexedDBData;
+      cacheTimestamp = Date.now();
       return cachedVMData;
     }
     
@@ -82,6 +109,7 @@ async function getLoadedVMData(): Promise<any[]> {
     const response = await fetch('/vm-inventory.json');
     if (!response.ok) throw new Error('Failed to fetch vm-inventory.json');
     cachedVMData = await response.json();
+    cacheTimestamp = Date.now();
   } catch (error) {
     console.error('[v0] Error loading VM data:', error);
     cachedVMData = [];
