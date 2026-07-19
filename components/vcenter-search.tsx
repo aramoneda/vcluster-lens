@@ -79,10 +79,19 @@ export function VCenterSearch() {
   const extractToolsStatusForVCenter = (vcenter: VCenterStats): string[] => {
     const statuses = new Set<string>();
     vcenter.vms?.forEach((vm: any) => {
-      const status = vm.tools_status?.toLowerCase() || 'unmanaged';
-      statuses.add(status);
+      if (vm.tools_status) {
+        statuses.add(vm.tools_status);
+      }
     });
     return Array.from(statuses).sort();
+  };
+
+  const formatToolsStatus = (status: string): string => {
+    if (status === 'toolsNotInstalled') return 'Not Installed';
+    if (status === 'toolsNotRunning') return 'Not Running';
+    if (status === 'toolsOk') return 'Running';
+    if (status === 'toolsOld') return 'Outdated';
+    return status;
   };
 
   const extractMemoryOptionsForVCenter = (vcenter: VCenterStats): number[] => {
@@ -351,7 +360,7 @@ export function VCenterSearch() {
                                 }}
                                 className="rounded border-slate-600 bg-slate-700 cursor-pointer w-4 h-4"
                               />
-                              <span className="text-sm text-slate-300 capitalize">{status}</span>
+                              <span className="text-sm text-slate-300">{formatToolsStatus(status)}</span>
                             </label>
                           ))
                         ) : (
@@ -362,9 +371,9 @@ export function VCenterSearch() {
                   </div>
 
                   {/* Middle Column */}
-                  <div>
+                  <div className="relative">
                     <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Guest OS</label>
-                    <div className="relative">
+                    <div className="relative z-20">
                       <button
                         type="button"
                         onClick={() => setGuestOSDropdownOpen(!guestOSDropdownOpen)}
@@ -375,7 +384,7 @@ export function VCenterSearch() {
                       </button>
                       
                       {guestOSDropdownOpen && (
-                        <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-10 max-h-64 overflow-y-auto">
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-64 overflow-y-auto">
                           {Object.entries(guestOSOptions).length > 0 ? (
                             Object.entries(guestOSOptions).map(([category, osVersions]) => (
                               <div key={category}>
@@ -409,9 +418,9 @@ export function VCenterSearch() {
 
                   {/* Right Column */}
                   <div className="space-y-5">
-                    <div>
+                    <div className="relative">
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Memory (GB)</label>
-                      <div className="relative">
+                      <div className="relative z-20">
                         <button
                           type="button"
                           onClick={() => setMemoryDropdownOpen(!memoryDropdownOpen)}
@@ -422,7 +431,7 @@ export function VCenterSearch() {
                         </button>
                         
                         {memoryDropdownOpen && memoryOptions.length > 0 && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-10 max-h-48 overflow-y-auto">
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-48 overflow-y-auto">
                             {memoryOptions.map(memory => (
                               <label key={memory} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs border-b border-slate-700 last:border-b-0">
                                 <input
@@ -447,6 +456,7 @@ export function VCenterSearch() {
                           <div className="text-xs text-slate-400 px-3 py-2">No options available</div>
                         )}
                       </div>
+                    </div>
                     </div>
 
                     <div>
