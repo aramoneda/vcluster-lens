@@ -310,9 +310,11 @@ export function VCenterSearch() {
                 ) : (
                   <>
                     <h3 className="text-sm font-semibold text-slate-200 mb-4">Advanced Filtering (Optional)</h3>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Left Column */}
-                  <div className="space-y-5">
+                <div className="space-y-6">
+                  {/* Top Row: Power State, Guest OS, Memory */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Left Column */}
+                    <div className="space-y-5">
                     <div>
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Power State</label>
                       <div className="space-y-2.5">
@@ -456,7 +458,10 @@ export function VCenterSearch() {
                       </div>
                     </div>
                     </div>
+                  </div>
 
+                  {/* Bottom Row: CPU Count */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:max-w-md lg:mx-auto">
                     <div>
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">CPU Count</label>
                       <div className="relative">
@@ -497,6 +502,7 @@ export function VCenterSearch() {
                       </div>
                     </div>
                   </div>
+                </div>
 
                 <div className="mt-4 flex gap-2">
                   <button
