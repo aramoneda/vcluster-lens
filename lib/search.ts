@@ -74,10 +74,7 @@ export async function getVCenters(): Promise<VCenterStats[]> {
   const data = await getLoadedVMData();
   const vcenterMap: Record<string, VCenterStats> = {};
   
-  // Filter out invalid VM records (empty vm_name indicates metadata/header record)
-  const validVMs = data.filter((vm: any) => vm.vm_name && vm.vm_name.trim() !== '');
-  
-  validVMs.forEach((vm: any) => {
+  data.forEach((vm: any) => {
     if (!vcenterMap[vm.vcenter]) {
       vcenterMap[vm.vcenter] = {
         vcenter: vm.vcenter,
@@ -91,13 +88,16 @@ export async function getVCenters(): Promise<VCenterStats[]> {
       };
     }
     
-    vcenterMap[vm.vcenter].total_vms++;
-    vcenterMap[vm.vcenter].vms.push(vm);
-    
-    if (vm.power_state === 'PoweredOn') {
-      vcenterMap[vm.vcenter].powered_on++;
-    } else if (vm.power_state === 'PoweredOff') {
-      vcenterMap[vm.vcenter].powered_off++;
+    // Only count valid VMs (non-empty vm_name) in the statistics
+    if (vm.vm_name && vm.vm_name.trim() !== '') {
+      vcenterMap[vm.vcenter].total_vms++;
+      vcenterMap[vm.vcenter].vms.push(vm);
+      
+      if (vm.power_state === 'PoweredOn') {
+        vcenterMap[vm.vcenter].powered_on++;
+      } else if (vm.power_state === 'PoweredOff') {
+        vcenterMap[vm.vcenter].powered_off++;
+      }
     }
   });
   
@@ -116,7 +116,8 @@ export async function searchByVCenter(vcentername: string): Promise<VCenterStats
   const vcenters = await getVCenters();
   const vc = vcenters.find((v) => v.vcenter.toLowerCase() === vcentername.toLowerCase());
   
-  if (vc && vc.total_vms > 0) {
+  // Return the vCenter even if it has no accessible VMs - let the UI display a "no VMs" message
+  if (vc) {
     return vc;
   }
   

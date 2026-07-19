@@ -165,24 +165,31 @@ export function VCenterSearch() {
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-between">
-                <button
-                  onClick={() => setExpandedVMs(!expandedVMs)}
-                  className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
-                >
-                  {expandedVMs ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                  {expandedVMs ? 'Hide' : 'Show'} VMs ({result.vms.length})
-                </button>
-                <button
-                  onClick={handleExportCSV}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2 transition-colors text-sm"
-                >
-                  <Download className="w-4 h-4" />
-                  Export CSV
-                </button>
-              </div>
+              {result.vms.length === 0 ? (
+                <div className="mt-4 bg-yellow-900/20 border border-yellow-800/50 rounded-lg p-4">
+                  <p className="text-yellow-200 font-semibold">No VMs found for this vCenter</p>
+                  <p className="text-yellow-300/70 text-sm mt-1">This vCenter either has no accessible VMs or the VMs are currently unavailable.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="pt-4 flex items-center justify-between">
+                    <button
+                      onClick={() => setExpandedVMs(!expandedVMs)}
+                      className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
+                    >
+                      {expandedVMs ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                      {expandedVMs ? 'Hide' : 'Show'} VMs ({result.vms.length})
+                    </button>
+                    <button
+                      onClick={handleExportCSV}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2 transition-colors text-sm"
+                    >
+                      <Download className="w-4 h-4" />
+                      Export CSV
+                    </button>
+                  </div>
 
-              {expandedVMs && (
+                  {expandedVMs && (
                 <div className="mt-4 overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-slate-700 border-b border-slate-600 sticky top-0">
@@ -252,6 +259,8 @@ export function VCenterSearch() {
                     </tbody>
                   </table>
                 </div>
+                  )}
+                </>
               )}
             </div>
           )}
