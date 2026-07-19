@@ -246,7 +246,7 @@ export function VCenterSearch() {
       vm.provisioned_gb.toFixed(2),
       vm.used_gb.toFixed(2),
       vm.vm_compatibility,
-      formatToolsStatus(vm),
+      formatToolsStatus(vm.tools_status),
       vm.has_snapshot && vm.has_snapshot !== 'No' ? 'Yes' : 'No',
     ]);
 
@@ -699,7 +699,7 @@ export function VCenterSearch() {
                           </td>
                           <td className="px-4 py-3 text-xs text-slate-300">{vm.vm_compatibility || '-'}</td>
                           <td className="px-4 py-3 text-xs text-slate-300">
-                            {formatToolsStatus(vm)}
+                            {formatToolsStatus(vm.tools_status)}
                           </td>
                           <td className="px-4 py-3 text-xs">
                             {vm.has_snapshot && vm.has_snapshot !== 'No' && vm.snapshot_details && vm.snapshot_details.length > 0 ? (
