@@ -51,7 +51,8 @@ export function AnalyticsDrilldown() {
     vcenters.forEach((vc) => {
       const poweredOffVms = vc.vms?.filter((vm: any) => vm.power_state === 'PoweredOff') || [];
       const storage = poweredOffVms.reduce((sum, vm: any) => sum + (vm.used_gb || 0), 0);
-      metrics[vc.vcenter] = { vcenter: vc.vcenter, count: poweredOffVms.length, storage };
+      const memory = poweredOffVms.reduce((sum, vm: any) => sum + (vm.memory_gb || 0), 0);
+      metrics[vc.vcenter] = { vcenter: vc.vcenter, count: poweredOffVms.length, storage, memory };
     });
     return metrics;
   };
@@ -104,10 +105,10 @@ export function AnalyticsDrilldown() {
         <h2>${title}</h2>
         <p>${subtitle}</p>
         <table border="1" cellpadding="10">
-          <tr><th>vCenter</th><th>Powered-Off Count</th><th>Storage Consumed (TB)</th></tr>
+          <tr><th>vCenter</th><th>Powered-Off Count</th><th>Storage Consumed (TB)</th><th>Memory Allocated (GB)</th></tr>
           ${Object.entries(metrics).sort((a, b) => b[1].count - a[1].count).map(([_, data]: [string, any]) => {
             if (!data.count) return '';
-            return `<tr><td>${data.vcenter}</td><td>${data.count}</td><td>${data.storage.toFixed(1)}</td></tr>`;
+            return `<tr><td>${data.vcenter}</td><td>${data.count}</td><td>${data.storage.toFixed(1)}</td><td>${data.memory.toFixed(0)}</td></tr>`;
           }).join('')}
         </table>
       `;
@@ -434,18 +435,22 @@ export function AnalyticsDrilldown() {
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="grid grid-cols-3 gap-3 text-sm">
                         <div>
                           <p className="text-slate-400">Count</p>
                           <p className="text-white font-semibold text-lg">{data.count}</p>
                         </div>
                         <div>
-                          <p className="text-slate-400">Storage Consumed</p>
+                          <p className="text-slate-400">Storage</p>
                           <p className="text-white font-semibold text-lg">{data.storage.toFixed(1)} TB</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-400">Memory</p>
+                          <p className="text-white font-semibold text-lg">{data.memory.toFixed(0)} GB</p>
                         </div>
                       </div>
 
-                      <p className="text-xs text-slate-400 mt-3">These VMs are not running but consuming storage. Consider cleanup or archival.</p>
+                      <p className="text-xs text-slate-400 mt-3">These VMs are not running but consuming storage and memory. Consider cleanup or archival.</p>
                     </div>
                   );
                 })}
