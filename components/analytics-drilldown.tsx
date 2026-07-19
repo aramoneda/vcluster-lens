@@ -37,8 +37,8 @@ export function AnalyticsDrilldown() {
   const calculateMemoryMetrics = () => {
     const metrics: Record<string, any> = {};
     vcenters.forEach((vc) => {
-      const used = vc.vms?.reduce((sum, vm: any) => sum + (vm.memory_gb || 0), 0) || 0;
-      const allocated = vc.vms?.reduce((sum, vm: any) => sum + (vm.allocated_memory_gb || 0), 0) || 0;
+      const used = vc.memory_gb || 0;
+      const allocated = vc.allocated_memory_gb || vc.memory_gb || 0;
       metrics[vc.vcenter] = { vcenter: vc.vcenter, used, allocated };
     });
     return metrics;
