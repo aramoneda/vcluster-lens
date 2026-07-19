@@ -21,13 +21,13 @@ export function VCenterSearch() {
   const [vcenterError, setVcenterError] = useState<string | null>(null);
   const [guestOSDropdownOpen, setGuestOSDropdownOpen] = useState(false);
   const [memoryDropdownOpen, setMemoryDropdownOpen] = useState(false);
-  const [cpuMin, setCpuMin] = useState<number | null>(null);
-  const [cpuMax, setCpuMax] = useState<number | null>(null);
+  const [cpuDropdownOpen, setCpuDropdownOpen] = useState(false);
   const [filters, setFilters] = useState({
     powerState: [] as string[],
     guestOS: [] as string[],
     toolsStatus: [] as string[],
     memory: [] as number[],
+    cpuCount: [] as number[],
   });
 
   const getOSCategory = (osName: string): string => {
@@ -162,6 +162,7 @@ export function VCenterSearch() {
           setToolsStatusOptions([]);
           setMemoryOptions([]);
           setCpuCountOptions([]);
+          setFilters(prev => ({ ...prev, cpuCount: [] }));
         }
       }
     } else {
@@ -171,6 +172,7 @@ export function VCenterSearch() {
       setToolsStatusOptions([]);
       setMemoryOptions([]);
       setCpuCountOptions([]);
+      setFilters(prev => ({ ...prev, cpuCount: [] }));
     }
   }, [selectedVCenter, vcenters]);
 
@@ -183,16 +185,12 @@ export function VCenterSearch() {
         return false;
       }
       if (filters.toolsStatus.length > 0) {
-        const toolsStatus = vm.tools_status?.toLowerCase() || 'unmanaged';
-        if (!filters.toolsStatus.includes(toolsStatus)) return false;
+        if (!filters.toolsStatus.includes(vm.tools_status)) return false;
       }
       if (filters.memory.length > 0 && !filters.memory.includes(vm.memory_gb)) {
         return false;
       }
-      if (cpuMin !== null && vm.num_cpu < cpuMin) {
-        return false;
-      }
-      if (cpuMax !== null && vm.num_cpu > cpuMax) {
+      if (filters.cpuCount.length > 0 && !filters.cpuCount.includes(vm.num_cpu)) {
         return false;
       }
       return true;
@@ -461,30 +459,42 @@ export function VCenterSearch() {
 
                     <div>
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">CPU Count</label>
-                      {cpuCountOptions.length > 0 ? (
-                        <div className="space-y-2">
-                          <div className="flex gap-2 items-center">
-                            <input
-                              type="number"
-                              placeholder="Min"
-                              value={cpuMin ?? ''}
-                              onChange={(e) => setCpuMin(e.target.value ? parseInt(e.target.value) : null)}
-                              className="flex-1 px-2.5 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
-                            />
-                            <span className="text-slate-500 text-xs">to</span>
-                            <input
-                              type="number"
-                              placeholder="Max"
-                              value={cpuMax ?? ''}
-                              onChange={(e) => setCpuMax(e.target.value ? parseInt(e.target.value) : null)}
-                              className="flex-1 px-2.5 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
-                            />
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setCpuDropdownOpen(!cpuDropdownOpen)}
+                          className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-left text-sm text-slate-300 hover:bg-slate-600 transition-colors flex items-center justify-between"
+                        >
+                          <span>{filters.cpuCount.length > 0 ? `${filters.cpuCount.length} selected` : 'Select CPU count...'}</span>
+                          <ChevronDown className={`w-4 h-4 transition-transform ${cpuDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        {cpuDropdownOpen && cpuCountOptions.length > 0 && (
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-50 max-h-48 overflow-y-auto">
+                            {cpuCountOptions.map(cpu => (
+                              <label key={cpu} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs border-b border-slate-700 last:border-b-0">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.cpuCount.includes(cpu)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
+                                    } else {
+                                      setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
+                                    }
+                                  }}
+                                  className="rounded border-slate-600 bg-slate-700 cursor-pointer"
+                                />
+                                <span className="text-slate-300">{cpu} CPU{cpu !== 1 ? 's' : ''}</span>
+                              </label>
+                            ))}
                           </div>
-                          <div className="text-xs text-slate-400">Available: {Math.min(...cpuCountOptions)} - {Math.max(...cpuCountOptions)} CPUs</div>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-slate-400">No options available</span>
-                      )}
+                        )}
+                        
+                        {cpuCountOptions.length === 0 && (
+                          <div className="text-xs text-slate-400 px-3 py-2">No options available</div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -503,9 +513,8 @@ export function VCenterSearch() {
                         guestOS: [],
                         toolsStatus: [],
                         memory: [],
+                        cpuCount: [],
                       });
-                      setCpuMin(null);
-                      setCpuMax(null);
                     }}
                     className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg transition-colors font-medium"
                   >
