@@ -19,12 +19,15 @@ export function VCenterSearch() {
   const [memoryOptions, setMemoryOptions] = useState<number[]>([]);
   const [cpuCountOptions, setCpuCountOptions] = useState<number[]>([]);
   const [vcenterError, setVcenterError] = useState<string | null>(null);
+  const [guestOSDropdownOpen, setGuestOSDropdownOpen] = useState(false);
+  const [memoryMin, setMemoryMin] = useState<number | null>(null);
+  const [memoryMax, setMemoryMax] = useState<number | null>(null);
+  const [cpuMin, setCpuMin] = useState<number | null>(null);
+  const [cpuMax, setCpuMax] = useState<number | null>(null);
   const [filters, setFilters] = useState({
     powerState: [] as string[],
     guestOS: [] as string[],
     toolsStatus: [] as string[],
-    memory: [] as number[],
-    cpuCount: [] as number[],
   });
 
   const getOSCategory = (osName: string): string => {
@@ -174,10 +177,16 @@ export function VCenterSearch() {
         const toolsStatus = vm.tools_status?.toLowerCase() || 'unmanaged';
         if (!filters.toolsStatus.includes(toolsStatus)) return false;
       }
-      if (filters.memory.length > 0 && !filters.memory.includes(vm.memory_gb)) {
+      if (memoryMin !== null && vm.memory_gb < memoryMin) {
         return false;
       }
-      if (filters.cpuCount.length > 0 && !filters.cpuCount.includes(vm.num_cpu)) {
+      if (memoryMax !== null && vm.memory_gb > memoryMax) {
+        return false;
+      }
+      if (cpuMin !== null && vm.num_cpu < cpuMin) {
+        return false;
+      }
+      if (cpuMax !== null && vm.num_cpu > cpuMax) {
         return false;
       }
       return true;
@@ -358,36 +367,45 @@ export function VCenterSearch() {
                   {/* Middle Column */}
                   <div>
                     <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Guest OS</label>
-                    <div className="space-y-3">
-                      {Object.entries(guestOSOptions).map(([category, osVersions]) => (
-                        <div key={category}>
-                          <div className="text-xs font-semibold text-slate-400 mb-1.5 pl-1">{category}</div>
-                          <div className="space-y-1.5 pl-2 border-l border-slate-600">
-                            {osVersions.slice(0, 3).map(os => (
-                              <label key={os} className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity text-xs">
-                                <input
-                                  type="checkbox"
-                                  checked={filters.guestOS.includes(os)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setFilters(prev => ({ ...prev, guestOS: [...prev.guestOS, os] }));
-                                    } else {
-                                      setFilters(prev => ({ ...prev, guestOS: prev.guestOS.filter(s => s !== os) }));
-                                    }
-                                  }}
-                                  className="rounded border-slate-600 bg-slate-700 cursor-pointer w-3 h-3"
-                                />
-                                <span className="text-slate-300 truncate" title={os}>{os.replace(/\(64-bit\)|\(32-bit\)/g, '').trim()}</span>
-                              </label>
-                            ))}
-                            {osVersions.length > 3 && (
-                              <span className="text-xs text-slate-500 italic">+{osVersions.length - 3} more</span>
-                            )}
-                          </div>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setGuestOSDropdownOpen(!guestOSDropdownOpen)}
+                        className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-left text-sm text-slate-300 hover:bg-slate-600 transition-colors flex items-center justify-between"
+                      >
+                        <span>{filters.guestOS.length > 0 ? `${filters.guestOS.length} selected` : 'Select OS types...'}</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${guestOSDropdownOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      
+                      {guestOSDropdownOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-10 max-h-64 overflow-y-auto">
+                          {Object.entries(guestOSOptions).length > 0 ? (
+                            Object.entries(guestOSOptions).map(([category, osVersions]) => (
+                              <div key={category}>
+                                <div className="sticky top-0 px-3 py-1.5 bg-slate-700 text-xs font-semibold text-slate-400 border-b border-slate-600">{category}</div>
+                                {osVersions.map(os => (
+                                  <label key={os} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs">
+                                    <input
+                                      type="checkbox"
+                                      checked={filters.guestOS.includes(os)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setFilters(prev => ({ ...prev, guestOS: [...prev.guestOS, os] }));
+                                        } else {
+                                          setFilters(prev => ({ ...prev, guestOS: prev.guestOS.filter(s => s !== os) }));
+                                        }
+                                      }}
+                                      className="rounded border-slate-600 bg-slate-700 cursor-pointer"
+                                    />
+                                    <span className="text-slate-300">{os.replace(/\(64-bit\)|\(32-bit\)/g, '').trim()}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="px-3 py-2 text-xs text-slate-400">No OS options available</div>
+                          )}
                         </div>
-                      ))}
-                      {Object.keys(guestOSOptions).length === 0 && (
-                        <span className="text-xs text-slate-400">Loading OS options...</span>
                       )}
                     </div>
                   </div>
@@ -396,60 +414,58 @@ export function VCenterSearch() {
                   <div className="space-y-5">
                     <div>
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Memory (GB)</label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {memoryOptions.length > 0 ? (
-                          memoryOptions.map(size => (
-                            <label key={size} className="flex items-center justify-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={filters.memory.includes(size)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setFilters(prev => ({ ...prev, memory: [...prev.memory, size].sort((a, b) => a - b) }));
-                                  } else {
-                                    setFilters(prev => ({ ...prev, memory: prev.memory.filter(m => m !== size) }));
-                                  }
-                                }}
-                                className="sr-only peer"
-                              />
-                              <span className="text-xs text-slate-300 px-2.5 py-1.5 bg-slate-700 border border-slate-600 rounded hover:bg-slate-600 peer-checked:bg-blue-600 peer-checked:border-blue-500 peer-checked:text-white transition-colors cursor-pointer">
-                                {size}
-                              </span>
-                            </label>
-                          ))
-                        ) : (
-                          <span className="text-xs text-slate-400 col-span-4 text-center">No options available</span>
-                        )}
-                      </div>
+                      {memoryOptions.length > 0 ? (
+                        <div className="space-y-2">
+                          <div className="flex gap-2 items-center">
+                            <input
+                              type="number"
+                              placeholder="Min"
+                              value={memoryMin ?? ''}
+                              onChange={(e) => setMemoryMin(e.target.value ? parseFloat(e.target.value) : null)}
+                              className="flex-1 px-2.5 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
+                            />
+                            <span className="text-slate-500 text-xs">to</span>
+                            <input
+                              type="number"
+                              placeholder="Max"
+                              value={memoryMax ?? ''}
+                              onChange={(e) => setMemoryMax(e.target.value ? parseFloat(e.target.value) : null)}
+                              className="flex-1 px-2.5 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
+                            />
+                          </div>
+                          <div className="text-xs text-slate-400">Available: {Math.min(...memoryOptions).toFixed(2)} - {Math.max(...memoryOptions).toFixed(2)} GB</div>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400">No options available</span>
+                      )}
                     </div>
 
                     <div>
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">CPU Count</label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {cpuCountOptions.length > 0 ? (
-                          cpuCountOptions.map(cpu => (
-                            <label key={cpu} className="flex items-center justify-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={filters.cpuCount.includes(cpu)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setFilters(prev => ({ ...prev, cpuCount: [...prev.cpuCount, cpu].sort((a, b) => a - b) }));
-                                  } else {
-                                    setFilters(prev => ({ ...prev, cpuCount: prev.cpuCount.filter(c => c !== cpu) }));
-                                  }
-                                }}
-                                className="sr-only peer"
-                              />
-                              <span className="text-xs text-slate-300 px-2.5 py-1.5 bg-slate-700 border border-slate-600 rounded hover:bg-slate-600 peer-checked:bg-blue-600 peer-checked:border-blue-500 peer-checked:text-white transition-colors cursor-pointer">
-                                {cpu}
-                              </span>
-                            </label>
-                          ))
-                        ) : (
-                          <span className="text-xs text-slate-400 col-span-4 text-center">No options available</span>
-                        )}
-                      </div>
+                      {cpuCountOptions.length > 0 ? (
+                        <div className="space-y-2">
+                          <div className="flex gap-2 items-center">
+                            <input
+                              type="number"
+                              placeholder="Min"
+                              value={cpuMin ?? ''}
+                              onChange={(e) => setCpuMin(e.target.value ? parseInt(e.target.value) : null)}
+                              className="flex-1 px-2.5 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
+                            />
+                            <span className="text-slate-500 text-xs">to</span>
+                            <input
+                              type="number"
+                              placeholder="Max"
+                              value={cpuMax ?? ''}
+                              onChange={(e) => setCpuMax(e.target.value ? parseInt(e.target.value) : null)}
+                              className="flex-1 px-2.5 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
+                            />
+                          </div>
+                          <div className="text-xs text-slate-400">Available: {Math.min(...cpuCountOptions)} - {Math.max(...cpuCountOptions)} CPUs</div>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400">No options available</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -468,9 +484,11 @@ export function VCenterSearch() {
                         powerState: [],
                         guestOS: [],
                         toolsStatus: [],
-                        memory: [],
-                        cpuCount: [],
                       });
+                      setMemoryMin(null);
+                      setMemoryMax(null);
+                      setCpuMin(null);
+                      setCpuMax(null);
                     }}
                     className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg transition-colors font-medium"
                   >
