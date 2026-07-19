@@ -20,14 +20,14 @@ export function VCenterSearch() {
   const [cpuCountOptions, setCpuCountOptions] = useState<number[]>([]);
   const [vcenterError, setVcenterError] = useState<string | null>(null);
   const [guestOSDropdownOpen, setGuestOSDropdownOpen] = useState(false);
-  const [memoryMin, setMemoryMin] = useState<number | null>(null);
-  const [memoryMax, setMemoryMax] = useState<number | null>(null);
+  const [memoryDropdownOpen, setMemoryDropdownOpen] = useState(false);
   const [cpuMin, setCpuMin] = useState<number | null>(null);
   const [cpuMax, setCpuMax] = useState<number | null>(null);
   const [filters, setFilters] = useState({
     powerState: [] as string[],
     guestOS: [] as string[],
     toolsStatus: [] as string[],
+    memory: [] as number[],
   });
 
   const getOSCategory = (osName: string): string => {
@@ -177,10 +177,7 @@ export function VCenterSearch() {
         const toolsStatus = vm.tools_status?.toLowerCase() || 'unmanaged';
         if (!filters.toolsStatus.includes(toolsStatus)) return false;
       }
-      if (memoryMin !== null && vm.memory_gb < memoryMin) {
-        return false;
-      }
-      if (memoryMax !== null && vm.memory_gb > memoryMax) {
+      if (filters.memory.length > 0 && !filters.memory.includes(vm.memory_gb)) {
         return false;
       }
       if (cpuMin !== null && vm.num_cpu < cpuMin) {
@@ -414,30 +411,42 @@ export function VCenterSearch() {
                   <div className="space-y-5">
                     <div>
                       <label className="text-xs font-semibold text-slate-300 block mb-3 uppercase tracking-wide">Memory (GB)</label>
-                      {memoryOptions.length > 0 ? (
-                        <div className="space-y-2">
-                          <div className="flex gap-2 items-center">
-                            <input
-                              type="number"
-                              placeholder="Min"
-                              value={memoryMin ?? ''}
-                              onChange={(e) => setMemoryMin(e.target.value ? parseFloat(e.target.value) : null)}
-                              className="flex-1 px-2.5 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
-                            />
-                            <span className="text-slate-500 text-xs">to</span>
-                            <input
-                              type="number"
-                              placeholder="Max"
-                              value={memoryMax ?? ''}
-                              onChange={(e) => setMemoryMax(e.target.value ? parseFloat(e.target.value) : null)}
-                              className="flex-1 px-2.5 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-slate-100 placeholder-slate-500"
-                            />
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setMemoryDropdownOpen(!memoryDropdownOpen)}
+                          className="w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded text-left text-sm text-slate-300 hover:bg-slate-600 transition-colors flex items-center justify-between"
+                        >
+                          <span>{filters.memory.length > 0 ? `${filters.memory.length} selected` : 'Select memory...'}</span>
+                          <ChevronDown className={`w-4 h-4 transition-transform ${memoryDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        {memoryDropdownOpen && memoryOptions.length > 0 && (
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded shadow-lg z-10 max-h-48 overflow-y-auto">
+                            {memoryOptions.map(memory => (
+                              <label key={memory} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-700 cursor-pointer text-xs border-b border-slate-700 last:border-b-0">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.memory.includes(memory)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFilters(prev => ({ ...prev, memory: [...prev.memory, memory].sort((a, b) => a - b) }));
+                                    } else {
+                                      setFilters(prev => ({ ...prev, memory: prev.memory.filter(m => m !== memory) }));
+                                    }
+                                  }}
+                                  className="rounded border-slate-600 bg-slate-700 cursor-pointer"
+                                />
+                                <span className="text-slate-300">{memory.toFixed(2)} GB</span>
+                              </label>
+                            ))}
                           </div>
-                          <div className="text-xs text-slate-400">Available: {Math.min(...memoryOptions).toFixed(2)} - {Math.max(...memoryOptions).toFixed(2)} GB</div>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-slate-400">No options available</span>
-                      )}
+                        )}
+                        
+                        {memoryOptions.length === 0 && (
+                          <div className="text-xs text-slate-400 px-3 py-2">No options available</div>
+                        )}
+                      </div>
                     </div>
 
                     <div>
@@ -484,9 +493,8 @@ export function VCenterSearch() {
                         powerState: [],
                         guestOS: [],
                         toolsStatus: [],
+                        memory: [],
                       });
-                      setMemoryMin(null);
-                      setMemoryMax(null);
                       setCpuMin(null);
                       setCpuMax(null);
                     }}
