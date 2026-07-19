@@ -37,8 +37,10 @@ export function AnalyticsDrilldown() {
   const calculateMemoryMetrics = () => {
     const metrics: Record<string, any> = {};
     vcenters.forEach((vc) => {
-      const used = vc.memory_gb || 0;
-      const allocated = vc.allocated_memory_gb || vc.memory_gb || 0;
+      const allVms = vc.vms || [];
+      const poweredOnVms = allVms.filter((vm: any) => vm.power_state === 'PoweredOn');
+      const used = poweredOnVms.reduce((sum, vm: any) => sum + (vm.memory_gb || 0), 0);
+      const allocated = allVms.reduce((sum, vm: any) => sum + (vm.memory_gb || 0), 0);
       metrics[vc.vcenter] = { vcenter: vc.vcenter, used, allocated };
     });
     return metrics;
@@ -148,9 +150,9 @@ export function AnalyticsDrilldown() {
                   </div>
                 </div>
                 <p className="text-white font-mono text-right text-lg mb-3">
-                  <span>{data.used.toFixed(1)}</span>
+                  <span>{data.provisioned.toFixed(1)}</span>
                   <span className="text-slate-400"> / </span>
-                  <span>{data.provisioned.toFixed(1)} TB</span>
+                  <span>{data.used.toFixed(1)} TB</span>
                 </p>
 
                     <div className="flex gap-2 h-6 rounded overflow-hidden mb-2">
