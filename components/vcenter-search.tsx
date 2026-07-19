@@ -165,10 +165,17 @@ export function VCenterSearch() {
                 </div>
               </div>
 
-              {result.vms.length === 0 ? (
+              {!result.isAccessible ? (
+                <div className="mt-4 bg-red-900/20 border border-red-800/50 rounded-lg p-4">
+                  <p className="text-red-200 font-semibold">Unable to connect to vCenter</p>
+                  {result.errorMessage && (
+                    <p className="text-red-300/80 text-sm mt-2 font-mono break-words">{result.errorMessage}</p>
+                  )}
+                </div>
+              ) : result.vms.length === 0 ? (
                 <div className="mt-4 bg-yellow-900/20 border border-yellow-800/50 rounded-lg p-4">
                   <p className="text-yellow-200 font-semibold">No VMs found for this vCenter</p>
-                  <p className="text-yellow-300/70 text-sm mt-1">This vCenter either has no accessible VMs or the VMs are currently unavailable.</p>
+                  <p className="text-yellow-300/70 text-sm mt-1">This vCenter is accessible but has no VMs or they are currently unavailable.</p>
                 </div>
               ) : (
                 <>

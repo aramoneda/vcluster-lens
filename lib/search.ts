@@ -40,6 +40,27 @@ export interface VCenterStats {
   powered_on: number;
   powered_off: number;
   vms: VM[];
+  isAccessible: boolean;
+  errorMessage?: string;
+}
+
+// Extract error message from notes field
+function extractErrorMessage(notes: string): string {
+  if (!notes) return '';
+  
+  // Notes format: "timestamp\tConnect-VIServer\t\tError message\nAdditional info..."
+  // Extract the main error message (third tab-separated field) and first line
+  const lines = notes.split('\n');
+  if (lines.length > 0) {
+    const firstLine = lines[0];
+    const parts = firstLine.split('\t');
+    // Get the error message (usually 4th field, index 3)
+    if (parts.length >= 4) {
+      const errorPart = parts.slice(3).join('\t').trim();
+      return errorPart;
+    }
+  }
+  return notes.split('\n')[0]; // Fallback to first line
 }
 
 // Cached data
@@ -76,6 +97,7 @@ export async function getVCenters(): Promise<VCenterStats[]> {
   
   data.forEach((vm: any) => {
     if (!vcenterMap[vm.vcenter]) {
+      const isAccessible = vm.exists !== 'No';
       vcenterMap[vm.vcenter] = {
         vcenter: vm.vcenter,
         site: vm.site,
@@ -85,6 +107,8 @@ export async function getVCenters(): Promise<VCenterStats[]> {
         powered_on: 0,
         powered_off: 0,
         vms: [],
+        isAccessible,
+        errorMessage: !isAccessible ? extractErrorMessage(vm.notes) : undefined,
       };
     }
     
