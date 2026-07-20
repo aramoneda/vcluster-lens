@@ -159,7 +159,18 @@ export async function getVCenters(): Promise<VCenterStats[]> {
 // Search for single VM
 export async function searchVM(vmName: string): Promise<VM | null> {
   const data = await getLoadedVMData();
-  const vm = data.find((v) => v.vm_name.toLowerCase() === vmName.toLowerCase());
+  const searchLower = vmName.toLowerCase();
+  
+  // First try exact match (FQDN)
+  let vm = data.find((v) => v.vm_name.toLowerCase() === searchLower);
+  if (vm) return vm;
+  
+  // If no exact match, try hostname-only match (part before first dot)
+  vm = data.find((v) => {
+    const hostname = v.vm_name.split('.')[0].toLowerCase();
+    return hostname === searchLower;
+  });
+  
   return vm || null;
 }
 
@@ -197,17 +208,29 @@ export async function searchMultipleVMs(vmNames: string[]): Promise<VM[]> {
     if (!name.trim()) continue;
 
     if (hasWildcards(name)) {
-      // Wildcard pattern matching
+      // Wildcard pattern matching (works on FQDN or hostname)
       const regex = wildcardToRegex(name);
       data.forEach((vm) => {
-        if (regex.test(vm.vm_name) && !seen.has(vm.vm_name)) {
+        const hostname = vm.vm_name.split('.')[0];
+        // Match against both FQDN and hostname
+        if ((regex.test(vm.vm_name) || regex.test(hostname)) && !seen.has(vm.vm_name)) {
           results.push(vm);
           seen.add(vm.vm_name);
         }
       });
     } else {
-      // Exact match
-      const vm = data.find((v) => v.vm_name.toLowerCase() === name.toLowerCase());
+      // Try exact match first (FQDN)
+      let vm = data.find((v) => v.vm_name.toLowerCase() === name.toLowerCase());
+      
+      // If no exact match, try hostname-only match
+      if (!vm) {
+        const searchLower = name.toLowerCase();
+        vm = data.find((v) => {
+          const hostname = v.vm_name.split('.')[0].toLowerCase();
+          return hostname === searchLower;
+        });
+      }
+      
       if (vm && !seen.has(vm.vm_name)) {
         results.push(vm);
         seen.add(vm.vm_name);
