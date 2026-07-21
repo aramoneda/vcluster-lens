@@ -14,7 +14,7 @@ export default function Home() {
     <main className="min-h-screen bg-slate-950">
       {/* Header */}
       <header className="bg-gradient-to-r from-slate-900 to-blue-900 border-b border-blue-800 shadow-lg sticky top-0 z-10">
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div>
             <h1 className="text-4xl font-bold text-white">ICS SRE vCenter Dashboard</h1>
             <p className="text-blue-200 mt-2">VM Search & Resource Analytics</p>
@@ -52,7 +52,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-slate-900 border-t border-slate-700 mt-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <p className="text-center text-slate-400 text-sm">
             vCenter Dashboard • Last Updated: {new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}
           </p>
