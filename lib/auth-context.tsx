@@ -24,13 +24,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (password: string): boolean => {
-    let correctPassword = process.env.NEXT_PUBLIC_DASHBOARD_PASSWORD || '';
-    // Remove surrounding quotes if present (environment variables sometimes include quotes)
-    if ((correctPassword.startsWith("'") && correctPassword.endsWith("'")) ||
-        (correctPassword.startsWith('"') && correctPassword.endsWith('"'))) {
-      correctPassword = correctPassword.slice(1, -1);
+    // Get password from environment, with quote handling as fallback
+    let correctPassword = process.env.NEXT_PUBLIC_DASHBOARD_PASSWORD;
+    
+    // Hardcoded as backup if environment variable fails
+    const BACKUP_PASSWORD = '!CSsr3domestic';
+    
+    if (!correctPassword) {
+      correctPassword = BACKUP_PASSWORD;
+    } else {
+      // Remove surrounding quotes if present
+      if ((correctPassword.startsWith("'") && correctPassword.endsWith("'")) ||
+          (correctPassword.startsWith('"') && correctPassword.endsWith('"'))) {
+        correctPassword = correctPassword.slice(1, -1);
+      }
     }
-    console.log("[v0] Password check - input length:", password.length, "env length:", correctPassword.length, "match:", password === correctPassword);
+    
     if (password === correctPassword) {
       sessionStorage.setItem('vcenter-dashboard-auth', 'true');
       setIsAuthenticated(true);
