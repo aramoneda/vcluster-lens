@@ -24,23 +24,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (password: string): boolean => {
-    // Get password from environment, with quote handling as fallback
-    let correctPassword = process.env.NEXT_PUBLIC_DASHBOARD_PASSWORD;
+    // Hardcoded password for Broadridge dashboard access
+    const correctPassword = '!CSsr3domestic';
     
-    // Hardcoded as backup if environment variable fails
-    const BACKUP_PASSWORD = '!CSsr3domestic';
+    // Trim whitespace from input
+    const trimmedInput = password.trim();
     
-    if (!correctPassword) {
-      correctPassword = BACKUP_PASSWORD;
-    } else {
-      // Remove surrounding quotes if present
-      if ((correctPassword.startsWith("'") && correctPassword.endsWith("'")) ||
-          (correctPassword.startsWith('"') && correctPassword.endsWith('"'))) {
-        correctPassword = correctPassword.slice(1, -1);
-      }
-    }
-    
-    if (password === correctPassword) {
+    if (trimmedInput === correctPassword) {
       sessionStorage.setItem('vcenter-dashboard-auth', 'true');
       setIsAuthenticated(true);
       return true;
