@@ -38,10 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
   };
 
-  if (isLoading) {
-    return null; // Prevent hydration mismatch
-  }
-
   return (
     <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
       {children}
