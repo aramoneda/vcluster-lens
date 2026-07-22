@@ -24,7 +24,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (password: string): boolean => {
-    const correctPassword = process.env.NEXT_PUBLIC_DASHBOARD_PASSWORD;
+    let correctPassword = process.env.NEXT_PUBLIC_DASHBOARD_PASSWORD || '';
+    // Remove surrounding quotes if present (environment variables sometimes include quotes)
+    if ((correctPassword.startsWith("'") && correctPassword.endsWith("'")) ||
+        (correctPassword.startsWith('"') && correctPassword.endsWith('"'))) {
+      correctPassword = correctPassword.slice(1, -1);
+    }
     if (password === correctPassword) {
       sessionStorage.setItem('vcenter-dashboard-auth', 'true');
       setIsAuthenticated(true);
