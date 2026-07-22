@@ -30,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         (correctPassword.startsWith('"') && correctPassword.endsWith('"'))) {
       correctPassword = correctPassword.slice(1, -1);
     }
+    console.log("[v0] Password check - input length:", password.length, "env length:", correctPassword.length, "match:", password === correctPassword);
     if (password === correctPassword) {
       sessionStorage.setItem('vcenter-dashboard-auth', 'true');
       setIsAuthenticated(true);
