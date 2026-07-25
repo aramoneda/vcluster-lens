@@ -4,8 +4,6 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { LayoutWrapper } from "@/components/layout-wrapper"
 import { ThemeProvider } from "@/components/theme-provider"
-import { AuthProvider } from "@/lib/auth-context"
-import ProtectedLayout from "@/components/protected-layout"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,18 +24,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-[var(--font-family-brand)]`}>
-        <AuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={false}
-            disableTransitionOnChange
-          >
-            <ProtectedLayout>
-              <LayoutWrapper>{children}</LayoutWrapper>
-            </ProtectedLayout>
-          </ThemeProvider>
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </ThemeProvider>
       </body>
     </html>
   )
