@@ -1,52 +1,28 @@
-import { Summary } from '@/components/summary';
-import { AnalyticsDrilldown } from '@/components/analytics-drilldown';
-import { SingleVMSearch } from '@/components/single-vm-search';
-import { VCenterSearch } from '@/components/vcenter-search';
-import { MultiVMSearch } from '@/components/multi-vm-search';
+'use client';
 
-export const metadata = {
-  title: 'vCenter Dashboard',
-  description: 'Search and discover virtual machines across your vCenter infrastructure',
-};
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if user is already authenticated
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      // Already logged in, redirect to dashboard
+      router.push('/dashboard');
+    } else {
+      // Not logged in, redirect to login
+      router.push('/login');
+    }
+  }, [router]);
+
   return (
-    <main className="min-h-screen bg-slate-950">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-slate-900 to-blue-900 border-b border-blue-800 shadow-lg sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div>
-            <h1 className="text-4xl font-bold text-white">ICS SRE vCenter Dashboard</h1>
-            <p className="text-blue-200 mt-2">VM Search & Resource Analytics</p>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Quick Stats */}
-        <section className="mb-8">
-          <Summary />
-        </section>
-
-        {/* Analytics Drill-Down */}
-        <section className="mb-8">
-          <AnalyticsDrilldown />
-        </section>
-
-        {/* Search Sections */}
-        <section className="space-y-12">
-          <div id="single-vm">
-            <SingleVMSearch />
-          </div>
-
-          <div id="vcenter-search" className="pt-8 border-t border-slate-700">
-            <VCenterSearch />
-          </div>
-
-          <div id="multi-vm" className="pt-8 border-t border-slate-700">
-            <MultiVMSearch />
-          </div>
-        </section>
+    <main className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="text-white">Redirecting...</div>
+    </main>
+  );
 
       </div>
 
