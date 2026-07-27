@@ -1,0 +1,792 @@
+@{
+    ViewData["Title"] = "ICS SRE vCenter Dashboard";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICS SRE vCenter Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e3a5f;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+            --accent-orange: #f97316;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #2d5a8c 100%);
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+        }
+
+        /* Container */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Analytics Cards */
+        .analytics-section {
+            margin-bottom: 3rem;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .analytics-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .analytics-card.powered-on { border-left-color: var(--accent-green); }
+        .analytics-card.powered-off { border-left-color: var(--accent-red); }
+        .analytics-card.storage { border-left-color: var(--accent-purple); }
+        .analytics-card.memory { border-left-color: var(--accent-orange); }
+
+        .analytics-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-subtitle {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Search Panels */
+        .search-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-panel h3 {
+            font-size: 1.3rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-panel h3::before {
+            content: "🔍";
+        }
+
+        /* Search Input */
+        .search-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input-group input,
+        .search-input-group select {
+            flex: 1;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .search-input-group input::placeholder,
+        .search-input-group select {
+            color: #64748b;
+        }
+
+        .search-input-group input:focus,
+        .search-input-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-search {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-search:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-clear {
+            background-color: #64748b;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-clear:hover {
+            background-color: #475569;
+        }
+
+        /* Advanced Filtering */
+        .advanced-filtering {
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .advanced-filtering.active {
+            display: block;
+        }
+
+        .advanced-filtering h4 {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .filter-group select {
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.5rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        /* Results Table */
+        .results-container {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+        }
+
+        .results-header {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .results-table {
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .results-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table thead {
+            background-color: #0f172a;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .results-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .results-table tbody tr:hover {
+            background-color: #1e293b;
+        }
+
+        .status-online {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .status-offline {
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+
+        /* Export Button */
+        .export-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-export {
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-export:hover {
+            background-color: #059669;
+        }
+
+        /* No Results */
+        .no-results {
+            padding: 2rem;
+            text-align: center;
+            color: #94a3b8;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1>ICS SRE vCenter Dashboard</h1>
+        <p>VM Search & Resource Analytics</p>
+    </div>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <!-- Analytics Section -->
+        <div class="analytics-section">
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="analytics-label">Total VMs</div>
+                    <div class="analytics-value" id="totalVMs">0</div>
+                    <div class="analytics-subtitle" id="onlineCount">0 Online</div>
+                </div>
+                <div class="analytics-card">
+                    <div class="analytics-label">vCenters</div>
+                    <div class="analytics-value" id="totalVCenters">0</div>
+                    <div class="analytics-subtitle">Active Sites</div>
+                </div>
+                <div class="analytics-card powered-on">
+                    <div class="analytics-label">Powered On</div>
+                    <div class="analytics-value" id="poweredOnCount">0</div>
+                    <div class="analytics-subtitle" id="poweredOnPercent">0% of total</div>
+                </div>
+                <div class="analytics-card powered-off">
+                    <div class="analytics-label">Powered Off</div>
+                    <div class="analytics-value" id="poweredOffCount">0</div>
+                    <div class="analytics-subtitle" id="poweredOffStorage">0 TB used</div>
+                </div>
+                <div class="analytics-card storage">
+                    <div class="analytics-label">Storage Utilization</div>
+                    <div class="analytics-value" id="storagePercent">0%</div>
+                    <div class="analytics-subtitle" id="storageDetails">0.0 TB of 0.0 TB</div>
+                </div>
+                <div class="analytics-card memory">
+                    <div class="analytics-label">Memory Allocation</div>
+                    <div class="analytics-value" id="memoryPercent">0%</div>
+                    <div class="analytics-subtitle" id="memoryDetails">0.0 GB of 0.0 GB</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Single VM -->
+        <div class="search-panel">
+            <h3>Search Single VM</h3>
+            <div class="search-input-group">
+                <input type="text" id="singleVMInput" placeholder="Search by VM name (supports wildcards: edp*, *qa*, etc.)" />
+                <button class="btn-search" onclick="searchSingleVM()">Search</button>
+                <button class="btn-clear" onclick="clearSingleVMResults()">Clear</button>
+            </div>
+            <div class="results-container" id="singleVMResults">
+                <div class="export-section" id="singleVMExport" style="display: none;">
+                    <button class="btn-export" onclick="exportToCSV('singleVM')">📥 Export to CSV</button>
+                </div>
+                <div class="results-table" id="singleVMTable"></div>
+                <div class="no-results" id="singleVMNoResults"></div>
+            </div>
+        </div>
+
+        <!-- Search by vCenter -->
+        <div class="search-panel">
+            <h3>Search by vCenter</h3>
+            <div class="search-input-group">
+                <select id="vCenterSelect" onchange="onVCenterSelected()">
+                    <option value="">Select a vCenter...</option>
+                </select>
+                <button class="btn-search" onclick="searchByVCenter()">Search</button>
+                <button class="btn-clear" onclick="clearVCenterResults()">Clear</button>
+            </div>
+
+            <!-- Advanced Filtering -->
+            <div class="advanced-filtering" id="advancedFiltering">
+                <h4>Advanced Filtering (Optional)</h4>
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label>Power State</label>
+                        <select id="powerStateFilter">
+                            <option value="">All States</option>
+                            <option value="poweredOn">Powered On</option>
+                            <option value="poweredOff">Powered Off</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Guest OS</label>
+                        <select id="guestOSFilter">
+                            <option value="">All OSes</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Memory (GB)</label>
+                        <select id="memoryFilter">
+                            <option value="">All Sizes</option>
+                            <option value="0-4">0-4 GB</option>
+                            <option value="4-8">4-8 GB</option>
+                            <option value="8-16">8-16 GB</option>
+                            <option value="16+">16+ GB</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>CPU Cores</label>
+                        <select id="cpuFilter">
+                            <option value="">All Counts</option>
+                            <option value="1-2">1-2 Cores</option>
+                            <option value="2-4">2-4 Cores</option>
+                            <option value="4-8">4-8 Cores</option>
+                            <option value="8+">8+ Cores</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Tools Status</label>
+                        <select id="toolsFilter">
+                            <option value="">All Status</option>
+                            <option value="guestToolsRunning">Running</option>
+                            <option value="guestToolsNotRunning">Not Running</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-container" id="vCenterResults">
+                <div class="export-section" id="vCenterExport" style="display: none;">
+                    <button class="btn-export" onclick="exportToCSV('vCenter')">📥 Export to CSV</button>
+                </div>
+                <div class="results-table" id="vCenterTable"></div>
+                <div class="no-results" id="vCenterNoResults"></div>
+            </div>
+        </div>
+
+        <!-- Search Multiple VMs -->
+        <div class="search-panel">
+            <h3>Search Multiple VMs</h3>
+            <div class="search-input-group">
+                <textarea id="multipleVMInput" placeholder="Enter VM names/patterns (one per line). Examples: edp*, *qa*, prod-db-*" style="width: 100%; height: 100px; padding: 1rem; background-color: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; color: white; font-family: monospace;"></textarea>
+            </div>
+            <div class="search-input-group">
+                <button class="btn-search" onclick="searchMultipleVMs()">Search</button>
+                <button class="btn-clear" onclick="clearMultipleVMResults()">Clear</button>
+            </div>
+            <div class="results-container" id="multipleVMResults">
+                <div class="export-section" id="multipleVMExport" style="display: none;">
+                    <button class="btn-export" onclick="exportToCSV('multipleVM')">📥 Export to CSV</button>
+                </div>
+                <div class="results-table" id="multipleVMTable"></div>
+                <div class="no-results" id="multipleVMNoResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="dashboard-footer">
+        ICS SRE vCenter Dashboard • Last Updated: <span id="lastUpdated">-</span>
+    </div>
+
+    <script>
+        let allVMs = [];
+        let currentSearchType = null;
+        let currentSearchResults = [];
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadDashboardData();
+            populateVCenterDropdown();
+            updateLastUpdated();
+        });
+
+        // Load all dashboard data
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/dashboard-summary');
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update analytics cards
+                    document.getElementById('totalVMs').textContent = data.summary.totalVMs.toLocaleString();
+                    document.getElementById('onlineCount').textContent = data.summary.onlineVMs + ' Online';
+                    document.getElementById('totalVCenters').textContent = data.summary.vCenterCount;
+                    document.getElementById('poweredOnCount').textContent = data.summary.poweredOnCount.toLocaleString();
+                    document.getElementById('poweredOnPercent').textContent = data.summary.poweredOnPercent.toFixed(1) + '% of total';
+                    document.getElementById('poweredOffCount').textContent = data.summary.poweredOffCount.toLocaleString();
+                    document.getElementById('poweredOffStorage').textContent = (data.summary.poweredOffStorageTB).toFixed(1) + ' TB used';
+                    document.getElementById('storagePercent').textContent = data.summary.storageUtilizationPercent.toFixed(1) + '%';
+                    document.getElementById('storageDetails').textContent = (data.summary.usedStorageTB).toFixed(1) + ' TB of ' + (data.summary.totalStorageTB).toFixed(1) + ' TB';
+                    document.getElementById('memoryPercent').textContent = data.summary.memoryAllocationPercent.toFixed(1) + '%';
+                    document.getElementById('memoryDetails').textContent = (data.summary.allocatedMemoryGB).toFixed(1) + ' GB of ' + (data.summary.totalMemoryGB).toFixed(1) + ' GB';
+
+                    // Store all VMs for searching
+                    allVMs = data.vms || [];
+                }
+            } catch (error) {
+                console.error('[v0] Error loading dashboard data:', error);
+            }
+        }
+
+        // Populate vCenter dropdown
+        function populateVCenterDropdown() {
+            const vCenters = [...new Set(allVMs.map(vm => vm.vcenter))].filter(Boolean).sort();
+            const select = document.getElementById('vCenterSelect');
+
+            vCenters.forEach(vCenter => {
+                const option = document.createElement('option');
+                option.value = vCenter;
+                option.textContent = vCenter;
+                select.appendChild(option);
+            });
+        }
+
+        // When vCenter is selected
+        function onVCenterSelected() {
+            const selectedVCenter = document.getElementById('vCenterSelect').value;
+            const advancedFiltering = document.getElementById('advancedFiltering');
+
+            if (selectedVCenter) {
+                advancedFiltering.classList.add('active');
+                populateOSFilter(selectedVCenter);
+            } else {
+                advancedFiltering.classList.remove('active');
+            }
+        }
+
+        // Populate Guest OS filter based on selected vCenter
+        function populateOSFilter(vCenter) {
+            const osFilter = document.getElementById('guestOSFilter');
+            const vCenterVMs = allVMs.filter(vm => vm.vcenter === vCenter);
+            const osTypes = [...new Set(vCenterVMs.map(vm => vm.guestOs))].filter(Boolean).sort();
+
+            osFilter.innerHTML = '<option value="">All OSes</option>';
+            osTypes.forEach(os => {
+                const option = document.createElement('option');
+                option.value = os;
+                option.textContent = os;
+                osFilter.appendChild(option);
+            });
+        }
+
+        // Search single VM
+        async function searchSingleVM() {
+            const searchTerm = document.getElementById('singleVMInput').value.trim();
+            if (!searchTerm) {
+                alert('Please enter a VM name');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/search-single-vm?query=${encodeURIComponent(searchTerm)}`);
+                const data = await response.json();
+
+                if (data.success && data.results.length > 0) {
+                    displayResults(data.results, 'singleVM');
+                } else {
+                    showNoResults('singleVM', `No VMs found matching "${searchTerm}"`);
+                }
+            } catch (error) {
+                console.error('[v0] Error searching single VM:', error);
+            }
+        }
+
+        // Search by vCenter
+        async function searchByVCenter() {
+            const vCenter = document.getElementById('vCenterSelect').value;
+            if (!vCenter) {
+                alert('Please select a vCenter');
+                return;
+            }
+
+            const powerState = document.getElementById('powerStateFilter').value;
+            const guestOS = document.getElementById('guestOSFilter').value;
+            const memory = document.getElementById('memoryFilter').value;
+            const cpu = document.getElementById('cpuFilter').value;
+            const tools = document.getElementById('toolsFilter').value;
+
+            try {
+                const params = new URLSearchParams({
+                    vCenter,
+                    powerState,
+                    guestOS,
+                    memory,
+                    cpu,
+                    tools
+                });
+
+                const response = await fetch(`/api/search-vcenter?${params}`);
+                const data = await response.json();
+
+                if (data.success && data.results.length > 0) {
+                    displayResults(data.results, 'vCenter');
+                } else {
+                    showNoResults('vCenter', 'No VMs found matching your filters');
+                }
+            } catch (error) {
+                console.error('[v0] Error searching vCenter:', error);
+            }
+        }
+
+        // Search multiple VMs
+        async function searchMultipleVMs() {
+            const input = document.getElementById('multipleVMInput').value.trim();
+            if (!input) {
+                alert('Please enter at least one VM name or pattern');
+                return;
+            }
+
+            const patterns = input.split('\n').map(p => p.trim()).filter(Boolean);
+
+            try {
+                const response = await fetch('/api/search-multiple-vms', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ patterns })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.results.length > 0) {
+                    displayResults(data.results, 'multipleVM');
+                } else {
+                    showNoResults('multipleVM', 'No VMs found matching your patterns');
+                }
+            } catch (error) {
+                console.error('[v0] Error searching multiple VMs:', error);
+            }
+        }
+
+        // Display results table
+        function displayResults(results, searchType) {
+            const resultsDiv = document.getElementById(searchType + 'Results');
+            const tableDiv = document.getElementById(searchType + 'Table');
+            const exportDiv = document.getElementById(searchType + 'Export');
+            const noResultsDiv = document.getElementById(searchType + 'NoResults');
+
+            currentSearchResults = results;
+            currentSearchType = searchType;
+
+            if (results.length === 0) {
+                showNoResults(searchType, 'No results found');
+                return;
+            }
+
+            let html = '<table><thead><tr>';
+            html += '<th>VM Name</th><th>Power State</th><th>Hostname</th><th>vCenter</th><th>CPU</th><th>Memory GB</th>';
+            html += '<th>Provisioned GB</th><th>Used GB</th><th>ESXi Host</th><th>Cluster</th><th>IP Address</th><th>Tools Status</th>';
+            html += '</tr></thead><tbody>';
+
+            results.forEach(vm => {
+                const powerStateClass = vm.powerState === 'poweredOn' ? 'status-online' : 'status-offline';
+                const powerStateText = vm.powerState === 'poweredOn' ? 'On' : 'Off';
+
+                html += `<tr>
+                    <td>${vm.vmName || '-'}</td>
+                    <td><span class="${powerStateClass}">${powerStateText}</span></td>
+                    <td>${vm.hostname || '-'}</td>
+                    <td>${vm.vcenter || '-'}</td>
+                    <td>${vm.numCpu || '-'}</td>
+                    <td>${vm.memoryMB ? (vm.memoryMB / 1024).toFixed(1) : '-'}</td>
+                    <td>${vm.provisionedGB || '-'}</td>
+                    <td>${vm.usedGB || '-'}</td>
+                    <td>${vm.esxiHost || '-'}</td>
+                    <td>${vm.cluster || '-'}</td>
+                    <td>${vm.ipAddress || '-'}</td>
+                    <td>${vm.guestToolsStatus || '-'}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+
+            tableDiv.innerHTML = html;
+            noResultsDiv.innerHTML = '';
+            exportDiv.style.display = 'block';
+            resultsDiv.classList.add('active');
+        }
+
+        // Show no results message
+        function showNoResults(searchType, message) {
+            const resultsDiv = document.getElementById(searchType + 'Results');
+            const tableDiv = document.getElementById(searchType + 'Table');
+            const exportDiv = document.getElementById(searchType + 'Export');
+            const noResultsDiv = document.getElementById(searchType + 'NoResults');
+
+            tableDiv.innerHTML = '';
+            exportDiv.style.display = 'none';
+            noResultsDiv.innerHTML = message;
+            resultsDiv.classList.add('active');
+        }
+
+        // Clear results
+        function clearSingleVMResults() {
+            document.getElementById('singleVMInput').value = '';
+            document.getElementById('singleVMResults').classList.remove('active');
+        }
+
+        function clearVCenterResults() {
+            document.getElementById('vCenterSelect').value = '';
+            document.getElementById('advancedFiltering').classList.remove('active');
+            document.getElementById('vCenterResults').classList.remove('active');
+        }
+
+        function clearMultipleVMResults() {
+            document.getElementById('multipleVMInput').value = '';
+            document.getElementById('multipleVMResults').classList.remove('active');
+        }
+
+        // Export to CSV
+        async function exportToCSV(searchType) {
+            if (currentSearchResults.length === 0) {
+                alert('No results to export');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/export-csv', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ vms: currentSearchResults })
+                });
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `vm-search-${searchType}-${new Date().getTime()}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error('[v0] Error exporting CSV:', error);
+            }
+        }
+
+        // Update last updated timestamp
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+        }
+    </script>
+</body>
+</html>
