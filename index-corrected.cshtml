@@ -1,0 +1,572 @@
+@model IcsSreVcenterDashboard.Models.DashboardSummaryViewModel
+@{
+    ViewData["Title"] = "ICS SRE vCenter Dashboard";
+    var vcenters = ViewBag.VCenters as List<string> ?? new List<string>();
+}
+
+<div class="container-fluid py-4">
+    <!-- HEADER -->
+    <div class="dashboard-header rounded-4 p-4 mb-4 shadow">
+        <h1 class="text-white mb-1">ICS SRE vCenter Dashboard</h1>
+        <p class="text-light mb-0">VM Search & Resource Analytics</p>
+        <small class="text-muted">Last updated: <span id="lastUpdated">@DateTime.Now.ToString("M/d/yyyy, h:mm:ss tt")</span> • Auto-refreshes hourly</small>
+    </div>
+
+    <!-- ANALYTICS SUMMARY CARDS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-stat-card stat-blue text-white h-100">
+                <div class="card-body">
+                    <div class="small text-muted">Total VMs</div>
+                    <div class="fs-2 fw-bold">@Model.TotalVms</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-stat-card stat-purple text-white h-100">
+                <div class="card-body">
+                    <div class="small text-muted">vCenters</div>
+                    <div class="fs-2 fw-bold">@Model.TotalVCenters</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-stat-card stat-green text-white h-100">
+                <div class="card-body">
+                    <div class="small text-muted">Powered On</div>
+                    <div class="fs-2 fw-bold">@Model.PoweredOnVms</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-stat-card stat-orange text-white h-100">
+                <div class="card-body">
+                    <div class="small text-muted">Powered Off</div>
+                    <div class="fs-2 fw-bold">@Model.PoweredOffVms</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESOURCE UTILIZATION CARDS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card dashboard-stat-card stat-cyan text-white h-100">
+                <div class="card-body">
+                    <div class="fw-bold mb-2">Storage Utilization</div>
+                    <div class="display-6 fw-bold">91.6%</div>
+                    <small class="text-muted mt-2 d-block">11752.7 TB used of 12873.7 TB</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card dashboard-stat-card stat-magenta text-white h-100">
+                <div class="card-body">
+                    <div class="fw-bold mb-2">Memory Allocation</div>
+                    <div class="display-6 fw-bold">96.5%</div>
+                    <small class="text-muted mt-2 d-block">433499 GB used of 448317 GB</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card dashboard-stat-card stat-red text-white h-100">
+                <div class="card-body">
+                    <div class="fw-bold mb-2">Powered Off VMs</div>
+                    <div class="display-6 fw-bold">875</div>
+                    <small class="text-muted mt-2 d-block">212.9 TB storage consumed</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH SINGLE VM -->
+    <div class="card dashboard-panel mb-4">
+        <div class="card-body">
+            <h5 class="text-white mb-3">
+                <i class="bi bi-search"></i> Search Single VM
+            </h5>
+            <form id="singleVmForm" class="d-flex gap-2">
+                <div class="flex-grow-1 position-relative">
+                    <input 
+                        type="text"
+                        id="singleVmSearch"
+                        class="form-control form-dark search-input"
+                        placeholder="Search by VM name (supports wildcards: edp*, *qa*, etc.)"
+                        autocomplete="off" />
+                    <button 
+                        type="button"
+                        id="singleVmClearBtn"
+                        class="btn btn-sm input-clear-btn d-none"
+                        title="Clear">
+                        ×
+                    </button>
+                </div>
+                <button class="btn btn-primary search-btn" type="submit">Search</button>
+            </form>
+            <div id="singleVmResults" class="mt-3"></div>
+        </div>
+    </div>
+
+    <!-- SEARCH BY VCENTER -->
+    <div class="card dashboard-panel mb-4">
+        <div class="card-body">
+            <h5 class="text-white mb-3">
+                <i class="bi bi-building"></i> Search by vCenter
+            </h5>
+
+            <form id="vCenterForm" class="d-flex gap-2 mb-3">
+                <div class="flex-grow-1 position-relative">
+                    <input 
+                        type="text"
+                        id="vCenterSearch"
+                        class="form-control form-dark search-input"
+                        list="vcenterOptions"
+                        placeholder="Enter or select a vCenter..."
+                        autocomplete="off" />
+                    <datalist id="vcenterOptions">
+                        @foreach (var vc in vcenters)
+                        {
+                            <option value="@vc"></option>
+                        }
+                    </datalist>
+                    <button 
+                        type="button"
+                        id="vCenterClearBtn"
+                        class="btn btn-sm input-clear-btn d-none"
+                        title="Clear">
+                        ×
+                    </button>
+                </div>
+                <button class="btn btn-primary search-btn" type="submit">Search</button>
+            </form>
+
+            <!-- ADVANCED FILTERING SECTION -->
+            <div id="advancedFilterWrap" class="mt-4 d-none p-3 bg-dark rounded border border-secondary">
+                <h6 class="text-white mb-3">Advanced Filtering (Optional)</h6>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="small text-uppercase text-secondary fw-bold mb-2">Power State</label>
+                        <div id="filterPowerState" class="filter-group"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small text-uppercase text-secondary fw-bold mb-2">Tools Status</label>
+                        <div id="filterToolsStatus" class="filter-group"></div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="small text-uppercase text-secondary fw-bold mb-2">Guest OS</label>
+                        <select id="filterGuestOs" class="form-select form-dark form-select-sm">
+                            <option value="">All OSes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="small text-uppercase text-secondary fw-bold mb-2">Memory (GB)</label>
+                        <select id="filterMemory" class="form-select form-dark form-select-sm">
+                            <option value="">All Sizes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="small text-uppercase text-secondary fw-bold mb-2">CPU Cores</label>
+                        <select id="filterCpu" class="form-select form-dark form-select-sm">
+                            <option value="">All Counts</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-primary" type="button" id="applyAdvancedFiltersBtn">Apply Filters</button>
+                    <button class="btn btn-sm btn-secondary" type="button" id="clearAdvancedFiltersBtn">Clear Filters</button>
+                </div>
+            </div>
+
+            <!-- EXPORT BUTTON -->
+            <div id="vCenterExportWrap" class="mt-3 d-none">
+                <button class="btn btn-success btn-sm" type="button" onclick="exportVCenterCsv()">
+                    <i class="bi bi-download"></i> Export to CSV
+                </button>
+            </div>
+
+            <!-- RESULTS -->
+            <div id="vCenterResults" class="mt-3"></div>
+        </div>
+    </div>
+
+    <!-- SEARCH MULTIPLE VMs -->
+    <div class="card dashboard-panel mb-4">
+        <div class="card-body">
+            <h5 class="text-white mb-3">
+                <i class="bi bi-collection"></i> Search Multiple VMs
+            </h5>
+            <div class="small text-info mb-2">
+                Enter VM names one per line. Supports wildcard patterns:
+            </div>
+            <div class="small text-secondary mb-3">
+                <code>edpv*</code> - matches all VMs starting with "edpv" | 
+                <code>prod</code> - matches VMs containing "prod" | 
+                <code>exact-name</code> - exact match
+            </div>
+
+            <form id="multiVmForm">
+                <div class="mb-3">
+                    <textarea 
+                        id="batchSearch"
+                        rows="6"
+                        class="form-control form-dark"
+                        placeholder="edp-prod-vm-01&#10;qa-*&#10;exact-vm-name"
+                        autocomplete="off"></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    <button class="btn btn-secondary" type="button" id="multiVmClearBtn">Clear</button>
+                </div>
+            </form>
+
+            <div id="multiVmExportWrap" class="mt-3 d-none">
+                <button class="btn btn-success btn-sm" type="button" onclick="exportMultiVmCsv()">
+                    <i class="bi bi-download"></i> Export to CSV
+                </button>
+            </div>
+
+            <div id="multiVmResults" class="mt-3"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let vCenterRawResults = [];
+
+    const singleVmInput = document.getElementById("singleVmSearch");
+    const singleVmClearBtn = document.getElementById("singleVmClearBtn");
+    const vCenterInput = document.getElementById("vCenterSearch");
+    const vCenterClearBtn = document.getElementById("vCenterClearBtn");
+    const multiVmInput = document.getElementById("batchSearch");
+
+    const singleVmResults = document.getElementById("singleVmResults");
+    const vCenterResults = document.getElementById("vCenterResults");
+    const multiVmResults = document.getElementById("multiVmResults");
+
+    const vCenterExportWrap = document.getElementById("vCenterExportWrap");
+    const multiVmExportWrap = document.getElementById("multiVmExportWrap");
+    const advancedFilterWrap = document.getElementById("advancedFilterWrap");
+
+    // Toggle clear button visibility
+    function toggleClearButton(input, button) {
+        if (!input || !button) return;
+        button.classList.toggle("d-none", !input.value.trim());
+    }
+
+    singleVmInput.addEventListener("input", () => toggleClearButton(singleVmInput, singleVmClearBtn));
+    vCenterInput.addEventListener("input", () => toggleClearButton(vCenterInput, vCenterClearBtn));
+
+    // Clear buttons
+    singleVmClearBtn.addEventListener("click", () => {
+        singleVmInput.value = "";
+        singleVmResults.innerHTML = "";
+        toggleClearButton(singleVmInput, singleVmClearBtn);
+    });
+
+    vCenterClearBtn.addEventListener("click", () => {
+        vCenterInput.value = "";
+        vCenterResults.innerHTML = "";
+        vCenterExportWrap.classList.add("d-none");
+        advancedFilterWrap.classList.add("d-none");
+        vCenterRawResults = [];
+        clearAdvancedFiltersUI();
+        toggleClearButton(vCenterInput, vCenterClearBtn);
+    });
+
+    document.getElementById("multiVmClearBtn").addEventListener("click", () => {
+        multiVmInput.value = "";
+        multiVmResults.innerHTML = "";
+        multiVmExportWrap.classList.add("d-none");
+    });
+
+    // Form submissions
+    document.getElementById("singleVmForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const value = singleVmInput.value.trim();
+        
+        if (!value) {
+            showAlert(singleVmResults, "Enter a VM name, hostname, or FQDN.", "warning");
+            return;
+        }
+
+        fetch(`/Dashboard/SearchSingleVm?singleVmSearch=${encodeURIComponent(value)}`)
+            .then(r => {
+                if (!r.ok) throw new Error("Single VM search request failed.");
+                return r.text();
+            })
+            .then(html => {
+                singleVmResults.innerHTML = html;
+            })
+            .catch(err => {
+                showAlert(singleVmResults, err.message, "danger");
+            });
+    });
+
+    document.getElementById("vCenterForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const value = vCenterInput.value.trim();
+        
+        if (!value) {
+            showAlert(vCenterResults, "Enter or select a vCenter.", "warning");
+            return;
+        }
+
+        fetch(`/Dashboard/SearchVCenter?vCenterSearch=${encodeURIComponent(value)}`)
+            .then(r => {
+                if (!r.ok) throw new Error("vCenter search request failed.");
+                return r.json();
+            })
+            .then(payload => {
+                vCenterResults.innerHTML = payload.html || "";
+                vCenterRawResults = payload.data || [];
+
+                if (vCenterRawResults.length > 0) {
+                    vCenterExportWrap.classList.remove("d-none");
+                    advancedFilterWrap.classList.remove("d-none");
+                    buildDynamicFiltersFromVCenterData(vCenterRawResults);
+                } else {
+                    vCenterExportWrap.classList.add("d-none");
+                    advancedFilterWrap.classList.add("d-none");
+                    clearAdvancedFiltersUI();
+                }
+            })
+            .catch(err => {
+                showAlert(vCenterResults, err.message, "danger");
+                vCenterExportWrap.classList.add("d-none");
+                advancedFilterWrap.classList.add("d-none");
+                vCenterRawResults = [];
+                clearAdvancedFiltersUI();
+            });
+    });
+
+    document.getElementById("multiVmForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const value = multiVmInput.value.trim();
+        
+        if (!value) {
+            showAlert(multiVmResults, "Enter one or more VMs, one per line.", "warning");
+            return;
+        }
+
+        fetch(`/Dashboard/SearchMultipleVms?batchSearch=${encodeURIComponent(value)}`)
+            .then(r => {
+                if (!r.ok) throw new Error("Multiple VM search request failed.");
+                return r.json();
+            })
+            .then(payload => {
+                multiVmResults.innerHTML = payload.html || "";
+                multiVmExportWrap.classList.toggle("d-none", !payload.count);
+            })
+            .catch(err => {
+                showAlert(multiVmResults, err.message, "danger");
+                multiVmExportWrap.classList.add("d-none");
+            });
+    });
+
+    // Helper functions
+    function showAlert(container, message, type = "warning") {
+        container.innerHTML = `<div class="alert alert-${type} mt-2 mb-0">${escapeHtml(message)}</div>`;
+    }
+
+    function getDistinctValues(data, selector) {
+        return [...new Set(
+            data.map(selector)
+                .filter(v => v !== null && v !== undefined && String(v).trim() !== "")
+        )].sort((a, b) => String(a).localeCompare(String(b)));
+    }
+
+    function getDistinctNumbers(data, selector) {
+        return [...new Set(
+            data.map(selector)
+                .filter(v => v !== null && v !== undefined && String(v).trim() !== "")
+        )].sort((a, b) => Number(a) - Number(b));
+    }
+
+    function getCheckedValues(containerId) {
+        return Array.from(
+            document.querySelectorAll(`#${containerId} input[type='checkbox']:checked`)
+        ).map(x => x.value);
+    }
+
+    function buildDynamicFiltersFromVCenterData(data) {
+        const powerStates = getDistinctValues(data, x => x.powerState);
+        const toolsStatuses = getDistinctValues(data, x => x.toolsRunningStatus || x.toolsStatus);
+        const guestOsValues = getDistinctValues(data, x => x.guestOs);
+        const memoryValues = getDistinctNumbers(data, x => x.memoryGb);
+        const cpuValues = getDistinctNumbers(data, x => x.numCpu);
+
+        buildCheckboxGroup("filterPowerState", powerStates);
+        buildCheckboxGroup("filterToolsStatus", toolsStatuses);
+        buildSelect("filterGuestOs", guestOsValues, "All OSes");
+        buildSelect("filterMemory", memoryValues, "All Sizes");
+        buildSelect("filterCpu", cpuValues, "All Counts");
+    }
+
+    function buildCheckboxGroup(containerId, values) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        values.forEach(val => {
+            const safeId = `${containerId}_${String(val).replace(/[^a-zA-Z0-9_]/g, "_")}`;
+            container.insertAdjacentHTML("beforeend", `
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" value="${escapeHtml(val)}" id="${safeId}">
+                    <label class="form-check-label text-light" for="${safeId}">${escapeHtml(val)}</label>
+                </div>
+            `);
+        });
+    }
+
+    function buildSelect(containerId, values, placeholder) {
+        const select = document.getElementById(containerId);
+        select.innerHTML = `<option value="">${placeholder}</option>`;
+        values.forEach(val => {
+            select.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(val)}">${escapeHtml(val)}</option>`);
+        });
+    }
+
+    function clearAdvancedFiltersUI() {
+        document.getElementById("filterPowerState").innerHTML = "";
+        document.getElementById("filterToolsStatus").innerHTML = "";
+        document.getElementById("filterGuestOs").innerHTML = `<option value="">All OSes</option>`;
+        document.getElementById("filterMemory").innerHTML = `<option value="">All Sizes</option>`;
+        document.getElementById("filterCpu").innerHTML = `<option value="">All Counts</option>`;
+    }
+
+    // Advanced filter buttons
+    document.getElementById("applyAdvancedFiltersBtn").addEventListener("click", applyAdvancedFilters);
+    document.getElementById("clearAdvancedFiltersBtn").addEventListener("click", clearAdvancedFilters);
+
+    function applyAdvancedFilters() {
+        let filtered = [...vCenterRawResults];
+
+        const selectedPower = getCheckedValues("filterPowerState");
+        const selectedTools = getCheckedValues("filterToolsStatus");
+        const guestOs = document.getElementById("filterGuestOs").value;
+        const memory = document.getElementById("filterMemory").value;
+        const cpu = document.getElementById("filterCpu").value;
+
+        if (selectedPower.length > 0) {
+            filtered = filtered.filter(x => selectedPower.includes(x.powerState));
+        }
+        if (selectedTools.length > 0) {
+            filtered = filtered.filter(x => selectedTools.includes(x.toolsRunningStatus || x.toolsStatus));
+        }
+        if (guestOs) {
+            filtered = filtered.filter(x => (x.guestOs || "") === guestOs);
+        }
+        if (memory) {
+            filtered = filtered.filter(x => String(x.memoryGb) === String(memory));
+        }
+        if (cpu) {
+            filtered = filtered.filter(x => String(x.numCpu) === String(cpu));
+        }
+
+        renderFilteredVCenterResults(filtered);
+    }
+
+    function clearAdvancedFilters() {
+        document.querySelectorAll("#filterPowerState input[type='checkbox']").forEach(x => x.checked = false);
+        document.querySelectorAll("#filterToolsStatus input[type='checkbox']").forEach(x => x.checked = false);
+        document.getElementById("filterGuestOs").value = "";
+        document.getElementById("filterMemory").value = "";
+        document.getElementById("filterCpu").value = "";
+        renderFilteredVCenterResults(vCenterRawResults);
+    }
+
+    function renderFilteredVCenterResults(data) {
+        if (!data || data.length === 0) {
+            showAlert(vCenterResults, "No results found.", "info");
+            return;
+        }
+
+        let html = `
+        <div class="table-responsive mt-3">
+            <table class="table table-dark table-hover align-middle table-sm">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>VM Name</th>
+                        <th>Power</th>
+                        <th>Hostname</th>
+                        <th>vCenter</th>
+                        <th>CPU</th>
+                        <th>Memory</th>
+                        <th>Provisioned</th>
+                        <th>Used</th>
+                        <th>ESXi Host</th>
+                        <th>Cluster</th>
+                        <th>IP Address</th>
+                        <th>Tools</th>
+                        <th>Snapshots</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        data.forEach(vm => {
+            let powerBadge = `<span class="badge bg-secondary">${escapeHtml(vm.powerState || "")}</span>`;
+            if ((vm.powerState || "").toLowerCase() === "poweredon") {
+                powerBadge = `<span class="badge bg-success">On</span>`;
+            } else if ((vm.powerState || "").toLowerCase() === "poweredoff") {
+                powerBadge = `<span class="badge bg-warning text-dark">Off</span>`;
+            }
+
+            html += `
+                <tr>
+                    <td class="fw-bold">${escapeHtml(vm.vmName)}</td>
+                    <td>${powerBadge}</td>
+                    <td>${escapeHtml(vm.guestHostname || "—")}</td>
+                    <td>${escapeHtml(vm.vCenter || "—")}</td>
+                    <td>${escapeHtml(vm.numCpu || "—")}</td>
+                    <td>${escapeHtml(vm.memoryGb || "—")} GB</td>
+                    <td>${formatNumber(vm.provisionedGb)} GB</td>
+                    <td>${formatNumber(vm.usedGb)} GB</td>
+                    <td><small>${escapeHtml(vm.esxiHost || "—")}</small></td>
+                    <td><small>${escapeHtml(vm.cluster || "—")}</small></td>
+                    <td><small>${escapeHtml(vm.ipAddress || "—")}</small></td>
+                    <td><small>${escapeHtml(vm.toolsRunningStatus || vm.toolsStatus || "—")}</small></td>
+                    <td>${escapeHtml(vm.snapshotCount || "0")}</td>
+                </tr>
+            `;
+        });
+
+        html += `</tbody></table></div>`;
+        vCenterResults.innerHTML = html;
+    }
+
+    function formatNumber(val) {
+        if (!val || val === "—") return "—";
+        return Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function escapeHtml(value) {
+        if (value === null || value === undefined) return "";
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll("\"", "&quot;")
+            .replaceAll("'", "&#39;");
+    }
+
+    // Export functions
+    function exportVCenterCsv() {
+        const value = vCenterInput.value.trim();
+        if (!value) return;
+        window.location = `/Dashboard/ExportVCenterCsv?vCenterSearch=${encodeURIComponent(value)}`;
+    }
+
+    function exportMultiVmCsv() {
+        const value = multiVmInput.value.trim();
+        if (!value) return;
+        window.location = `/Dashboard/ExportMultiVmCsv?batchSearch=${encodeURIComponent(value)}`;
+    }
+</script>
+}
