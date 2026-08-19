@@ -51,6 +51,7 @@
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
+    "exceljs": "^4.4.0",
     "fs": "latest",
     "highcharts": "^12.0.0",
     "highcharts-react-official": "^3.2.1",
